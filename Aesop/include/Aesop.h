@@ -62,6 +62,12 @@ namespace ae {
       PVal val;
       bool set;
    };
+   /// A name-value pair represents setting or checking the value of a
+   /// Predicate. Used by Action.
+   struct Statement {
+      PName name;
+      PVal val;
+   };
 
    /// Boolean values for Predicates.
    enum PVals {
@@ -73,18 +79,15 @@ namespace ae {
    class Action {
    public:
       /// @brief Abstract the type of container used to store predicates.
-      typedef std::list<PName> storage;
+      typedef std::list<Statement> statements;
+      typedef std::list<PName> predicates;
 
-      /// @brief Get the names of the predicates that must be TRUE.
-      const storage& getRequired() const;
-      /// @brief Get the names of predicates which must be FALSE.
-      const storage& getVetoed() const;
-      /// @brief Get the names of predicates we set to TRUE.
-      const storage& getSet() const;
-      /// @brief Get the names of predicates we set to FALSE.
-      const storage& getReset() const;
-      /// @brief Get the names of predicates we UNSET.
-      const storage& getCleared() const;
+      /// @brief Get the names of the statements that must be TRUE.
+      const statements& getRequired() const { return mRequired; }
+      /// @brief Get the names of statements we set to some value.
+      const statements& getSet()      const { return mPostSet; }
+      /// @brief Get the names of statements we UNSET.
+      const predicates& getCleared()  const { return mPostClear; }
 
       /// @brief Default constructor.
       Action();
@@ -92,11 +95,9 @@ namespace ae {
       ~Action();
    protected:
    private:
-      storage mRequired;
-      storage mRequiredNot;
-      storage mPostSetTrue;
-      storage mPostSetFalse;
-      storage mPostClear;
+      statements mRequired;
+      statements mPostSet;
+      predicates mPostClear;
 
       /// Preconditions. Each predicate in this list must be set to TRUE for
       /// this Action to be valid.

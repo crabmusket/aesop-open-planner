@@ -49,29 +49,16 @@ namespace ae {
    /// 'vetoed' predicates are flagged FALSE.
    bool WorldState::actionPreMatch(const Action *ac) const
    {
-      Action::storage st;
-      Action::storage::const_iterator it;
+      const Action::statements &st = ac->getRequired();
+      Action::statements::const_iterator it;
 
-      // Check required predicates.
-      st = ac->getRequired();
       for(it = st.begin(); it != st.end(); it++)
       {
          // If we don't have a mapping for this predicate then we fail.
-         if(!predicateSet(*it))
+         if(!predicateSet(it->name))
             return false;
-         // If the predicate isn't true, we fail.
-         if(getPredicate(*it) != TRUE)
-            return false;
-      }
-
-      // Check vetoed predicates.
-      st = ac->getVetoed();
-      for(it = st.begin(); it != st.end(); it++)
-      {
-         if(!predicateSet(*it))
-            return false;
-         // If the predicate isn't false, we fail.
-         if(getPredicate(*it) != FALSE)
+         // If the predicate isn't set to the right value, we fail.
+         if(getPredicate(it->name) != it->val)
             return false;
       }
 
@@ -82,39 +69,27 @@ namespace ae {
    /// doing this, we match up 
    bool WorldState::actionPostMatch(const Action *ac) const
    {
-      Action::storage st;
-      Action::storage::const_iterator it;
-      std::map<PName, PVal>::iterator val;
+      Action::statements::const_iterator sit;
+      Action::predicates::const_iterator pit;
 
       // Check predicates that are set to true.
-      st = ac->getSet();
-      for(it = st.begin(); it != st.end(); it++)
+      const Action::statements &st = ac->getSet();
+      for(sit = st.begin(); sit != st.end(); sit++)
       {
          // If we don't have a mapping for this predicate, we're still good.
-         if(!predicateSet(*it))
+         if(!predicateSet(sit->name))
             continue;
-         // If the predicate isn't true, we fail.
-         if(getPredicate(*it) != TRUE)
-            return false;
-      }
-
-      // Check predicates that are reset (i.e. FALSE).
-      st = ac->getReset();
-      for(it = st.begin(); it != st.end(); it++)
-      {
-         if(!predicateSet(*it))
-            continue;
-         // If the predicate isn't false, we fail.
-         if(getPredicate(*it) != FALSE)
+         // If the predicate isn't correct, we fail.
+         if(getPredicate(sit->name) != sit->val)
             return false;
       }
 
       // Check predicates that should be unset.
-      st = ac->getCleared();
-      for(it = st.begin(); it != st.end(); it++)
+      const Action::predicates &pr = ac->getCleared();
+      for(pit = pr.begin(); pit != pr.end(); pit++)
       {
          // If we have a value for this predicate then we fail.
-         if(predicateSet(*it))
+         if(predicateSet(*pit))
             return false;
       }
 
@@ -125,23 +100,18 @@ namespace ae {
    /// applied to the current set of predicates.
    void WorldState::applyActionForward(const Action *ac)
    {
-      Action::storage st;
-      Action::storage::const_iterator it;
+      Action::statements::const_iterator sit;
+      Action::predicates::const_iterator pit;
 
       // Predicates set to TRUE.
-      st = ac->getSet();
-      for(it = st.begin(); it != st.end(); it++)
-         setPredicate(*it, TRUE);
-
-      // Predicates set to FALSE.
-      st = ac->getReset();
-      for(it = st.begin(); it != st.end(); it++)
-         setPredicate(*it, FALSE);
+      const Action::statements &st = ac->getSet();
+      for(sit = st.begin(); sit != st.end(); sit++)
+         setPredicate(sit->name, sit->val);
 
       // Predicates UNSET.
-      st = ac->getCleared();
-      for(it = st.begin(); it != st.end(); it++)
-         unsetPredicate(*it);
+      const Action::predicates &pr = ac->getCleared();
+      for(pit = pr.begin(); pit != pr.end(); pit++)
+         unsetPredicate(*pit);
    }
 
    /// This method applies an Action to a WorldState in reverse. In effect,
@@ -152,29 +122,21 @@ namespace ae {
    /// sets.
    void WorldState::applyActionReverse(const Action *ac)
    {
-      Action::storage st;
-      Action::storage::const_iterator it;
+      Action::statements::const_iterator sit;
+      Action::predicates::const_iterator pit;
 
-      // Predicates that must be TRUE.
-      st = ac->getRequired();
-      for(it = st.begin(); it != st.end(); it++)
-         setPredicate(*it, TRUE);
-
-      // Predicates that must be FALSE.
-      st = ac->getVetoed();
-      for(it = st.begin(); it != st.end(); it++)
-         setPredicate(*it, FALSE);
+      // Predicates that must be some value.
+      const Action::statements &req = ac->getRequired();
+      for(sit = req.begin(); sit != req.end(); sit++)
+         setPredicate(sit->name, sit->val);
 
       // Predicates that are touched by the Action are unset.
-      st = ac->getSet();
-      for(it = st.begin(); it != st.end(); it++)
-         unsetPredicate(*it);
-      st = ac->getReset();
-      for(it = st.begin(); it != st.end(); it++)
-         unsetPredicate(*it);
-      st = ac->getCleared();
-      for(it = st.begin(); it != st.end(); it++)
-         unsetPredicate(*it);
+      const Action::statements &set = ac->getSet();
+      for(sit = set.begin(); sit != set.end(); sit++)
+         unsetPredicate(sit->name);
+      const Action::predicates &pr = ac->getCleared();
+      for(pit = pr.begin(); pit != pr.end(); pit++)
+         unsetPredicate(*pit);
    }
 
    /// The difference score between two WorldStates is equal to the number of
