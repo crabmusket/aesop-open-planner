@@ -22,40 +22,35 @@ int main(int argc, char **argv)
    ae::PVal loc2 = 'b';
    ae::PVal loc3 = 'c';
 
-   // Create a WorldState with a location specified.
-   ae::WorldState ws1;
-   ws1.setPredicate(at, loc1);
+   // Create a WorldState to represent our initial state.
+   ae::WorldState start;
+   start.setPredicate(at, loc1);
 
-   // Create another WorldState with different data.
-   ae::WorldState ws2;
-   ws2.setPredicate(at, loc2);
-   ws2.setPredicate(money, t);
-
-   // Print out the number of differences between ws1 and ws2.
-   printf("Comparison of ws1 and ws2: %d\n", ae::WorldState::comp(ws1, ws2));
-   // Should have printed 1, since ws1 and ws2 differ only once, in the value
-   // of pred1. (Predicates not set in both states are not counted.)
+   // Create another WorldState which will be our goal.
+   ae::WorldState goal;
+   goal.setPredicate(at, loc2);
+   goal.setPredicate(money, t);
 
    // Create some Actions to move between the three locations.
    //   Required: we are in some location
    //   Outcome:  we are in some location adjacent
-   ae::Action aMove1;
+   ae::Action aMove1("Move 1->2");
    aMove1.addRequired(ae::Statement(at, loc1));
    aMove1.addSet(ae::Statement(at, loc2));
-   ae::Action aMove2;
+   ae::Action aMove2("Move 2->3");
    aMove2.addRequired(ae::Statement(at, loc2));
    aMove2.addSet(ae::Statement(at, loc3));
-   ae::Action aMove3;
+   ae::Action aMove3("Move 3->2");
    aMove3.addRequired(ae::Statement(at, loc3));
    aMove3.addSet(ae::Statement(at, loc2));
-   ae::Action aMove4;
+   ae::Action aMove4("Move 2->1");
    aMove4.addRequired(ae::Statement(at, loc2));
    aMove4.addSet(ae::Statement(at, loc1));
 
    // Action to take money from loc3.
    //   Required: we are at loc3 and have no money
    //   Outcome:  we have money
-   ae::Action aTake;
+   ae::Action aTake("Take money");
    aTake.addRequired(ae::Statement(at, loc3));
    aTake.addRequired(ae::Statement(money, f));
    aTake.addSet(ae::Statement(money, t));
@@ -63,11 +58,25 @@ int main(int argc, char **argv)
    // Action to order food from loc2.
    //   Required: we are at loc2 and have money
    //   Outcome:  we have no money and are not hungry
-   ae::Action aOrder;
+   ae::Action aOrder("Order pizza");
    aOrder.addRequired(ae::Statement(at, loc2));
    aOrder.addRequired(ae::Statement(money, t));
    aOrder.addSet(ae::Statement(money, f));
    aOrder.addSet(ae::Statement(hungry, f));
+
+   // Make a plan to get from 'start' to 'goal'.
+   ae::Planner planner(&start, &goal);
+   if(planner.plan())
+   {
+      const ae::Plan plan = planner.getPlan();
+      ae::Plan::const_iterator it;
+      for(it = plan.begin(); it != plan.end(); it++)
+         printf("%s\n", it->getName());
+   }
+   else
+   {
+      printf("No plan found to satisfy goal!\n");
+   }
 
    return 0;
 }
