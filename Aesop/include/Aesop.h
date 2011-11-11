@@ -46,33 +46,52 @@
 
 #include "AesopConfig.h"
 
-#ifndef AE_PREDICATE_NAME_LEN
-#define AE_PREDICATE_NAME_LEN 32
-#endif
-
 /// @namespace ae
 /// @brief Includes all Aesop functions and classes.
 namespace ae {
-   /// Represents the name of a predicate.
+   /// @brief Represents the name of a predicate.
    typedef std::string PName;
-   /// Represents the value of a predicate.
+   /// @brief Represents the value of a predicate.
    typedef unsigned char PVal;
-   /// A predicate has a value and a set flag. It does not store its own name.
+
+   /// @brief A Predicate has a value and a set flag.
+   ///
+   /// A Predicate does not store its own name; this is done in WorldState and
+   /// its internal map of PNames to Predicate instances.
    struct Predicate {
       PVal val;
       bool set;
+      /// @brief Default constructor.
+      Predicate()
+      {
+         val = 0;
+         set = false;
+      }
+      /// @brief Value constructor.
+      Predicate(PVal v, bool s)
+      {
+         val = v;
+         set = s;
+      }
    };
-   /// A name-value pair represents setting or checking the value of a
-   /// Predicate. Used by Action.
+
+   /// @brief A name-value pair represents setting or checking the value of a
+   ///        Predicate. Used by Action.
    struct Statement {
       PName name;
       PVal val;
-   };
-
-   /// Boolean values for Predicates.
-   enum PVals {
-      FALSE,
-      TRUE,
+      /// @brief Default constructor.
+      Statement()
+      {
+         name = "";
+         val = 0;
+      }
+      /// @brief Value constructor.
+      Statement(PName n, PVal v)
+      {
+         name = n;
+         val = v;
+      }
    };
 
    /// @brief An atomic change that can be made to the world state.
@@ -89,43 +108,42 @@ namespace ae {
       /// @brief Get the names of statements we UNSET.
       const predicates& getCleared()  const { return mPostClear; }
 
+      /// @brief Add a single Statement to our list of required statements.
+      /// @param[in] st Statement to add.
+      void addRequired(const Statement st);
+      /// @brief Add a list of Statements to our required set.
+      /// @param[in] sts  A pointer to an array of Statements.
+      /// @param[in] size Length of array.
+      void addRequired(const Statement sts[], unsigned int size);
+
+      /// @brief Add a single Statement to our list of Predicates to set after
+      ///        execution.
+      /// @param[in] st Statement to add.
+      void addSet(const Statement st);
+      /// @brief Add a list of Statements to our post-set list.
+      /// @param[in] sts  A pointer to an array of Statements.
+      /// @param[in] size Length of array.
+      void addSet(const Statement sts[], unsigned int size);
+
+      /// @brief Add a single Predicate to the list that we unset after
+      ///        execution.
+      /// @param[in] pred Name of Predicate to add.
+      void addClear(const PName pred);
+      /// @brief Add a list of Statements to our required set.
+      /// @param[in] preds A pointer to an array of PNames.
+      /// @param[in] size  Length of array.
+      void addClear(const PName preds[], unsigned int size);
+
       /// @brief Default constructor.
       Action();
       /// @brief Default destructor.
       ~Action();
+
    protected:
    private:
       statements mRequired;
       statements mPostSet;
       predicates mPostClear;
-
-      /// Preconditions. Each predicate in this list must be set to TRUE for
-      /// this Action to be valid.
-
-      /// Vetos. None of the predicates in this list may be TRUE for this
-      /// Action to be valid.
-
-      /// Post-set. After this Action is executed, it is expected that the
-      /// predicates in this list take the value of TRUE.
-
-      /// Post-unset. After this Action is executed, we expect that the
-      /// predicates in this list become FALSE.
-
-      /// Parametric requirements. For this Action to be valid, all of the
-      /// predicates in each parameter list must be set to the value specified
-      /// in the matching parameter.
-      ///
-      /// For example, if paramReq[0] = {location} and this Action instance's
-      /// first (0th) parameter is "livingRoom", the predicate 'location' must
-      /// include "livingRoom".
-
-      /// Parametric results. After the Action is executed, the predicates in
-      /// each parameter list will be set to the values of the matching
-      /// parameters of the Action.
-      ///
-      /// For example, if paramSet[1] = {have} and this Action instance's
-      /// second (1th) parameter is "bananas", then after the Action executes,
-      /// the predicate 'have' will include "bananas".
    };
 
    /// @brief Knowledge about a state of the world, current or possible.
@@ -178,6 +196,7 @@ namespace ae {
       WorldState();
       /// @brief Default destructor.
       ~WorldState();
+
    protected:
    private:
       /// @brief Abstract the representation of the world state.
