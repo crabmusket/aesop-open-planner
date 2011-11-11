@@ -10,6 +10,4 @@
 // Modify these defines to your heart's content!
 // All of them have sensible defaults if undefined.
 
-//#define AE_PREDICATE_NAME_LEN 32
-
 #endif
