@@ -68,14 +68,15 @@ namespace ae {
       return true;
    }
 
-   /// This method compares a desired world state with an action's results. In
-   /// doing this, we match up 
+   /// This method compares a desired world state with an action's results.
+   /// @todo This method is incorrect. We need to check the requisites of the
+   ///       Action as well.
    bool WorldState::actionPostMatch(const Action *ac) const
    {
       Action::statements::const_iterator sit;
       Action::predicates::const_iterator pit;
 
-      // Check predicates that are set to true.
+      // Check predicates that are set by the Action.
       const Action::statements &st = ac->getSet();
       for(sit = st.begin(); sit != st.end(); sit++)
       {
