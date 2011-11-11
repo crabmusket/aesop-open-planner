@@ -92,6 +92,12 @@ namespace ae {
          name = n;
          val = v;
       }
+      /// @brief Simple equality operator.
+      /// Warning: This regards statements as equal if their names are
+      /// equal, without referring to their values. This is used in
+      /// WorldState::actionPreMatch. Not sure if it's a good idea.
+      bool operator==(const Statement &s) const
+      { return name == s.name; }
    };
 
    /// @brief An atomic change that can be made to the world state.

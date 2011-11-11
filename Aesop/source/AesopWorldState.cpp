@@ -1,6 +1,8 @@
 /// @file AesopWorldState.cpp
 /// @brief Implementation of WorldState class as defined in Aesop.h
 
+#include <algorithm>
+
 #include "Aesop.h"
 
 namespace ae {
@@ -86,6 +88,19 @@ namespace ae {
          // If the predicate isn't correct, we fail.
          if(getPredicate(sit->name) != sit->val)
             return false;
+      }
+
+      // Match world state requirements that are not modified.
+      const Action::statements &req = ac->getRequired();
+      for(sit = req.begin(); sit != req.end(); sit++)
+      {
+         // If the Action doesn't also touch this prerequisite:
+         if(find(ac->getSet().begin(), ac->getSet().end(), *sit) ==
+            ac->getSet().end())
+         {
+            if(getPredicate(sit->name) != sit->val)
+               return false;
+         }
       }
 
       // Check predicates that should be unset.
