@@ -209,6 +209,10 @@ namespace ae {
       /// @brief Default destructor.
       ~WorldState();
 
+      /// Equality operator uses static comp method.
+      bool operator==(const WorldState &s) const
+      { return !comp(*this, s); }
+
    protected:
    private:
       /// @brief Abstract the representation of the world state.
@@ -219,7 +223,6 @@ namespace ae {
       /// @brief Get the Predicate of the world state entry.
       static inline Predicate getPred(worldrep::const_iterator it)
       { return it->second; }
-
       /// @brief Internal representation of world state.
       worldrep mState;
    };
@@ -251,11 +254,15 @@ namespace ae {
       /// @return A Plan.
       const Plan& getPlan() const;
 
+      /// @brief Set the ActionSet we can use.
+      /// @param[in] set The ActionSet to pull from.
+      void setActions(const ActionSet *set);
+
       /// @brief Value constructor.
       /// @param[in] start Starting world state.
       /// @param[in] goal  Target world state.
       /// @param[in] set   ActionSet that defines the Actions we may perform.
-      Planner(const WorldState *start, const WorldState *goal);
+      Planner(const WorldState *start, const WorldState *goal, const ActionSet *set);
 
       /// @brief Default constructor.
       Planner();

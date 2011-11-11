@@ -64,8 +64,17 @@ int main(int argc, char **argv)
    aOrder.addSet(ae::Statement(money, f));
    aOrder.addSet(ae::Statement(hungry, f));
 
+   // Bundle these actions into an ActionSet.
+   ae::ActionSet actions;
+   actions.push_back(aMove1);
+   actions.push_back(aMove2);
+   actions.push_back(aMove3);
+   actions.push_back(aMove4);
+   actions.push_back(aTake);
+   actions.push_back(aOrder);
+
    // Make a plan to get from 'start' to 'goal'.
-   ae::Planner planner(&start, &goal);
+   ae::Planner planner(&start, &goal, &actions);
    if(planner.plan())
    {
       const ae::Plan plan = planner.getPlan();
