@@ -3,6 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(AesopSources
 	source/AesopAction.cpp
 	source/AesopWorldState.cpp
+	source/AesopPlanner.cpp
 )
 
 SET(AesopHeaders

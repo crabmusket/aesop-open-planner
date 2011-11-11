@@ -134,6 +134,14 @@ namespace ae {
       /// @param[in] size  Length of array.
       void addClear(const PName preds[], unsigned int size);
 
+      /// @brief Get this Action's friendly name.
+      /// @return This Action's name.
+      const std::string& getName() const { return mName; }
+
+      /// @brief Constructor with name.
+      /// @param[in] name Friendly name for this Action.
+      Action(std::string name);
+
       /// @brief Default constructor.
       Action();
       /// @brief Default destructor.
@@ -141,8 +149,13 @@ namespace ae {
 
    protected:
    private:
+      /// @brief Friendly name of this Action.
+      std::string mName;
+      /// @brief 
       statements mRequired;
+      /// @brief 
       statements mPostSet;
+      /// @brief 
       predicates mPostClear;
    };
 
@@ -169,7 +182,6 @@ namespace ae {
       void unsetPredicate(PName pred);
 
       /// @brief Do the given Action's pre-conditions match this world state?
-      /// @see Action
       /// @param[in] ac Action instance to test against this world state.
       /// @return True iff the Action is valid under the current world state.
       bool actionPreMatch(const Action *ac) const;
@@ -202,12 +214,67 @@ namespace ae {
       /// @brief Abstract the representation of the world state.
       typedef std::map<PName, Predicate> worldrep;
       /// @brief Get the name of the world state entry.
-      static inline PName getPName(worldrep::const_iterator it) { return it->first; }
+      static inline PName getPName(worldrep::const_iterator it)
+      { return it->first; }
       /// @brief Get the Predicate of the world state entry.
-      static inline Predicate getPred(worldrep::const_iterator it) { return it->second; }
+      static inline Predicate getPred(worldrep::const_iterator it)
+      { return it->second; }
 
       /// @brief Internal representation of world state.
       worldrep mState;
+   };
+
+   /// @brief A Plan is a sequence of Actions that take us from one WorldState
+   ///        to another.
+   /// @todo Eventually this will be something like ActionEntry, accounting for
+   ///       Actions that can be executed with different parameters.
+   typedef std::list<Action> Plan;
+
+   /// @brief An ActionSet is a bunch of Actions that we are allowed to use.
+   typedef std::list<Action> ActionSet;
+
+   /// @brief A context in which we can make plans.
+   class Planner {
+   public:
+      /// @brief Set our starting WorldState.
+      /// @param[in] start Pointer to a WorldState.
+      void setStart(const WorldState *start);
+
+      /// @brief Set our goal state.
+      /// @param[in] goal Pointer to a WorldState.
+      void setGoal(const WorldState *goal);
+
+      /// @brief Create a plan!
+      bool plan();
+
+      /// @brief Get the currently constructed plan.
+      /// @return A Plan.
+      const Plan& getPlan() const;
+
+      /// @brief Value constructor.
+      /// @param[in] start Starting world state.
+      /// @param[in] goal  Target world state.
+      /// @param[in] set   ActionSet that defines the Actions we may perform.
+      Planner(const WorldState *start, const WorldState *goal);
+
+      /// @brief Default constructor.
+      Planner();
+      /// @brief Default destructor.
+      ~Planner();
+
+   protected:
+
+   private:
+      /// @brief Starting state.
+      /// Not allowed to modify this.
+      const WorldState *mStart;
+      /// @brief Goal state.
+      /// Not allowed to modify this.
+      const WorldState *mGoal;
+      /// @brief Current plan to get from mStart to mGoal.
+      Plan mPlan;
+      /// @brief Set of Actions we are allowed to perform.
+      const ActionSet *mActions;
    };
 };
 
