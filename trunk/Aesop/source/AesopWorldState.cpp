@@ -6,7 +6,10 @@
 namespace ae {
    /// @class WorldState
    ///
-   /// 
+   /// This class represents a set of knowledge (facts, or predicates) about
+   /// the state of the world that we are planning within. A WorldState can be
+   /// used by individual characters as a representation of their knowledge,
+   /// but is also used internally in planning.
 
    WorldState::WorldState()
    {
@@ -125,11 +128,6 @@ namespace ae {
       Action::statements::const_iterator sit;
       Action::predicates::const_iterator pit;
 
-      // Predicates that must be some value.
-      const Action::statements &req = ac->getRequired();
-      for(sit = req.begin(); sit != req.end(); sit++)
-         setPredicate(sit->name, sit->val);
-
       // Predicates that are touched by the Action are unset.
       const Action::statements &set = ac->getSet();
       for(sit = set.begin(); sit != set.end(); sit++)
@@ -137,11 +135,17 @@ namespace ae {
       const Action::predicates &pr = ac->getCleared();
       for(pit = pr.begin(); pit != pr.end(); pit++)
          unsetPredicate(*pit);
+
+      // Predicates that must be some value. This may re-set some of the
+      // predicates that were unset above.
+      const Action::statements &req = ac->getRequired();
+      for(sit = req.begin(); sit != req.end(); sit++)
+         setPredicate(sit->name, sit->val);
    }
 
    /// The difference score between two WorldStates is equal to the number of
    /// predicates which they both have defined, but to different values.
-   /// Predicates that are not defined in either state, or are flagged as unset
+   /// Predicates that are not defined in one state, or are flagged as unset
    /// in either, are not considered.
    unsigned int WorldState::comp(const WorldState &ws1, const WorldState &ws2)
    {
