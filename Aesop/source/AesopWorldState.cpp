@@ -171,14 +171,30 @@ namespace ae {
       worldrep::const_iterator p1 = ws1.mState.begin();
       worldrep::const_iterator p2 = ws2.mState.begin();
 
-      while(p1 != ws1.mState.end() && p2 != ws2.mState.end())
+      while(p1 != ws1.mState.end() || p2 != ws2.mState.end())
       {
+         // One state may have run out of keys.
+         if(p1 == ws1.mState.end())
+         {
+            score++;
+            p2++;
+            continue;
+         }
+         if(p2 == ws2.mState.end())
+         {
+            score++;
+            p1++;
+            continue;
+         }
+
          // Compare names of predicates (keys).
          int cmp = getPName(p1).compare(getPName(p2));
          if(cmp == 0)
          {
             // Names are equal. Check for different values.
-            if(getPred(p1).set && getPred(p2).set &&
+            if(getPred(p1).set != getPred(p2).set)
+               score++;
+            else if(getPred(p1).set && getPred(p2).set &&
                getPred(p1).val != getPred(p2).val)
                score++;
             p1++;
@@ -187,11 +203,13 @@ namespace ae {
          else if(cmp > 0)
          {
             // Key 1 is greater.
+            score++;
             p2++;
          }
-         else if(cmp < 0)
+         else // if(cmp < 0)
          {
             // Key 2 is greater.
+            score++;
             p1++;
          }
       }
