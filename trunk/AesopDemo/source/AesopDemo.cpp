@@ -2,6 +2,7 @@
 //
 
 #include <stdio.h>
+#include <stdarg.h>
 
 #include "AesopDemo.h"
 #include "Aesop.h"
@@ -88,4 +89,26 @@ int main(int argc, char **argv)
    }
 
    return 0;
+}
+
+/// @class AesopDemoLogger
+///
+/// 
+
+/// In this simple implementation, we use vprintf to write the event message
+/// to stdout.
+void AesopDemoLogger::logEvent(const char *fmt, ...)
+{
+   va_list args;
+   va_start(args, fmt);
+   vprintf(fmt, args);
+   va_end(args);
+}
+
+AesopDemoLogger::AesopDemoLogger()
+{
+}
+
+AesopDemoLogger::~AesopDemoLogger()
+{
 }

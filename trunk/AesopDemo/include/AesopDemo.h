@@ -23,6 +23,18 @@
 #ifndef _AESOPDEMO_H_
 #define _AESOPDEMO_H_
 
+#include "Aesop.h"
 
+/// @brief Implement the AesopLogger interface and just print events to the
+///        console.
+class AesopDemoLogger : public ae::AesopLogger {
+public:
+   void logEvent(const char *fmt, ...);
+
+   AesopDemoLogger();
+   ~AesopDemoLogger();
+protected:
+private:
+};
 
 #endif

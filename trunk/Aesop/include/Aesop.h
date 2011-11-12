@@ -233,6 +233,21 @@ namespace ae {
       worldrep mState;
    };
 
+   /// @brief An interface used to log the planning process.
+   /// Designed to be implemented by the end-user in a manner particular to
+   /// their application and requirements.
+   class AesopLogger {
+   public:
+      /// @brief Record an event taking place. Uses printf-like syntax for now.
+      /// @param[in] fmt event format string.
+      /// @todo Make this function more useful!
+      virtual void logEvent(const char *fmt, ...) = 0;
+
+      virtual ~AesopLogger() {};
+   protected:
+   private:
+   };
+
    /// @brief A Plan is a sequence of Actions that take us from one WorldState
    ///        to another.
    /// @todo Eventually this will be something like ActionEntry, accounting for
@@ -254,7 +269,7 @@ namespace ae {
       void setGoal(const WorldState *goal);
 
       /// @brief Create a plan!
-      bool plan();
+      bool plan(AesopLogger *log = NULL);
 
       /// @brief Get the currently constructed plan.
       /// @return A Plan.

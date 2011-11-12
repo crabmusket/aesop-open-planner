@@ -83,7 +83,7 @@ namespace ae {
       return mPlan;
    }
 
-   bool Planner::plan()
+   bool Planner::plan(AesopLogger *log)
    {
       // Open list.
       std::vector<IntermediateState> ol;
