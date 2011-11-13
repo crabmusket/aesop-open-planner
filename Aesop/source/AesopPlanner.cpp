@@ -147,7 +147,7 @@ namespace ae {
                bool found = false;
                for(cli = cl.begin(); cli != cl.end(); cli++)
                {
-                  if(!WorldState::comp(n.state, cli->state))
+                  if(n.state == cli->state)
                   {
                      found = true;
                      break;
@@ -170,7 +170,7 @@ namespace ae {
                // Check to see if the world state is already in the open list.
                for(oli = ol.begin(); oli != ol.end(); oli++)
                {
-                  if(!WorldState::comp(n.state, oli->state))
+                  if(n.state == oli->state)
                   {
                      // We've found a more efficient way of getting here.
                      *oli = n;
