@@ -99,9 +99,14 @@ namespace ae {
       /// @return This Action's name.
       const std::string& getName() const { return mName; }
 
+      /// @brief Get the cost of using this Action.
+      /// @return This Action's cost.
+      unsigned int getCost() const { return mCost; }
+
       /// @brief Constructor with name.
       /// @param[in] name Friendly name for this Action.
-      Action(std::string name);
+      /// @param[in] cost Cost of performing this Action.
+      Action(std::string name, unsigned int cost = 1);
 
       /// @brief Default constructor.
       Action();
@@ -112,6 +117,8 @@ namespace ae {
    private:
       /// @brief Friendly name of this Action.
       std::string mName;
+      /// @brief Cost of using this Action in a plan.
+      unsigned int mCost;
       /// @brief Maps predicate names to the values we require for this Action
       ///        to be valid.
       worldrep mRequired;

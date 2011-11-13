@@ -13,9 +13,10 @@ namespace ae {
    /// Action, the world must be in a certain state. After the Action is
    /// performed, certain changes will be made to that world state.
 
-   Action::Action(std::string name)
+   Action::Action(std::string name, unsigned int cost)
    {
       mName = name;
+      mCost = cost;
    }
 
    Action::Action()
