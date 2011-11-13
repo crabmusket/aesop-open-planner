@@ -43,6 +43,7 @@
 #include <string>
 #include <map>
 #include <list>
+#include <vector>
 
 #include "AesopConfig.h"
 
@@ -53,92 +54,46 @@ namespace ae {
    typedef std::string PName;
    /// @brief Represents the value of a predicate.
    typedef unsigned char PVal;
-
-   /// @brief A Predicate has a value and a set flag.
-   ///
-   /// A Predicate does not store its own name; this is done in WorldState and
-   /// its internal map of PNames to Predicate instances.
-   struct Predicate {
-      PVal val;
-      bool set;
-      /// @brief Default constructor.
-      Predicate()
-      {
-         val = 0;
-         set = false;
-      }
-      /// @brief Value constructor.
-      Predicate(PVal v, bool s)
-      {
-         val = v;
-         set = s;
-      }
-   };
-
-   /// @brief A name-value pair represents setting or checking the value of a
-   ///        Predicate. Used by Action.
-   struct Statement {
-      PName name;
-      PVal val;
-      /// @brief Default constructor.
-      Statement()
-      {
-         name = "";
-         val = 0;
-      }
-      /// @brief Value constructor.
-      Statement(PName n, PVal v)
-      {
-         name = n;
-         val = v;
-      }
-      /// @brief Simple equality operator.
-      /// Warning: This regards statements as equal if their names are
-      /// equal, without referring to their values. This is used in
-      /// WorldState::actionPreMatch. Not sure if it's a good idea.
-      bool operator==(const Statement &s) const
-      { return name == s.name; }
-   };
+   /// @brief Method of storing Predicates and their values.
+   typedef std::map<PName, PVal> worldrep;
+   /// @brief Simply stores a list of predicate names.
+   typedef std::vector<PName> pnamelist;
 
    /// @brief An atomic change that can be made to the world state.
    class Action {
    public:
-      /// @brief Abstract the type of container used to store predicates.
-      typedef std::list<Statement> statements;
-      typedef std::list<PName> predicates;
-
       /// @brief Get the names of the statements that must be TRUE.
-      const statements& getRequired() const { return mRequired; }
+      const worldrep& getRequired() const { return mRequired; }
       /// @brief Get the names of statements we set to some value.
-      const statements& getSet()      const { return mPostSet; }
+      const worldrep& getSet()      const { return mPostSet; }
       /// @brief Get the names of statements we UNSET.
-      const predicates& getCleared()  const { return mPostClear; }
+      const pnamelist& getCleared()  const { return mPostClear; }
 
       /// @brief Add a single Statement to our list of required statements.
       /// @param[in] st Statement to add.
-      void addRequired(const Statement st);
+      void addRequired(PName name, PVal val);
       /// @brief Add a list of Statements to our required set.
       /// @param[in] sts  A pointer to an array of Statements.
       /// @param[in] size Length of array.
-      void addRequired(const Statement sts[], unsigned int size);
+      //void addRequired(const Predicate sts[], unsigned int size);
 
       /// @brief Add a single Statement to our list of Predicates to set after
       ///        execution.
       /// @param[in] st Statement to add.
-      void addSet(const Statement st);
+      void addSet(PName name, PVal val);
       /// @brief Add a list of Statements to our post-set list.
       /// @param[in] sts  A pointer to an array of Statements.
       /// @param[in] size Length of array.
-      void addSet(const Statement sts[], unsigned int size);
+      //void addSet(const Statement sts[], unsigned int size);
 
       /// @brief Add a single Predicate to the list that we unset after
       ///        execution.
       /// @param[in] pred Name of Predicate to add.
-      void addClear(const PName pred);
+      void addClear(PName pred);
       /// @brief Add a list of Statements to our required set.
       /// @param[in] preds A pointer to an array of PNames.
       /// @param[in] size  Length of array.
-      void addClear(const PName preds[], unsigned int size);
+      //void addClear(const PName preds[], unsigned int size);
 
       /// @brief Get this Action's friendly name.
       /// @return This Action's name.
@@ -157,12 +112,14 @@ namespace ae {
    private:
       /// @brief Friendly name of this Action.
       std::string mName;
+      /// @brief Maps predicate names to the values we require for this Action
+      ///        to be valid.
+      worldrep mRequired;
+      /// @brief Maps predicate names to the values they are set to after this
+      ///        Action executes successfully.
+      worldrep mPostSet;
       /// @brief 
-      statements mRequired;
-      /// @brief 
-      statements mPostSet;
-      /// @brief 
-      predicates mPostClear;
+      pnamelist mPostClear;
    };
 
    /// @brief Knowledge about a state of the world, current or possible.
@@ -221,13 +178,11 @@ namespace ae {
 
    protected:
    private:
-      /// @brief Abstract the representation of the world state.
-      typedef std::map<PName, Predicate> worldrep;
       /// @brief Get the name of the world state entry.
       static inline PName getPName(worldrep::const_iterator it)
       { return it->first; }
       /// @brief Get the Predicate of the world state entry.
-      static inline Predicate getPred(worldrep::const_iterator it)
+      static inline PVal getPVal(worldrep::const_iterator it)
       { return it->second; }
       /// @brief Internal representation of world state.
       worldrep mState;

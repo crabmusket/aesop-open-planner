@@ -12,6 +12,8 @@ namespace ae {
    /// @brief A WorldState instance used during planning.
    /// @see Planner
    struct IntermediateState {
+      /// @brief ID number of this IntermediateState within the current plan.
+      unsigned int ID;
       /// @brief State of the world at this step.
       WorldState state;
       /// @brief Current cost to get to this state from starting state.
@@ -24,12 +26,13 @@ namespace ae {
       const Action *ac;
 
       /// @brief Default constructor.
-      IntermediateState()
+      IntermediateState(unsigned int id)
       {
          G = 0;
          H = 0;
          prev = 0;
          ac = NULL;
+         ID = id;
       }
 
       /// @brief What makes one IntermediateState greater than another?
@@ -87,11 +90,16 @@ namespace ae {
    {
       // Open list.
       std::vector<IntermediateState> ol;
+      std::vector<IntermediateState>::iterator oli;
       // Closed list.
       std::vector<IntermediateState> cl;
+      std::vector<IntermediateState>::const_iterator cli;
+
+      // Current IntermediateState ID number.
+      unsigned int id = 0;
 
       // Push start onto the open list.
-      ol.push_back(IntermediateState());
+      ol.push_back(IntermediateState(id)); id++;
       ol.back().state = *mGoal;
 
       // Did we find a plan?
@@ -104,6 +112,8 @@ namespace ae {
          pop_heap(ol.begin(), ol.end(), std::greater<IntermediateState>());
          IntermediateState s = ol.back();
          ol.pop_back();
+
+         if(log) log->logEvent("Moving state %d from open to closed.", s.ID);
 
          // Add to closed list.
          cl.push_back(s);
@@ -127,20 +137,63 @@ namespace ae {
          {
             if(s.state.actionPostMatch(&*it))
             {
-               // Add a new intermediate state to the open list.
-               ol.push_back(IntermediateState());
+               IntermediateState n(id); id++;
                // Copy the current state, then apply the Action to it in
                // reverse to get the previous state.
-               ol.back().state = s.state;
-               ol.back().state.applyActionReverse(&*it);
-               ol.back().H = WorldState::comp(ol.back().state, *mStart);
-               // At the moment, each action costs 1.
-               ol.back().G = s.G + 1;
-               ol.back().ac = &*it;
-               // Remember position in closed list of our predecessor.
-               ol.back().prev = cl.size() - 1;
-               // Heapify open list.
-               push_heap(ol.begin(), ol.end(), std::greater<IntermediateState>());
+               n.state = s.state;
+               n.state.applyActionReverse(&*it);
+
+               // Check to see if the world state is in the closed list.
+               bool found = false;
+               for(cli = cl.begin(); cli != cl.end(); cli++)
+               {
+                  if(!WorldState::comp(n.state, cli->state))
+                  {
+                     found = true;
+                     break;
+                  }
+               }
+               if(found)
+                  continue;
+
+               // H (heuristic) cost is the estimated number of Actions to get
+               // from new state to start.
+               n.H = WorldState::comp(n.state, *mStart);
+               // G cost is the number of Actions we've taken to get to this
+               // state. At the moment, each action costs 1.
+               n.G = s.G + 1;
+               // Remember Action we used to to this state.
+               n.ac = &*it;
+               // Predecessor is the last state to be added to the closed list.
+               n.prev = cl.size() - 1;
+
+               // Check to see if the world state is already in the open list.
+               for(oli = ol.begin(); oli != ol.end(); oli++)
+               {
+                  if(!WorldState::comp(n.state, oli->state))
+                  {
+                     // We've found a more efficient way of getting here.
+                     *oli = n;
+                     // Reorder the heap.
+                     make_heap(ol.begin(), ol.end(),
+                        std::greater<IntermediateState>());
+
+                     if(log) log->logEvent("Updating state %d to F=%d",
+                        oli->ID, oli->G + oli->H);
+                     break;
+                  }
+               }
+               // No match found in open list.
+               if(oli == ol.end())
+               {
+                  // Add the new intermediate state to the open list.
+                  ol.push_back(n);
+                  // Heapify open list.
+                  push_heap(ol.begin(), ol.end(), std::greater<IntermediateState>());
+
+                  if(log) log->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%d.",
+                     n.ID, it->getName().c_str(), n.G + n.H);
+               }
             }
          }
       }

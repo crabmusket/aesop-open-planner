@@ -29,41 +29,39 @@ int main(int argc, char **argv)
 
    // Create another WorldState which will be our goal.
    ae::WorldState goal;
-   goal.setPredicate(at, loc2);
-   goal.setPredicate(money, t);
+   goal.setPredicate(hungry, f);
 
    // Create some Actions to move between the three locations.
    //   Required: we are in some location
    //   Outcome:  we are in some location adjacent
    ae::Action aMove1("Move 1->2");
-   aMove1.addRequired(ae::Statement(at, loc1));
-   aMove1.addSet(ae::Statement(at, loc2));
+   aMove1.addRequired(at, loc1);
+   aMove1.addSet(at, loc2);
    ae::Action aMove2("Move 2->3");
-   aMove2.addRequired(ae::Statement(at, loc2));
-   aMove2.addSet(ae::Statement(at, loc3));
+   aMove2.addRequired(at, loc2);
+   aMove2.addSet(at, loc3);
    ae::Action aMove3("Move 3->2");
-   aMove3.addRequired(ae::Statement(at, loc3));
-   aMove3.addSet(ae::Statement(at, loc2));
+   aMove3.addRequired(at, loc3);
+   aMove3.addSet(at, loc2);
    ae::Action aMove4("Move 2->1");
-   aMove4.addRequired(ae::Statement(at, loc2));
-   aMove4.addSet(ae::Statement(at, loc1));
+   aMove4.addRequired(at, loc2);
+   aMove4.addSet(at, loc1);
 
    // Action to take money from loc3.
    //   Required: we are at loc3 and have no money
    //   Outcome:  we have money
    ae::Action aTake("Take money");
-   aTake.addRequired(ae::Statement(at, loc3));
-   aTake.addRequired(ae::Statement(money, f));
-   aTake.addSet(ae::Statement(money, t));
+   aTake.addRequired(at, loc3);
+   aTake.addSet(money, t);
 
-   // Action to order food from loc2.
+   // Action to buy food from loc2.
    //   Required: we are at loc2 and have money
    //   Outcome:  we have no money and are not hungry
-   ae::Action aOrder("Order pizza");
-   aOrder.addRequired(ae::Statement(at, loc2));
-   aOrder.addRequired(ae::Statement(money, t));
-   aOrder.addSet(ae::Statement(money, f));
-   aOrder.addSet(ae::Statement(hungry, f));
+   ae::Action aOrder("Buy food");
+   aOrder.addRequired(at, loc2);
+   aOrder.addRequired(money, t);
+   aOrder.addSet(money, f);
+   aOrder.addSet(hungry, f);
 
    // Bundle these actions into an ActionSet.
    ae::ActionSet actions;
@@ -74,14 +72,18 @@ int main(int argc, char **argv)
    actions.push_back(aTake);
    actions.push_back(aOrder);
 
+   // Construct a logger to keep track of the planning process.
+   AesopDemoLogger logger;
+
    // Make a plan to get from 'start' to 'goal'.
    ae::Planner planner(&start, &goal, &actions);
-   if(planner.plan())
+   if(planner.plan(&logger))
    {
       const ae::Plan plan = planner.getPlan();
       ae::Plan::const_iterator it;
+      printf("The Plan:\n\n");
       for(it = plan.begin(); it != plan.end(); it++)
-         printf("%s\n", it->getName());
+         printf("%s\n", it->getName().c_str());
    }
    else
    {
@@ -102,6 +104,7 @@ void AesopDemoLogger::logEvent(const char *fmt, ...)
    va_list args;
    va_start(args, fmt);
    vprintf(fmt, args);
+   putchar('\n');
    va_end(args);
 }
 
