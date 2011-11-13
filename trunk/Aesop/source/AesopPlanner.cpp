@@ -153,9 +153,9 @@ namespace ae {
                // H (heuristic) cost is the estimated number of Actions to get
                // from new state to start.
                n.H = WorldState::comp(n.state, *mStart);
-               // G cost is the number of Actions we've taken to get to this
-               // state. At the moment, each action costs 1.
-               n.G = s.G + 1;
+               // G cost is the total weight of all Actions we've taken to get
+               // to this state. By default, the cost of an Action is 1.
+               n.G = s.G + it->getCost();
                // Remember Action we used to to this state.
                n.ac = &*it;
                // Predecessor is the last state to be added to the closed list.
