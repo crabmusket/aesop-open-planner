@@ -1,0 +1,14 @@
+#summary Instructions for using Aesop.
+#labels Help,Introduction
+
+= Getting Started =
+
+This page goes over the basic process of getting Aesop to work in your own application.
+
+== Installation ==
+
+First, grab the source code from [http://code.google.com/p/aesop-open-planner/source/ this site] using your favourite SVN client. The recommended method of using Aesop is to just add all the files from the Aesop/ directory into your source tree and build process as usual.
+
+== Use ==
+
+See [http://code.google.com/p/aesop-open-planner/source/browse/trunk/AesopDemo/source/AesopDemo.cpp AesopDemo.cpp] for a good example usage of the classes in Aesop.
