@@ -172,9 +172,11 @@ namespace ae {
       /// @brief Default destructor.
       ~WorldState();
 
-      /// Equality operator uses static comp method.
-      bool operator==(const WorldState &s) const
-      { return !comp(*this, s); }
+      /// @brief Boolean equality test.
+      bool operator==(const WorldState &s) const;
+      /// @brief Boolean inequality test.
+      bool operator!=(const WorldState &s) const
+      { return !this->operator==(s); }
 
    protected:
    private:
@@ -186,6 +188,11 @@ namespace ae {
       { return it->second; }
       /// @brief Internal representation of world state.
       worldrep mState;
+
+      /// @brief Calculated hash value of this state.
+      unsigned int mHash;
+      /// @brief Update our hash value.
+      void updateHash();
    };
 
    /// @brief An interface used to log the planning process.

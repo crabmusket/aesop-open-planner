@@ -15,6 +15,7 @@ namespace ae {
 
    WorldState::WorldState()
    {
+      mHash = 0;
    }
 
    WorldState::~WorldState()
@@ -38,6 +39,7 @@ namespace ae {
    void WorldState::setPredicate(PName pred, PVal val)
    {
       mState[pred] = val;
+      updateHash();
    }
 
    void WorldState::unsetPredicate(PName pred)
@@ -45,6 +47,7 @@ namespace ae {
       worldrep::iterator it = mState.find(pred);
       if(it != mState.end())
          mState.erase(it);
+      updateHash();
    }
 
    /// For a 'pre-match' to be valid, we compare the Action's required
@@ -155,6 +158,21 @@ namespace ae {
          setPredicate(getPName(sit), getPVal(sit));
    }
 
+   /// This hash method sums the string hashes of all the predicate names in
+   /// this state, XORing certain bits based on the values of each predicate.
+   void WorldState::updateHash()
+   {
+      mHash = 0;
+      worldrep::const_iterator it;
+      for(it = mState.begin(); it != mState.end(); it++)
+      {
+         unsigned int l = getPName(it).length();
+         while(l)
+            mHash = 31 * mHash + getPName(it)[--l];
+         mHash ^= getPVal(it) << getPName(it).length() % (sizeof(unsigned int) - sizeof(PVal));
+      }
+   }
+
    /// The difference score between two WorldStates is equal to the number of
    /// predicates which they both have defined, but to different values.
    /// Predicates that are not defined in one state, or are flagged as unset
@@ -208,5 +226,15 @@ namespace ae {
       }
 
       return score;
+   }
+
+   /// This equality test will compare WorldStates based on their hash codes,
+   /// providing a faster negative result. If their hash codes are equal, then
+   /// WorldState::comp is used to verify.
+   bool WorldState::operator ==(const ae::WorldState &s) const
+   {
+      if(mHash != s.mHash)
+         return false;
+      return !comp(*this, s);
    }
 };
