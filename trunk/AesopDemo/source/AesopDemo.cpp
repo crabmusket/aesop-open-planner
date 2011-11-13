@@ -19,9 +19,9 @@ int main(int argc, char **argv)
    ae::PVal f = 0;
 
    // Three location names.
-   ae::PVal loc1 = 'a';
-   ae::PVal loc2 = 'b';
-   ae::PVal loc3 = 'c';
+   ae::PVal loc1 = 'A';
+   ae::PVal loc2 = 'B';
+   ae::PVal loc3 = 'C';
 
    // Create a WorldState to represent our initial state.
    ae::WorldState start;
@@ -34,16 +34,16 @@ int main(int argc, char **argv)
    // Create some Actions to move between the three locations.
    //   Required: we are in some location
    //   Outcome:  we are in some location adjacent
-   ae::Action aMove1("Move 1->2");
+   ae::Action aMove1("Move A->B");
    aMove1.addRequired(at, loc1);
    aMove1.addSet(at, loc2);
-   ae::Action aMove2("Move 2->3");
+   ae::Action aMove2("Move B->C");
    aMove2.addRequired(at, loc2);
    aMove2.addSet(at, loc3);
-   ae::Action aMove3("Move 3->2");
+   ae::Action aMove3("Move C->B");
    aMove3.addRequired(at, loc3);
    aMove3.addSet(at, loc2);
-   ae::Action aMove4("Move 2->1");
+   ae::Action aMove4("Move B->A");
    aMove4.addRequired(at, loc2);
    aMove4.addSet(at, loc1);
 
