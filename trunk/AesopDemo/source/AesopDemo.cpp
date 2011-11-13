@@ -15,8 +15,8 @@ int main(int argc, char **argv)
    ae::PName money = "money";
 
    // Boolean predicate values.
-   ae::PVal t = 1;
-   ae::PVal f = 0;
+   ae::PVal ptrue = 1;
+   ae::PVal pfalse = 0;
 
    // Three location names.
    ae::PVal loc1 = 'A';
@@ -26,10 +26,11 @@ int main(int argc, char **argv)
    // Create a WorldState to represent our initial state.
    ae::WorldState start;
    start.setPredicate(at, loc1);
+   start.setPredicate(money, pfalse);
 
    // Create another WorldState which will be our goal.
    ae::WorldState goal;
-   goal.setPredicate(hungry, f);
+   goal.setPredicate(hungry, pfalse);
 
    // Create some Actions to move between the three locations.
    //   Required: we are in some location
@@ -52,16 +53,17 @@ int main(int argc, char **argv)
    //   Outcome:  we have money
    ae::Action aTake("Take money");
    aTake.addRequired(at, loc3);
-   aTake.addSet(money, t);
+   aTake.addRequired(money, pfalse);
+   aTake.addSet(money, ptrue);
 
    // Action to buy food from loc2.
    //   Required: we are at loc2 and have money
    //   Outcome:  we have no money and are not hungry
    ae::Action aOrder("Buy food");
    aOrder.addRequired(at, loc2);
-   aOrder.addRequired(money, t);
-   aOrder.addSet(money, f);
-   aOrder.addSet(hungry, f);
+   aOrder.addRequired(money, ptrue);
+   aOrder.addSet(money, pfalse);
+   aOrder.addSet(hungry, pfalse);
 
    // Bundle these actions into an ActionSet.
    ae::ActionSet actions;
