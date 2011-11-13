@@ -17,9 +17,9 @@ namespace ae {
       /// @brief State of the world at this step.
       WorldState state;
       /// @brief Current cost to get to this state from starting state.
-      unsigned int G;
+      float G;
       /// @brief Guess at cost to get from this state to goal.
-      unsigned int H;
+      float H;
       /// @brief IntermediateState leading to this one.
       unsigned int prev;
       /// @brief Action leading to this one.
@@ -39,6 +39,9 @@ namespace ae {
       /// The answer is the sum of F and G.
       bool operator>(const IntermediateState s) const
       { return (G + H) > (s.G + s.H); }
+
+      bool operator<(const IntermediateState s) const
+      { return (G + H) < (s.G + s.H); }
 
       bool operator==(const IntermediateState &s) const
       { return state == s.state; }
@@ -152,7 +155,7 @@ namespace ae {
 
                // H (heuristic) cost is the estimated number of Actions to get
                // from new state to start.
-               n.H = WorldState::comp(n.state, *mStart);
+               n.H = (float)WorldState::comp(n.state, *mStart);
                // G cost is the total weight of all Actions we've taken to get
                // to this state. By default, the cost of an Action is 1.
                n.G = s.G + it->getCost();
@@ -164,7 +167,7 @@ namespace ae {
                // Check to see if the world state is already in the open list.
                for(oli = ol.begin(); oli != ol.end(); oli++)
                {
-                  if(n.state == oli->state)
+                  if(n.state == oli->state && n < *oli)
                   {
                      // We've found a more efficient way of getting here.
                      *oli = n;
@@ -172,7 +175,7 @@ namespace ae {
                      make_heap(ol.begin(), ol.end(),
                         std::greater<IntermediateState>());
 
-                     if(log) log->logEvent("Updating state %d to F=%d",
+                     if(log) log->logEvent("Updating state %d to F=%f",
                         oli->ID, oli->G + oli->H);
                      break;
                   }
@@ -185,7 +188,7 @@ namespace ae {
                   // Heapify open list.
                   push_heap(ol.begin(), ol.end(), std::greater<IntermediateState>());
 
-                  if(log) log->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%d.",
+                  if(log) log->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%f.",
                      n.ID, it->getName().c_str(), n.G + n.H);
                }
             }
