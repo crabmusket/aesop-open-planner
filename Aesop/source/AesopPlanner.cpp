@@ -125,12 +125,6 @@ namespace ae {
             break;
          }
 
-         // For each action we could perform to get to this state:
-         //    Compute the state that would come before this action temporally.
-         //    If it's in the closed list, ignore it.
-         //    If it's already in the ol, update G and H costs as necessary.
-         //    Otherwise, add it.
-
          // Find all actions we can use that may result in the current state.
          ActionSet::const_iterator it;
          for(it = mActions->begin(); it != mActions->end(); it++)
