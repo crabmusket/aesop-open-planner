@@ -38,16 +38,26 @@ namespace ae {
 
    void WorldState::setPredicate(PName pred, PVal val)
    {
-      mState[pred] = val;
+      _setPredicate(pred, val);
       updateHash();
+   }
+
+   void WorldState::_setPredicate(PName pred, PVal val)
+   {
+      mState[pred] = val;
    }
 
    void WorldState::unsetPredicate(PName pred)
    {
+      _unsetPredicate(pred);
+      updateHash();
+   }
+
+   void WorldState::_unsetPredicate(PName pred)
+   {
       worldrep::iterator it = mState.find(pred);
       if(it != mState.end())
          mState.erase(it);
-      updateHash();
    }
 
    /// For a 'pre-match' to be valid, we compare the Action's required
@@ -124,12 +134,14 @@ namespace ae {
       // Predicates set to TRUE.
       const worldrep &st = ac->getSet();
       for(sit = st.begin(); sit != st.end(); sit++)
-         setPredicate(getPName(sit), getPVal(sit));
+         _setPredicate(getPName(sit), getPVal(sit));
 
       // Predicates UNSET.
       const pnamelist &pr = ac->getCleared();
       for(pit = pr.begin(); pit != pr.end(); pit++)
-         unsetPredicate(*pit);
+         _unsetPredicate(*pit);
+
+      updateHash();
    }
 
    /// This method applies an Action to a WorldState in reverse. In effect,
@@ -146,16 +158,18 @@ namespace ae {
       // Predicates that are touched by the Action are unset.
       const worldrep &set = ac->getSet();
       for(sit = set.begin(); sit != set.end(); sit++)
-         unsetPredicate(getPName(sit));
+         _unsetPredicate(getPName(sit));
       const pnamelist &pr = ac->getCleared();
       for(pit = pr.begin(); pit != pr.end(); pit++)
-         unsetPredicate(*pit);
+         _unsetPredicate(*pit);
 
       // Predicates that must be some value. This may re-set some of the
       // predicates that were unset above.
       const worldrep &req = ac->getRequired();
       for(sit = req.begin(); sit != req.end(); sit++)
-         setPredicate(getPName(sit), getPVal(sit));
+         _setPredicate(getPName(sit), getPVal(sit));
+
+      updateHash();
    }
 
    /// This hash method sums the string hashes of all the predicate names in
