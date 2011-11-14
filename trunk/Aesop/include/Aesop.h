@@ -197,6 +197,15 @@ namespace ae {
       unsigned int mHash;
       /// @brief Update our hash value.
       void updateHash();
+
+      /// @brief Internal method to set the value of a predicate.
+      /// @param[in] pred Name of predicate to set.
+      /// @param[in] val Value to set the predicate to.
+      void _setPredicate(PName pred, PVal val);
+
+      /// @brief Internal method to mark that a predicate is unset.
+      /// @param[in] pred Name of the predicate to clear.
+      void _unsetPredicate(PName pred);
    };
 
    /// @brief An interface used to log the planning process.
