@@ -227,14 +227,4 @@ namespace ae {
 
       return score;
    }
-
-   /// This equality test will compare WorldStates based on their hash codes,
-   /// providing a faster negative result. If their hash codes are equal, then
-   /// WorldState::comp is used to verify.
-   bool WorldState::operator ==(const ae::WorldState &s) const
-   {
-      if(mHash != s.mHash)
-         return false;
-      return !comp(*this, s);
-   }
 };

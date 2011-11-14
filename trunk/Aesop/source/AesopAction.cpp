@@ -34,32 +34,13 @@ namespace ae {
       mRequired[name] = val;
    }
 
-   /*void Action::addRequired(const Statement sts[], unsigned int size)
-   {
-      while(size)
-         addRequired(sts[--size]);
-   }*/
-
    void Action::addSet(PName name, PVal val)
    {
       mPostSet[name] = val;
    }
-
-   /*void Action::addSet(const Statement sts[], unsigned int size)
-   {
-      while(size)
-         addSet(sts[--size]);
-   }*/
  
    void Action::addClear(PName pred)
    {
       mPostClear.push_back(pred);
    }
-
-   /*void Action::addClear(const PName preds[], unsigned int size)
-   {
-      while(size)
-         addClear(preds[--size]);
-   }*/
-
 };

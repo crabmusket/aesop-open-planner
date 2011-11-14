@@ -8,7 +8,6 @@
 #include <vector>
 
 namespace ae {
-   /// @struct IntermediateState
    /// @brief A WorldState instance used during planning.
    /// @see Planner
    struct IntermediateState {
