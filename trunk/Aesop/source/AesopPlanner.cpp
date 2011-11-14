@@ -20,6 +20,8 @@ namespace ae {
       float G;
       /// @brief Guess at cost to get from this state to goal.
       float H;
+      /// @brief The sum of G and H.
+      float F;
       /// @brief IntermediateState leading to this one.
       unsigned int prev;
       /// @brief Action leading to this one.
@@ -30,26 +32,34 @@ namespace ae {
       {
          G = 0;
          H = 0;
+         F = 0;
          prev = 0;
          ac = NULL;
          ID = id;
       }
 
-      /// @brief What makes one IntermediateState greater than another?
-      /// The answer is the sum of F and G.
+      /// @brief Compare based on F score.
       bool operator>(const IntermediateState s) const
-      { return (G + H) > (s.G + s.H); }
+      { return F > s.F; }
 
+      /// @brief Compare based on F score.
       bool operator<(const IntermediateState s) const
-      { return (G + H) < (s.G + s.H); }
+      { return F < s.F; }
 
+      /// @brief Equality is based on the state represented, not auxiliary
+      ///        data.
       bool operator==(const IntermediateState &s) const
       { return state == s.state; }
    };
 
    /// @class Planner
    ///
-   /// 
+   /// A Planner object actually performs plan queries on the world state.
+   /// It represents an entire planning state, with its own start and end
+   /// states and plan-specific data.
+   /// This will include, among other things, a set of vetoed Actions (for
+   /// example, Actions that we tried but failed in practis, and we now
+   /// want to exclude from our planning process temporarily).
 
    Planner::Planner(const WorldState *start, const WorldState *goal, const ActionSet *set)
    {
@@ -101,7 +111,7 @@ namespace ae {
       // Current IntermediateState ID number.
       unsigned int id = 0;
 
-      // Push start onto the open list.
+      // Push goal onto the open list.
       ol.push_back(IntermediateState(id)); id++;
       ol.back().state = *mGoal;
 
@@ -159,6 +169,8 @@ namespace ae {
                // G cost is the total weight of all Actions we've taken to get
                // to this state. By default, the cost of an Action is 1.
                n.G = s.G + it->getCost();
+               // Save this to avoid recalculating every time.
+               n.F = n.G + n.H;
                // Remember Action we used to to this state.
                n.ac = &*it;
                // Predecessor is the last state to be added to the closed list.
