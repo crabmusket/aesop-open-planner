@@ -1,5 +1,5 @@
-//
-//
+// @file AesopDemo.cpp
+// @brief A small test application for the Aesop library.
 
 #include <stdio.h>
 #include <stdarg.h>
