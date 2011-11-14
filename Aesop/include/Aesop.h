@@ -69,31 +69,21 @@ namespace ae {
       /// @brief Get the names of statements we UNSET.
       const pnamelist& getCleared()  const { return mPostClear; }
 
-      /// @brief Add a single Statement to our list of required statements.
-      /// @param[in] st Statement to add.
+      /// @brief Add a single statement to our list of required statements.
+      /// @param[in] name Name of the predicate the statement refers to.
+      /// @param[in] val  Value the predicate is required to take.
       void addRequired(PName name, PVal val);
-      /// @brief Add a list of Statements to our required set.
-      /// @param[in] sts  A pointer to an array of Statements.
-      /// @param[in] size Length of array.
-      //void addRequired(const Predicate sts[], unsigned int size);
 
-      /// @brief Add a single Statement to our list of Predicates to set after
+      /// @brief Add a single statement to our list of predicates to set after
       ///        execution.
-      /// @param[in] st Statement to add.
+      /// @param[in] name Name of predicate this statement refers to.
+      /// @param[in] val  Value this Action changes the predicate to.
       void addSet(PName name, PVal val);
-      /// @brief Add a list of Statements to our post-set list.
-      /// @param[in] sts  A pointer to an array of Statements.
-      /// @param[in] size Length of array.
-      //void addSet(const Statement sts[], unsigned int size);
 
-      /// @brief Add a single Predicate to the list that we unset after
+      /// @brief Add a single predicate to the list that we unset after
       ///        execution.
       /// @param[in] pred Name of Predicate to add.
       void addClear(PName pred);
-      /// @brief Add a list of Statements to our required set.
-      /// @param[in] preds A pointer to an array of PNames.
-      /// @param[in] size  Length of array.
-      //void addClear(const PName preds[], unsigned int size);
 
       /// @brief Get this Action's friendly name.
       /// @return This Action's name.
@@ -125,7 +115,7 @@ namespace ae {
       /// @brief Maps predicate names to the values they are set to after this
       ///        Action executes successfully.
       worldrep mPostSet;
-      /// @brief 
+      /// @brief List of predciates that are cleared (unset) after execution.
       pnamelist mPostClear;
    };
 
@@ -147,7 +137,7 @@ namespace ae {
       /// @param[in] val Value to set the predicate to.
       void setPredicate(PName pred, PVal val);
 
-      /// @brief mark that a predicate is unset.
+      /// @brief Remove our knowledge of a certain predicate.
       /// @param[in] pred Name of the predicate to clear.
       void unsetPredicate(PName pred);
 
@@ -156,7 +146,9 @@ namespace ae {
       /// @return True iff the Action is valid under the current world state.
       bool actionPreMatch(const Action *ac) const;
 
-      /// @todo How does this method work?
+      /// @brief Does the given Action, executed from an arbitrary world state,
+      ///        result in this world state?
+      /// @param[in] ac Action to compare.
       bool actionPostMatch(const Action *ac) const;
 
       /// @brief Apply the given Action to this WorldState in the forwards
@@ -180,7 +172,12 @@ namespace ae {
       ~WorldState();
 
       /// @brief Boolean equality test.
-      bool operator==(const WorldState &s) const;
+      /// This equality test will compare WorldStates based on their hash codes,
+      /// providing a faster negative result. If their hash codes are equal, then
+      /// WorldState::comp is used to verify.
+      bool operator==(const WorldState &s) const
+      { return mHash != s.mHash? false: !comp(*this, s); }
+
       /// @brief Boolean inequality test.
       bool operator!=(const WorldState &s) const
       { return !this->operator==(s); }

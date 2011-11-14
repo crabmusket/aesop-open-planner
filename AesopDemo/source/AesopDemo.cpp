@@ -97,7 +97,9 @@ int main(int argc, char **argv)
 
 /// @class AesopDemoLogger
 ///
-/// 
+/// This class demonstrates the use of the AesopLogger interface. Implement
+/// its methods in a way particular to your own application. This demo class
+/// simply prints out all the log events.
 
 /// In this simple implementation, we use vprintf to write the event message
 /// to stdout.
