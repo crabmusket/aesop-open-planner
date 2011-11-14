@@ -20,6 +20,9 @@
 // THE SOFTWARE.
 //
 
+/// @file AesopDemo.h
+/// @brief Include data for the Aesop demo application.
+
 #ifndef _AESOPDEMO_H_
 #define _AESOPDEMO_H_
 
