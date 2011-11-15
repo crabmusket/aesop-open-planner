@@ -142,13 +142,13 @@ namespace ae {
          ActionSet::const_iterator it;
          for(it = mActions->begin(); it != mActions->end(); it++)
          {
-            if(s.state.actionPostMatch(&*it))
+            if(s.state.actionPostMatch(*it))
             {
                IntermediateState n(id); id++;
                // Copy the current state, then apply the Action to it in
                // reverse to get the previous state.
                n.state = s.state;
-               n.state.applyActionReverse(&*it);
+               n.state.applyActionReverse(*it);
 
                // Check to see if the world state is in the closed list.
                bool found = false;
@@ -168,11 +168,11 @@ namespace ae {
                n.H = (float)WorldState::comp(n.state, *mStart);
                // G cost is the total weight of all Actions we've taken to get
                // to this state. By default, the cost of an Action is 1.
-               n.G = s.G + it->getCost();
+               n.G = s.G + (*it)->getCost();
                // Save this to avoid recalculating every time.
                n.F = n.G + n.H;
                // Remember Action we used to to this state.
-               n.ac = &*it;
+               n.ac = *it;
                // Predecessor is the last state to be added to the closed list.
                n.prev = cl.size() - 1;
 
@@ -201,7 +201,7 @@ namespace ae {
                   push_heap(ol.begin(), ol.end(), std::greater<IntermediateState>());
 
                   if(log) log->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%f.",
-                     n.ID, it->getName().c_str(), n.G + n.H);
+                     n.ID, (*it)->getName().c_str(), n.G + n.H);
                }
             }
          }
@@ -215,7 +215,7 @@ namespace ae {
          while(i)
          {
             // Extract the Action performed at this step.
-            mPlan.push_back(*cl[i].ac);
+            mPlan.push_back(cl[i].ac);
             // Iterate.
             i = cl[i].prev;
          }
