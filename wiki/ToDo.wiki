@@ -1,0 +1,10 @@
+#summary Itinerary of tasks and improvements.
+
+= To Do =
+
+ * Demo: parse PDDL files.
+ * Unit testing app.
+    * Implemented outside `namespace ae`.
+ * Benchmarking app.
+    * Possible: integrate into demo.
+    * Possible: generate random planning problems.
