@@ -218,8 +218,6 @@ namespace ae {
       /// @todo Make this function more useful! Also, provide more fine-grained
       ///       logging. Possibly split over multiple methods.
       virtual void logEvent(const char *fmt, ...) = 0;
-
-      virtual ~AesopLogger() {};
    protected:
    private:
    };
@@ -232,15 +230,13 @@ namespace ae {
    typedef std::list<const Action*> Plan;
 
    /// @brief An ActionSet is a bunch of Actions that we are allowed to use.
+   /// The pointers in this list are guaranteed to be non-NULL.
    /// @todo This list should take into account a preference for each Action.
    ///       So, certain ActionSets can prefer Actions over others, in addition
    ///       to considering the weights of the Actions themselves.
    typedef std::list<const Action*> ActionSet;
 
    /// @brief A context in which we can make plans.
-   /// @todo Time-sliced planning. Required the Planner storing open and closed
-   ///       lists as object members, and breaking out the A* logic to its own
-   ///       function.
    class Planner {
    public:
       /// @brief Set our starting WorldState.
@@ -251,8 +247,35 @@ namespace ae {
       /// @param[in] goal Pointer to a WorldState.
       void setGoal(const WorldState *goal);
 
-      /// @brief Create a plan!
+      /// @brief Create a plan.
+      /// @param[in] log Logger object to record the Planner's activity.
+      /// @return True if the plan was successfully calculated, false if no
+      ///         plan exists or something went wrong in the planning process.
       bool plan(AesopLogger *log = NULL);
+
+      /// @brief Start a sliced plan.
+      /// @param[in] log Logger object to record the Planner's activity.
+      /// @return True if the plan was successfully initialised, false if
+      ///         something went wrong in initialisation.
+      bool initSlicedPlan(AesopLogger *log = NULL);
+
+      /// @brief Update a sliced plan.
+      /// @param[in] log Logger object to record the Planner's activity.
+      /// @return False if a valid plan was not found; true otherwise.
+      bool updateSlicedPlan(AesopLogger *log = NULL);
+
+      /// @brief Output the result of a computed plan to 
+      /// @param[in] log Logger object to record the Planner's activity.
+      void finaliseSlicedPlan(AesopLogger *log = NULL);
+
+      /// @brief US English spelling of finaliseSlicedPlan. 'Cause I'm a nice guy.
+      /// @see Planner::finaliseSlicedPlan
+      inline void finalizeSlicedPlan(AesopLogger *log = NULL)
+      { finaliseSlicedPlan(log); }
+
+      /// @brief Is this Planner in the middle of processing a sliced plan?
+      /// @return 
+      bool isPlanning() const;
 
       /// @brief Get the currently constructed plan.
       /// @return A Plan.
@@ -276,12 +299,64 @@ namespace ae {
    protected:
 
    private:
+      /// @brief A WorldState instance used during planning.
+      struct IntermediateState {
+         /// @brief ID number of this IntermediateState within the current plan.
+         /// Not really used, except to identify states for debugging purposes.
+         unsigned int ID;
+         /// @brief State of the world at this step.
+         WorldState state;
+         /// @brief Current cost to get to this state from starting state.
+         float G;
+         /// @brief Guess at cost to get from this state to goal.
+         float H;
+         /// @brief The sum of G and H.
+         float F;
+         /// @brief IntermediateState leading to this one.
+         unsigned int prev;
+         /// @brief Action leading to this one.
+         const Action *ac;
+
+         /// @brief Default constructor.
+         IntermediateState(unsigned int id)
+         {
+            G = H = F = 0.0f;
+            prev = 0;
+            ac = NULL;
+            ID = id;
+         }
+
+         /// @brief Compare based on F score.
+         bool operator>(const IntermediateState s) const
+         { return F > s.F; }
+
+         /// @brief Compare based on F score.
+         bool operator<(const IntermediateState s) const
+         { return F < s.F; }
+
+         /// @brief Equality is based on the state represented, not auxiliary
+         ///        data.
+         bool operator==(const IntermediateState &s) const
+         { return state == s.state; }
+      };
+      typedef std::vector<IntermediateState> openlist;
+      typedef std::vector<IntermediateState> closedlist;
+
       /// @brief Starting state.
       /// Not allowed to modify this.
       const WorldState *mStart;
       /// @brief Goal state.
       /// Not allowed to modify this.
       const WorldState *mGoal;
+      /// @brief A* algorithm open list.
+      openlist mOpenList;
+      /// @brief A* algorithm closed list.
+      closedlist mClosedList;
+      /// @brief Are we still working on a sliced plan?
+      bool mPlanning;
+      /// @brief IntermediateState ID number for debug purposes.
+      /// @todo Find a better way to identify states!
+      unsigned int mId;
       /// @brief Current plan to get from mStart to mGoal.
       Plan mPlan;
       /// @brief Set of Actions we are allowed to perform.
