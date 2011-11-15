@@ -30,10 +30,19 @@
 /// a sequence of actions such that the world is transformed into some desired
 /// final state.
 ///
+/// This library is open-source under the MIT license. Get the source code at:
+/// <a href="http://code.google.com/p/aesop-open-planner">
+/// http://code.google.com/p/aesop-open-planner</a>
+///
 /// For more information:
 /// <ul>
-///   <li><a href="http://en.wikipedia.org/wiki/STRIPS">STRIPS - Wikipedia</a></li>
-///   <li><a href="http://web.media.mit.edu/~jorkin/goap.html">Goal-Oriented Action Planning</a></li>
+///   <li>
+///        <a href="http://en.wikipedia.org/wiki/STRIPS">STRIPS - Wikipedia</a>
+///   </li>
+///   <li>
+///        <a href="http://web.media.mit.edu/~jorkin/goap.html">Goal-Oriented
+///        Action Planning</a>
+///   </li>
 /// </ul>
 
 #ifndef _AE_AESOP_H_
@@ -94,8 +103,8 @@ namespace ae {
       float getCost() const { return mCost; }
 
       /// @brief Constructor with name.
-      /// @param[in] name Friendly name for this Action.
-      /// @param[in] cost Cost of performing this Action.
+      /// @param[in] name   Friendly name for this Action.
+      /// @param[in] cost   Cost of performing this Action.
       Action(std::string name, float cost = 1.0f);
 
       /// @brief Default constructor.
