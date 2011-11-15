@@ -12,6 +12,7 @@ namespace ae {
    /// @see Planner
    struct IntermediateState {
       /// @brief ID number of this IntermediateState within the current plan.
+      /// Not really used, except to identify states for debugging purposes.
       unsigned int ID;
       /// @brief State of the world at this step.
       WorldState state;
