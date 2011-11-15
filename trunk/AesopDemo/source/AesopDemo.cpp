@@ -67,12 +67,12 @@ int main(int argc, char **argv)
 
    // Bundle these actions into an ActionSet.
    ae::ActionSet actions;
-   actions.push_back(aMove1);
-   actions.push_back(aMove2);
-   actions.push_back(aMove3);
-   actions.push_back(aMove4);
-   actions.push_back(aTake);
-   actions.push_back(aOrder);
+   actions.push_back(&aMove1);
+   actions.push_back(&aMove2);
+   actions.push_back(&aMove3);
+   actions.push_back(&aMove4);
+   actions.push_back(&aTake);
+   actions.push_back(&aOrder);
 
    // Construct a logger to keep track of the planning process.
    AesopDemoLogger logger;
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
       ae::Plan::const_iterator it;
       printf("The Plan:\n\n");
       for(it = plan.begin(); it != plan.end(); it++)
-         printf("%s\n", it->getName().c_str());
+         printf("%s\n", (*it)->getName().c_str());
    }
    else
    {

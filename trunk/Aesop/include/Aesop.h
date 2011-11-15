@@ -229,13 +229,13 @@ namespace ae {
    /// @todo Eventually this will be something like ActionEntry, accounting for
    ///       Actions that can be executed with different parameters. Also,
    ///       maybe deal with something other than copied values.
-   typedef std::list<Action> Plan;
+   typedef std::list<const Action*> Plan;
 
    /// @brief An ActionSet is a bunch of Actions that we are allowed to use.
    /// @todo This list should take into account a preference for each Action.
    ///       So, certain ActionSets can prefer Actions over others, in addition
    ///       to considering the weights of the Actions themselves.
-   typedef std::list<Action> ActionSet;
+   typedef std::list<const Action*> ActionSet;
 
    /// @brief A context in which we can make plans.
    /// @todo Time-sliced planning. Required the Planner storing open and closed
