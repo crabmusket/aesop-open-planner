@@ -32,6 +32,13 @@ int main(int argc, char **argv)
    ae::WorldState goal;
    goal.setPredicate(hungry, pfalse);
 
+   // Movement action.
+   //   Required: we are in location given by param 0
+   //   Outcome: we are in location given by param 1
+   ae::Action aMove("Move", 2);
+   aMove.addRequiredParam("at", 0);
+   aMove.addSetParam("at", 1);
+
    // Create some Actions to move between the three locations.
    //   Required: we are in some location
    //   Outcome:  we are in some location adjacent
@@ -85,7 +92,16 @@ int main(int argc, char **argv)
       ae::Plan::const_iterator it;
       printf("The Plan:\n\n");
       for(it = plan.begin(); it != plan.end(); it++)
-         printf("%s\n", (*it)->getName().c_str());
+      {
+         printf("%s", it->ac->getName().c_str());
+         if(it->params.size())
+         {
+            ae::paramlist::const_iterator pl;
+            for(pl = it->params.begin(); pl != it->params.end(); pl++)
+               printf(" %c", *pl);
+         }
+         putchar('\n');
+      }
    }
    else
    {

@@ -13,16 +13,13 @@ namespace ae {
    /// Action, the world must be in a certain state. After the Action is
    /// performed, certain changes will be made to that world state.
 
-   Action::Action(std::string name, float cost)
+   Action::Action(std::string name, unsigned int params, float cost)
    {
       mName = name;
+      mNumParams = params;
       if(cost < 0.0f)
          cost = 0.0f;
       mCost = cost;
-   }
-
-   Action::Action()
-   {
    }
 
    Action::~Action()
@@ -41,6 +38,25 @@ namespace ae {
  
    void Action::addClear(PName pred)
    {
-      mPostClear.push_back(pred);
+      // Check if predicate name already exists in list.
+      pnamelist::const_iterator it;
+      for(it = mPostClear.begin(); it != mPostClear.end(); it++)
+         if(*it == pred)
+            break;
+      // Not found; add.
+      if(it == mPostClear.end())
+         mPostClear.push_back(pred);
+   }
+
+   void Action::addRequiredParam(PName name, unsigned int param)
+   {
+      if(param < mNumParams)
+         mRequiredParam[name] = param;
+   }
+
+   void Action::addSetParam(PName name, unsigned int param)
+   {
+      if(param < mNumParams)
+         mPostSetParam[name] = param;
    }
 };

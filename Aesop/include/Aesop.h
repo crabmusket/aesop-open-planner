@@ -63,31 +63,49 @@ namespace ae {
    typedef std::string PName;
    /// @brief Represents the value of a predicate.
    typedef unsigned char PVal;
-   /// @brief Method of storing Predicates and their values.
+   /// @brief Method of storing predicates and their values.
    typedef std::map<PName, PVal> worldrep;
    /// @brief Simply stores a list of predicate names.
    typedef std::vector<PName> pnamelist;
+   /// @brief Mapping of predicates to Action parameter indices.
+   typedef std::map<PName, unsigned int> actionparams;
+   /// @brief A list of parameter values specific to an ActionEntry.
+   typedef std::vector<PVal> paramlist;
 
    /// @brief An atomic change that can be made to the world state.
    class Action {
    public:
-      /// @brief Get the names of the statements that must be TRUE.
+      /// @brief Get predicate->value mapping that we require to be valid.
       const worldrep& getRequired() const { return mRequired; }
-      /// @brief Get the names of statements we set to some value.
+      /// @brief Get the predicate->value mapping we apply when executed.
       const worldrep& getSet()      const { return mPostSet; }
-      /// @brief Get the names of statements we UNSET.
+      /// @brief Get the names of statements we unset upon execution.
       const pnamelist& getCleared()  const { return mPostClear; }
+      /// @brief Get the predicate->parameter mapping that we require.
+      const actionparams& getRequiredParams() const { return mRequiredParam; }
+      /// @brief Get the predicate->parameter mapping that we set.
+      const actionparams& getSetParams() const {return mPostSetParam; }
 
       /// @brief Add a single statement to our list of required statements.
       /// @param[in] name Name of the predicate the statement refers to.
       /// @param[in] val  Value the predicate is required to take.
       void addRequired(PName name, PVal val);
 
+      /// @brief Add a mapping between a predicate and a parameter.
+      /// @param[in] name  Predicate name to map to a parameter.
+      /// @param[in] param Index of a parameter to map to.
+      void addRequiredParam(PName name, unsigned int param);
+
       /// @brief Add a single statement to our list of predicates to set after
       ///        execution.
       /// @param[in] name Name of predicate this statement refers to.
       /// @param[in] val  Value this Action changes the predicate to.
       void addSet(PName name, PVal val);
+
+      /// @brief Add a mapping between a predicate and a parameter.
+      /// @param[in] name  Predicate name to map to a parameter.
+      /// @param[in] param Index of a parameter to map to.
+      void addSetParam(PName name, unsigned int param);
 
       /// @brief Add a single predicate to the list that we unset after
       ///        execution.
@@ -98,17 +116,21 @@ namespace ae {
       /// @return This Action's name.
       const std::string& getName() const { return mName; }
 
+      /// @brief Get number of parameters.
+      /// @return The number of parameters that define an instance of this
+      ///         Action.
+      unsigned int getNumParams() const { return mNumParams; };
+
       /// @brief Get the cost of using this Action.
       /// @return This Action's cost.
       float getCost() const { return mCost; }
 
-      /// @brief Constructor with name.
-      /// @param[in] name   Friendly name for this Action.
-      /// @param[in] cost   Cost of performing this Action.
-      Action(std::string name, float cost = 1.0f);
-
       /// @brief Default constructor.
-      Action();
+      /// @param[in] name   Friendly name for this Action.
+      /// @param[in] params The number of variable parameters this Action has.
+      /// @param[in] cost   Cost of performing this Action.
+      Action(std::string name, unsigned int params = 0, float cost = 1.0f);
+
       /// @brief Default destructor.
       ~Action();
 
@@ -118,14 +140,47 @@ namespace ae {
       std::string mName;
       /// @brief Cost of using this Action in a plan.
       float mCost;
+
       /// @brief Maps predicate names to the values we require for this Action
       ///        to be valid.
       worldrep mRequired;
+
       /// @brief Maps predicate names to the values they are set to after this
       ///        Action executes successfully.
       worldrep mPostSet;
       /// @brief List of predciates that are cleared (unset) after execution.
       pnamelist mPostClear;
+
+      /// @brief Number of parameters we operate on.
+      unsigned int mNumParams;
+      /// @brief Maps predicate names to parameter indices which we require the
+      ///        predicate to be set to.
+      /// For example, if an entry in this map is ("at", 0) then for the Action
+      /// to be valid, the "at" predicate must be set to the value of the 0th
+      /// parameter to this Action.
+      actionparams mRequiredParam;
+      /// @brief Maps predicate names to parameter indices which should provide
+      ///        values for them to be set to.
+      /// For example, if an entry in this map is ("at", 1) then the "at"
+      /// predicate will be set to whatever value is in this Action's 1st param
+      /// when the Action executes.
+      actionparams mPostSetParam;
+   };
+
+   /// @brief Represents an instance of an Action with a list of defined
+   ///        parameter values.
+   struct ActionEntry {
+      /// @brief The Action this entry is an 'instance' of.
+      const Action* ac;
+      /// @brief Array of parameter values 
+      paramlist params;
+
+      /// @brief Default constructor.
+      /// @param[in] a Action this ActionEntry is an instance of.
+      ActionEntry()
+      {
+         ac = NULL;
+      }
    };
 
    /// @brief Knowledge about a state of the world, current or possible.
@@ -151,23 +206,29 @@ namespace ae {
       void unsetPredicate(PName pred);
 
       /// @brief Do the given Action's pre-conditions match this world state?
-      /// @param[in] ac Action instance to test against this world state.
+      /// @param[in] ac     Action instance to test against this world state.
+      /// @param[in] params Parameters to the Action instance if it takes any.
       /// @return True iff the Action is valid under the current world state.
-      bool actionPreMatch(const Action *ac) const;
+      bool actionPreMatch(const Action *ac, const paramlist *params = NULL) const;
 
       /// @brief Does the given Action, executed from an arbitrary world state,
       ///        result in this world state?
-      /// @param[in] ac Action to compare.
-      bool actionPostMatch(const Action *ac) const;
+      /// @param[in]  ac     Action to compare.
+      /// @param[out] params Parameters the Action must use for it to result in
+      ///                    this world state.
+      /// @return True iff the Action results in the current world state.
+      bool actionPostMatch(const Action *ac, paramlist *params = NULL) const;
 
       /// @brief Apply the given Action to this WorldState in the forwards
       ///        direction.
-      /// @param[in] ac Action to apply to the current state of the world.
-      void applyActionForward(const Action *ac);
+      /// @param[in] ac     Action to apply to the current state of the world.
+      /// @param[in] params Parameters to the Action instance if it takes any.
+      void applyActionForward(const Action *ac, const paramlist *params = NULL);
 
       /// @brief Remove the effects of the given Action from the world.
-      /// @param[in] ac Action to remove from the current state.
-      void applyActionReverse(const Action *ac);
+      /// @param[in] ac     Action to remove from the current state.
+      /// @param[in] params Parameters to the Action instance if it takes any.
+      void applyActionReverse(const Action *ac, const paramlist *params = NULL);
 
       /// @brief Compare two world states.
       /// @param[in] ws1 First WorldState to compare.
@@ -233,10 +294,7 @@ namespace ae {
 
    /// @brief A Plan is a sequence of Actions that take us from one WorldState
    ///        to another.
-   /// @todo Eventually this will be something like ActionEntry, accounting for
-   ///       Actions that can be executed with different parameters. Also,
-   ///       maybe deal with something other than copied values.
-   typedef std::list<const Action*> Plan;
+   typedef std::list<ActionEntry> Plan;
 
    /// @brief An ActionSet is a bunch of Actions that we are allowed to use.
    /// The pointers in this list are guaranteed to be non-NULL.
@@ -325,6 +383,8 @@ namespace ae {
          unsigned int prev;
          /// @brief Action leading to this one.
          const Action *ac;
+         /// @brief Parameters to pass to our Action.
+         paramlist params;
 
          /// @brief Default constructor.
          IntermediateState(unsigned int id)

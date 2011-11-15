@@ -120,7 +120,9 @@ namespace ae {
       while(i)
       {
          // Extract the Action performed at this step.
-         mPlan.push_back(mClosedList[i].ac);
+         mPlan.push_back(ActionEntry());
+         mPlan.back().ac = mClosedList[i].ac;
+         mPlan.back().params = mClosedList[i].params;
          // Iterate.
          i = mClosedList[i].prev;
       }
@@ -156,13 +158,14 @@ namespace ae {
          ActionSet::const_iterator it;
          for(it = mActions->begin(); it != mActions->end(); it++)
          {
-            if(*it && s.state.actionPostMatch(*it))
+            paramlist params;
+            if(*it && s.state.actionPostMatch(*it, &params))
             {
                IntermediateState n(mId); mId++;
                // Copy the current state, then apply the Action to it in
                // reverse to get the previous state.
                n.state = s.state;
-               n.state.applyActionReverse(*it);
+               n.state.applyActionReverse(*it, &params);
 
                closedlist::const_iterator cli;
                // Check to see if the world state is in the closed list.
@@ -188,6 +191,7 @@ namespace ae {
                n.F = n.G + n.H;
                // Remember Action we used to to this state.
                n.ac = *it;
+               n.params = params;
                // Predecessor is the last state to be added to the closed list.
                n.prev = mClosedList.size() - 1;
 

@@ -63,7 +63,7 @@ namespace ae {
    /// For a 'pre-match' to be valid, we compare the Action's required
    /// predicates to the values in the current world state. All values must
    /// match for the Action to be valid.
-   bool WorldState::actionPreMatch(const Action *ac) const
+   bool WorldState::actionPreMatch(const Action *ac, const paramlist *params) const
    {
       const worldrep &awr = ac->getRequired();
       worldrep::const_iterator it;
@@ -84,8 +84,11 @@ namespace ae {
    /// This method compares a desired world state with an action's results. The
    /// comparison returns true if each predicate in our current state is either
    /// set by the Action, or required by it and not changed.
+   /// In this method, params is an output argument. The method fills in the
+   /// values of each parameter required for the Action to result in the given
+   /// world state.
    /// @todo Review complexity of this method.
-   bool WorldState::actionPostMatch(const Action *ac) const
+   bool WorldState::actionPostMatch(const Action *ac, paramlist *params) const
    {
       worldrep::const_iterator it;
       worldrep::const_iterator ait;
@@ -127,7 +130,7 @@ namespace ae {
 
    /// Apply an Action to the current world state. The Action's effects are
    /// applied to the current set of predicates.
-   void WorldState::applyActionForward(const Action *ac)
+   void WorldState::applyActionForward(const Action *ac, const paramlist *params)
    {
       worldrep::const_iterator sit;
       pnamelist::const_iterator pit;
@@ -151,7 +154,7 @@ namespace ae {
    /// This involves making sure that the new state's predicates match the
    /// Action's prerequisites, and clearing any predicates that the Action
    /// sets.
-   void WorldState::applyActionReverse(const Action *ac)
+   void WorldState::applyActionReverse(const Action *ac, const paramlist *params)
    {
       worldrep::const_iterator sit;
       pnamelist::const_iterator pit;
