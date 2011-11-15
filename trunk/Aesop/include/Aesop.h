@@ -1,16 +1,16 @@
 //
 // Copyright (C) 2011-2012 by Daniel Buckmaster (dan.buckmaster@gmail.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -215,7 +215,8 @@ namespace ae {
    public:
       /// @brief Record an event taking place. Uses printf-like syntax for now.
       /// @param[in] fmt event format string.
-      /// @todo Make this function more useful!
+      /// @todo Make this function more useful! Also, provide more fine-grained
+      ///       logging. Possibly split over multiple methods.
       virtual void logEvent(const char *fmt, ...) = 0;
 
       virtual ~AesopLogger() {};
@@ -226,13 +227,20 @@ namespace ae {
    /// @brief A Plan is a sequence of Actions that take us from one WorldState
    ///        to another.
    /// @todo Eventually this will be something like ActionEntry, accounting for
-   ///       Actions that can be executed with different parameters.
+   ///       Actions that can be executed with different parameters. Also,
+   ///       maybe deal with something other than copied values.
    typedef std::list<Action> Plan;
 
    /// @brief An ActionSet is a bunch of Actions that we are allowed to use.
+   /// @todo This list should take into account a preference for each Action.
+   ///       So, certain ActionSets can prefer Actions over others, in addition
+   ///       to considering the weights of the Actions themselves.
    typedef std::list<Action> ActionSet;
 
    /// @brief A context in which we can make plans.
+   /// @todo Time-sliced planning. Required the Planner storing open and closed
+   ///       lists as object members, and breaking out the A* logic to its own
+   ///       function.
    class Planner {
    public:
       /// @brief Set our starting WorldState.

@@ -84,6 +84,7 @@ namespace ae {
    /// This method compares a desired world state with an action's results. The
    /// comparison returns true if each predicate in our current state is either
    /// set by the Action, or required by it and not changed.
+   /// @todo Review complexity of this method.
    bool WorldState::actionPostMatch(const Action *ac) const
    {
       worldrep::const_iterator it;
@@ -131,12 +132,12 @@ namespace ae {
       worldrep::const_iterator sit;
       pnamelist::const_iterator pit;
 
-      // Predicates set to TRUE.
+      // Predicates set by this Action.
       const worldrep &st = ac->getSet();
       for(sit = st.begin(); sit != st.end(); sit++)
          _setPredicate(getPName(sit), getPVal(sit));
 
-      // Predicates UNSET.
+      // Predicates unset.
       const pnamelist &pr = ac->getCleared();
       for(pit = pr.begin(); pit != pr.end(); pit++)
          _unsetPredicate(*pit);
@@ -174,6 +175,7 @@ namespace ae {
 
    /// This hash method sums the string hashes of all the predicate names in
    /// this state, XORing certain bits based on the values of each predicate.
+   /// @todo Is there a better hash func to use? Should do some unit testing.
    void WorldState::updateHash()
    {
       mHash = 0;
