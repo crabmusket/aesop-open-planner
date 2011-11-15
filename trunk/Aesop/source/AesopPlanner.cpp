@@ -8,50 +8,6 @@
 #include <vector>
 
 namespace ae {
-   /// @brief A WorldState instance used during planning.
-   /// @see Planner
-   struct IntermediateState {
-      /// @brief ID number of this IntermediateState within the current plan.
-      /// Not really used, except to identify states for debugging purposes.
-      unsigned int ID;
-      /// @brief State of the world at this step.
-      WorldState state;
-      /// @brief Current cost to get to this state from starting state.
-      float G;
-      /// @brief Guess at cost to get from this state to goal.
-      float H;
-      /// @brief The sum of G and H.
-      float F;
-      /// @brief IntermediateState leading to this one.
-      unsigned int prev;
-      /// @brief Action leading to this one.
-      const Action *ac;
-
-      /// @brief Default constructor.
-      IntermediateState(unsigned int id)
-      {
-         G = 0;
-         H = 0;
-         F = 0;
-         prev = 0;
-         ac = NULL;
-         ID = id;
-      }
-
-      /// @brief Compare based on F score.
-      bool operator>(const IntermediateState s) const
-      { return F > s.F; }
-
-      /// @brief Compare based on F score.
-      bool operator<(const IntermediateState s) const
-      { return F < s.F; }
-
-      /// @brief Equality is based on the state represented, not auxiliary
-      ///        data.
-      bool operator==(const IntermediateState &s) const
-      { return state == s.state; }
-   };
-
    /// @class Planner
    ///
    /// A Planner object actually performs plan queries on the world state.
@@ -66,13 +22,13 @@ namespace ae {
       setStart(start);
       setGoal(goal);
       setActions(set);
+      mPlanning = false;
+      mId = 0;
    }
 
    Planner::Planner()
    {
-      setStart(NULL);
-      setGoal(NULL);
-      setActions(NULL);
+      Planner(NULL, NULL, NULL);
    }
 
    Planner::~Planner()
@@ -94,65 +50,116 @@ namespace ae {
       mActions = set;
    }
 
+   bool Planner::isPlanning() const
+   {
+      return mPlanning;
+   }
+
    const Plan& Planner::getPlan() const
    {
       return mPlan;
    }
 
+   /// This method is actually just a wrapper for a series of calls to the
+   /// sliced planning methods.
    bool Planner::plan(AesopLogger *log)
    {
-      // Open list.
-      std::vector<IntermediateState> ol;
-      std::vector<IntermediateState>::iterator oli;
-      // Closed list.
-      std::vector<IntermediateState> cl;
-      std::vector<IntermediateState>::const_iterator cli;
+      // Try to start planning.
+      if(!initSlicedPlan(log))
+         return false;
 
-      // Current IntermediateState ID number.
-      unsigned int id = 0;
+      while(isPlanning())
+      {
+         // Increment plan and capture failure.
+         if(!updateSlicedPlan(log))
+            return false;
+         // If planning has halted, we must have been successful.
+         if(!isPlanning())
+         {
+            finaliseSlicedPlan(log);
+            return true;
+         }
+      }
 
-      // Push goal onto the open list.
-      ol.push_back(IntermediateState(id)); id++;
-      ol.back().state = *mGoal;
+      // No plan found.
+      return false;
+   }
 
-      // Did we find a plan?
-      bool success = false;
+   bool Planner::initSlicedPlan(AesopLogger *log)
+   {
+      // Validate pointers.
+      if(!mStart || !mGoal || !mActions)
+         return false;
 
+      // Reset intermediate data.
+      mPlanning = true;
+      mOpenList.clear();
+      mClosedList.clear();
+      mId = 0;
+
+      // Push initial state onto the open list.
+      mOpenList.push_back(IntermediateState(mId)); mId++;
+      mOpenList.back().state = *mGoal;
+
+      return true;
+   }
+
+   void Planner::finaliseSlicedPlan(AesopLogger *log)
+   {
+      // Work backwards up the closed list to get the final plan.
+      mPlan.clear();
+      unsigned int i = mClosedList.size() - 1;
+      while(i)
+      {
+         // Extract the Action performed at this step.
+         mPlan.push_back(mClosedList[i].ac);
+         // Iterate.
+         i = mClosedList[i].prev;
+      }
+      // Purge intermediate results.
+      mOpenList.clear();
+      mClosedList.clear();
+      mPlanning = false;
+   }
+
+   bool Planner::updateSlicedPlan(AesopLogger *log)
+   {
       // Main loop of A* search.
-      while(!ol.empty())
+      if(!mOpenList.empty())
       {
          // Remove best IntermediateState from open list.
-         pop_heap(ol.begin(), ol.end(), std::greater<IntermediateState>());
-         IntermediateState s = ol.back();
-         ol.pop_back();
+         pop_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
+         IntermediateState s = mOpenList.back();
+         mOpenList.pop_back();
 
          if(log) log->logEvent("Moving state %d from open to closed.", s.ID);
 
          // Add to closed list.
-         cl.push_back(s);
+         mClosedList.push_back(s);
 
          // Check for completeness.
          if(s.state == *mStart)
          {
-            success = true;
-            break;
+            mPlanning = false;
+            return true;
          }
 
          // Find all actions we can use that may result in the current state.
          ActionSet::const_iterator it;
          for(it = mActions->begin(); it != mActions->end(); it++)
          {
-            if(s.state.actionPostMatch(*it))
+            if(*it && s.state.actionPostMatch(*it))
             {
-               IntermediateState n(id); id++;
+               IntermediateState n(mId); mId++;
                // Copy the current state, then apply the Action to it in
                // reverse to get the previous state.
                n.state = s.state;
                n.state.applyActionReverse(*it);
 
+               closedlist::const_iterator cli;
                // Check to see if the world state is in the closed list.
                bool found = false;
-               for(cli = cl.begin(); cli != cl.end(); cli++)
+               for(cli = mClosedList.begin(); cli != mClosedList.end(); cli++)
                {
                   if(n.state == cli->state)
                   {
@@ -174,17 +181,18 @@ namespace ae {
                // Remember Action we used to to this state.
                n.ac = *it;
                // Predecessor is the last state to be added to the closed list.
-               n.prev = cl.size() - 1;
+               n.prev = mClosedList.size() - 1;
 
+               openlist::iterator oli;
                // Check to see if the world state is already in the open list.
-               for(oli = ol.begin(); oli != ol.end(); oli++)
+               for(oli = mOpenList.begin(); oli != mOpenList.end(); oli++)
                {
                   if(n.state == oli->state && n < *oli)
                   {
                      // We've found a more efficient way of getting here.
                      *oli = n;
                      // Reorder the heap.
-                     make_heap(ol.begin(), ol.end(),
+                     make_heap(mOpenList.begin(), mOpenList.end(),
                         std::greater<IntermediateState>());
 
                      if(log) log->logEvent("Updating state %d to F=%f",
@@ -193,12 +201,12 @@ namespace ae {
                   }
                }
                // No match found in open list.
-               if(oli == ol.end())
+               if(oli == mOpenList.end())
                {
                   // Add the new intermediate state to the open list.
-                  ol.push_back(n);
+                  mOpenList.push_back(n);
                   // Heapify open list.
-                  push_heap(ol.begin(), ol.end(), std::greater<IntermediateState>());
+                  push_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
 
                   if(log) log->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%f.",
                      n.ID, (*it)->getName().c_str(), n.G + n.H);
@@ -206,21 +214,9 @@ namespace ae {
             }
          }
       }
+      else
+         return false;
 
-      // Work backwards up the closed list to get out plan.
-      mPlan.clear();
-      if(success)
-      {
-         unsigned int i = cl.size() - 1;
-         while(i)
-         {
-            // Extract the Action performed at this step.
-            mPlan.push_back(cl[i].ac);
-            // Iterate.
-            i = cl[i].prev;
-         }
-      }
-
-      return success;
+      return true;
    }
 };
