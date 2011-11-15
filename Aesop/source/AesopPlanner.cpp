@@ -89,13 +89,20 @@ namespace ae {
    {
       // Validate pointers.
       if(!mStart || !mGoal || !mActions)
+      {
+         if(log) log->logEvent("Planning failed due to unset start, goal or action set!");
          return false;
+      }
+
+      if(log) log->logEvent("Starting new plan.");
 
       // Reset intermediate data.
       mPlanning = true;
       mOpenList.clear();
       mClosedList.clear();
       mId = 0;
+
+      if(log) log->logEvent("Pushing starting state onto open list.");
 
       // Push initial state onto the open list.
       mOpenList.push_back(IntermediateState(mId)); mId++;
@@ -106,6 +113,7 @@ namespace ae {
 
    void Planner::finaliseSlicedPlan(AesopLogger *log)
    {
+      if(log) log->logEvent("Finalising plan!");
       // Work backwards up the closed list to get the final plan.
       mPlan.clear();
       unsigned int i = mClosedList.size() - 1;
