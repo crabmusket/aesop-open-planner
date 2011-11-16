@@ -28,22 +28,31 @@
 
 #include "Aesop.h"
 
-/// @brief Implement the AesopLogger interface and just print events to the
-///        console.
-class AesopDemoLogger : public ae::AesopLogger {
+/// @brief Implement the AesopContext interface and just print events to the
+///        console. We also provide a 'flying' flag that will allow the planner
+///        to travel between any two locations.
+class AesopDemoContext : public ae::AesopContext {
 public:
    void logEvent(const char *fmt, ...);
 
-   AesopDemoLogger();
-   ~AesopDemoLogger();
+   /// @brief Does this context permit flying movement?
+   /// @return True if yes.
+   bool canFly() const { return mFlying; }
+
+   /// @brief Constructor with specifier for flying movement.
+   AesopDemoContext(bool canFly);
+   ~AesopDemoContext();
 protected:
 private:
+   /// @brief Flying movement flag.
+   bool mFlying;
 };
 
+/// @brief Implement the Action interface for a two-parameter movement action.
 class MoveAction : public ae::Action {
 public:
    MoveAction(std::string name, float cost = 1.0f);
-   void getParams(const ae::paramlist &plist, ae::paramset &pset) const;
+   void getParams(ae::AesopContext *ctx, const ae::paramlist &plist, ae::paramset &pset) const;
 };
 
 #endif

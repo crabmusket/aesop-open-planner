@@ -62,21 +62,21 @@ namespace ae {
 
    /// This method is actually just a wrapper for a series of calls to the
    /// sliced planning methods.
-   bool Planner::plan(AesopLogger *log)
+   bool Planner::plan(AesopContext *ctx)
    {
       // Try to start planning.
-      if(!initSlicedPlan(log))
+      if(!initSlicedPlan(ctx))
          return false;
 
       while(isPlanning())
       {
          // Increment plan and capture failure.
-         if(!updateSlicedPlan(log))
+         if(!updateSlicedPlan(ctx))
             return false;
          // If planning has halted, we must have been successful.
          if(!isPlanning())
          {
-            finaliseSlicedPlan(log);
+            finaliseSlicedPlan(ctx);
             return true;
          }
       }
@@ -85,16 +85,16 @@ namespace ae {
       return false;
    }
 
-   bool Planner::initSlicedPlan(AesopLogger *log)
+   bool Planner::initSlicedPlan(AesopContext *ctx)
    {
       // Validate pointers.
       if(!mStart || !mGoal || !mActions)
       {
-         if(log) log->logEvent("Planning failed due to unset start, goal or action set!");
+         if(ctx) ctx->logEvent("Planning failed due to unset start, goal or action set!");
          return false;
       }
 
-      if(log) log->logEvent("Starting new plan.");
+      if(ctx) ctx->logEvent("Starting new plan.");
 
       // Reset intermediate data.
       mPlanning = true;
@@ -102,7 +102,7 @@ namespace ae {
       mClosedList.clear();
       mId = 0;
 
-      if(log) log->logEvent("Pushing starting state onto open list.");
+      if(ctx) ctx->logEvent("Pushing starting state onto open list.");
 
       // Push initial state onto the open list.
       mOpenList.push_back(IntermediateState(mId)); mId++;
@@ -111,9 +111,9 @@ namespace ae {
       return true;
    }
 
-   void Planner::finaliseSlicedPlan(AesopLogger *log)
+   void Planner::finaliseSlicedPlan(AesopContext *ctx)
    {
-      if(log) log->logEvent("Finalising plan!");
+      if(ctx) ctx->logEvent("Finalising plan!");
       // Work backwards up the closed list to get the final plan.
       mPlan.clear();
       unsigned int i = mClosedList.size() - 1;
@@ -132,7 +132,7 @@ namespace ae {
       mPlanning = false;
    }
 
-   bool Planner::updateSlicedPlan(AesopLogger *log)
+   bool Planner::updateSlicedPlan(AesopContext *ctx)
    {
       // Main loop of A* search.
       if(!mOpenList.empty())
@@ -142,7 +142,7 @@ namespace ae {
          IntermediateState s = mOpenList.back();
          mOpenList.pop_back();
 
-         if(log) log->logEvent("Moving state %d from open to closed.", s.ID);
+         if(ctx) ctx->logEvent("Moving state %d from open to closed.", s.ID);
 
          // Add to closed list.
          mClosedList.push_back(s);
@@ -170,14 +170,14 @@ namespace ae {
                s.state.actionGetParams(*it, p);
                // Allow the Action to fill in the parameters after some have
                // been specified.
-               (*it)->getParams(p, pset);
+               (*it)->getParams(ctx, p, pset);
                // Loop on the parameter set.
                paramset::iterator pit;
                for(pit = pset.begin(); pit != pset.end(); pit++)
-                  attemptIntermediate(log, s, *it, &*pit);
+                  attemptIntermediate(ctx, s, *it, &*pit);
             }
             else
-               attemptIntermediate(log, s, *it, NULL);
+               attemptIntermediate(ctx, s, *it, NULL);
          }
       }
       else
@@ -186,7 +186,7 @@ namespace ae {
       return true;
    }
 
-   void Planner::attemptIntermediate(AesopLogger *log, IntermediateState &s, const Action* ac, paramlist *plist)
+   void Planner::attemptIntermediate(AesopContext *ctx, IntermediateState &s, const Action* ac, paramlist *plist)
    {
       if(!s.state.actionPostMatch(ac, plist))
          return;
@@ -238,7 +238,7 @@ namespace ae {
             make_heap(mOpenList.begin(), mOpenList.end(),
                std::greater<IntermediateState>());
 
-            if(log) log->logEvent("Updating state %d to F=%f",
+            if(ctx) ctx->logEvent("Updating state %d to F=%f",
                oli->ID, oli->G + oli->H);
             break;
          }
@@ -251,7 +251,7 @@ namespace ae {
          // Heapify open list.
          push_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
 
-         if(log) log->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%f.",
+         if(ctx) ctx->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%f.",
             n.ID, ac->getName().c_str(), n.G + n.H);
       }
    }
