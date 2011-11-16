@@ -65,9 +65,9 @@ namespace ae {
    /// match for the Action to be valid.
    bool WorldState::actionPreMatch(const Action *ac, const paramlist *params) const
    {
+      // Check static predicates.
       const worldrep &awr = ac->getRequired();
       worldrep::const_iterator it;
-
       for(it = awr.begin(); it != awr.end(); it++)
       {
          // If we don't have a mapping for this predicate then we fail.
@@ -76,6 +76,22 @@ namespace ae {
          // If the predicate isn't set to the right value, we fail.
          if(getPredicate(getPName(it)) != getPVal(it))
             return false;
+      }
+
+      // Check parameter predicates.
+      if(params && params->size() == ac->getNumParams())
+      {
+         const actionparams &apl = ac->getRequiredParams();
+         actionparams::const_iterator pit;
+
+         for(pit = apl.begin(); pit != apl.end(); pit++)
+         {
+            if(!predicateSet(pit->first))
+               return false;
+            // If the predicate is set to the wrong value, fail.
+            if(getPredicate(pit->first) != params->at(pit->second))
+               return false;
+         }
       }
 
       return true;
@@ -93,27 +109,45 @@ namespace ae {
       worldrep::const_iterator it;
       worldrep::const_iterator ait;
       worldrep::const_iterator rit;
+      actionparams::const_iterator plit;
 
       const worldrep &set = ac->getSet();
       const worldrep &req = ac->getRequired();
+      const actionparams &preq = ac->getRequiredParams();
+      const actionparams &pset = ac->getSetParams();
 
       unsigned int matched = 0;
 
+      // Check each of our predicates.
       for(it = mState.begin(); it != mState.end(); it++)
       {
+         // Does this Action set this predicate to some value?
          ait = set.find(getPName(it));
          if(ait == set.end())
          {
-            // Action does not set this predicate. Does it require it?
-            rit = req.find(getPName(it));
-            if(rit == req.end())
-               // Nope. We're fine, and this prerequisite will carry over.
-               continue;
-            else if(getPVal(rit) != getPVal(it))
-               // Value is incorrect; bail!
-               return false;
-            else
+            // Action does not set this predicate. Does a parameter set it?
+            plit = pset.find(getPName(it));
+            if(plit != pset.end())
+            {
+               // Make sure the parameter is of the correct value.
+               params->at(plit->second) = getPredicate(plit->first);
                matched++;
+            }
+            else
+            {
+               // Last chance: does the Action require this predicate?
+               rit = req.find(getPName(it));
+               if(rit == req.end())
+                  // Nope. We're fine, and this prerequisite will carry over.
+                  continue;
+               else if(getPVal(rit) != getPVal(it))
+                  // Action requires a different predicate; bail!
+                  return false;
+               else
+                  // Action requires predicate to be at its current value and does
+                  // not set it. Count that as a match.
+                  matched++;
+            }
          }
          else
          {
@@ -145,6 +179,15 @@ namespace ae {
       for(pit = pr.begin(); pit != pr.end(); pit++)
          _unsetPredicate(*pit);
 
+      // Predicate set to a parameter.
+      if(params && params->size() == ac->getNumParams())
+      {
+         const actionparams &pl = ac->getSetParams();
+         actionparams::const_iterator plit;
+         for(plit = pl.begin(); plit != pl.end(); plit++)
+            _setPredicate(plit->first, params->at(plit->second));
+      }
+
       updateHash();
    }
 
@@ -158,6 +201,7 @@ namespace ae {
    {
       worldrep::const_iterator sit;
       pnamelist::const_iterator pit;
+      actionparams::const_iterator plit;
 
       // Predicates that are touched by the Action are unset.
       const worldrep &set = ac->getSet();
@@ -166,12 +210,24 @@ namespace ae {
       const pnamelist &pr = ac->getCleared();
       for(pit = pr.begin(); pit != pr.end(); pit++)
          _unsetPredicate(*pit);
+      if(params && params->size() == ac->getNumParams())
+      {
+         const actionparams &pl = ac->getSetParams();
+         for(plit = pl.begin(); plit != pl.end(); plit++)
+            _unsetPredicate(plit->first);
+      }
 
       // Predicates that must be some value. This may re-set some of the
       // predicates that were unset above.
       const worldrep &req = ac->getRequired();
       for(sit = req.begin(); sit != req.end(); sit++)
          _setPredicate(getPName(sit), getPVal(sit));
+      if(params && params->size() == ac->getNumParams())
+      {
+         const actionparams &pl = ac->getRequiredParams();
+         for(plit = pl.begin(); plit != pl.end(); plit++)
+            _setPredicate(plit->first, params->at(plit->second));
+      }
 
       updateHash();
    }

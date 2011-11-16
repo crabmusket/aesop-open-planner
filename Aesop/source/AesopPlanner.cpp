@@ -158,7 +158,7 @@ namespace ae {
          ActionSet::const_iterator it;
          for(it = mActions->begin(); it != mActions->end(); it++)
          {
-            paramlist params;
+            paramlist params((*it)->getNumParams());
             if(*it && s.state.actionPostMatch(*it, &params))
             {
                IntermediateState n(mId); mId++;
