@@ -73,7 +73,7 @@ namespace ae {
    typedef std::vector<PVal> paramlist;
    /// @brief A set of paramlist objects used to evaluate a single Action with
    ///        many different parameter lists.
-   typedef std::vector<paramlist> paramset;
+   typedef std::list<paramlist> paramset;
 
    /// @brief An atomic change that can be made to the world state.
    class Action {
@@ -455,6 +455,9 @@ namespace ae {
       Plan mPlan;
       /// @brief Set of Actions we are allowed to perform.
       const ActionSet *mActions;
+
+      /// @brief Internal function used by pathfinding.
+      void attemptIntermediate(AesopLogger *log, IntermediateState &s, const Action* ac, paramlist *plist);
    };
 };
 

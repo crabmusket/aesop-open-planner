@@ -74,11 +74,11 @@ int main(int argc, char **argv)
 
    // Bundle these actions into an ActionSet.
    ae::ActionSet actions;
-   //actions.push_back(&aMove);
-   actions.push_back(&aMove1);
-   actions.push_back(&aMove2);
-   actions.push_back(&aMove3);
-   actions.push_back(&aMove4);
+   //actions.push_back(&aMove1);
+   //actions.push_back(&aMove2);
+   //actions.push_back(&aMove3);
+   //actions.push_back(&aMove4);
+   actions.push_back(&aMove);
    actions.push_back(&aTake);
    actions.push_back(&aOrder);
 
@@ -156,20 +156,20 @@ void MoveAction::getParams(const ae::paramlist &plist, ae::paramset &pset) const
    switch(plist[1])
    {
    case 'A':
-      pset.push_back(ae::paramlist());
+      pset.push_back(ae::paramlist(mNumParams));
       pset.back()[0] = 'B';
       pset.back()[1] = 'A';
       break;
    case 'B':
-      pset.push_back(ae::paramlist());
+      pset.push_back(ae::paramlist(mNumParams));
       pset.back()[0] = 'A';
       pset.back()[1] = 'B';
-      pset.push_back(ae::paramlist());
+      pset.push_back(ae::paramlist(mNumParams));
       pset.back()[0] = 'C';
       pset.back()[1] = 'B';
       break;
    case 'C':
-      pset.push_back(ae::paramlist());
+      pset.push_back(ae::paramlist(mNumParams));
       pset.back()[0] = 'B';
       pset.back()[1] = 'C';
       break;

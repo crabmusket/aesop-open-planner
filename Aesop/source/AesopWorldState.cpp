@@ -62,9 +62,26 @@ namespace ae {
 
    /// This method is responsible for setting the parameters in the paramlist
    /// that are required to be a certain value in order to match this state.
-   void WorldState::actionGetParams(const ae::Action *ac, ae::paramlist &params) const
+   void WorldState::actionGetParams(const Action *ac, paramlist &params) const
    {
-      //
+      params.resize(ac->getNumParams());
+
+      // Each parameter that sets a predicate must have the correct value.
+      const actionparams &spl = ac->getSetParams();
+      actionparams::const_iterator sit;
+      for(sit = spl.begin(); sit != spl.end(); sit++)
+         params[sit->second] = getPredicate(sit->first);
+
+      // Each predicate required and not set must have the correct value.
+      const actionparams &rpl = ac->getRequiredParams();
+      actionparams::const_iterator rit;
+      for(rit = rpl.begin(); rit != rpl.end(); rit++)
+      {
+         const worldrep &set = ac->getSet();
+         if(set.find(rit->first) == set.end() &&
+            spl.find(rit->first) == spl.end())
+            params[rit->second] = getPredicate(rit->first);
+      }
    }
 
    /// For a 'pre-match' to be valid, we compare the Action's required
@@ -130,28 +147,65 @@ namespace ae {
       {
          // Does this Action set this predicate to some value?
          ait = set.find(getPName(it));
-         if(ait == set.end())
+         if(ait != set.end())
          {
-            // Action does not set this predicate. Does it require it?
-            rit = req.find(getPName(it));
-            if(rit == req.end())
-               // Nope. We're fine, and this prerequisite will carry over.
-               continue;
-            else if(getPVal(rit) != getPVal(it))
-               // Action requires a different predicate; bail!
-               return false;
-            else
-               // Action requires predicate to be at its current value and does
-               // not set it. Count that as a match.
+            // Action touches this predicate; check value is correct.
+            if(getPVal(ait) == getPredicate(getPName(ait)))
+            {
                matched++;
+               continue;
+            }
+            else
+               return false;
          }
          else
          {
-            // Action sets this predicate. Make sure value is correct.
-            if(getPVal(ait) != getPVal(it))
-               return false;
+            // Action does not set this predicate to a constant. Check params.
+            plit = pset.find(getPName(it));
+            if(plit != pset.end())
+            {
+               // Check if value matches.
+               if(params && params->size() == ac->getNumParams() &&
+                  params->at(plit->second) == getPredicate(plit->first))
+               {
+                  matched++;
+                  continue;
+               }
+               else
+                  return false;
+            }
             else
-               matched++;
+            {
+               // Predicate is not set anywhere. Is it required?
+               rit = req.find(getPName(it));
+               if(rit != req.end())
+               {
+                  // Check to see if is is required to be the right value.
+                  if(rit->second == getPredicate(rit->first))
+                  {
+                     matched++;
+                     continue;
+                  }
+                  else
+                     return false;
+               }
+               else
+               {
+                  // Check to see if required to a parameter.
+                  plit = preq.find(getPName(it));
+                  if(plit != preq.end())
+                  {
+                     if(params && params->size() == ac->getNumParams() &&
+                        params->at(plit->second) == getPredicate(plit->first))
+                     {
+                        matched++;
+                        continue;
+                     }
+                     else
+                        return false;
+                  }
+               }
+            }
          }
       }
 
