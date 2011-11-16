@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 
    // Create a WorldState to represent our initial state.
    ae::WorldState start;
-   start.setPredicate(at, loc1);
+   //start.setPredicate(at, loc1);
    start.setPredicate(money, pfalse);
 
    // Create another WorldState which will be our goal.
@@ -33,11 +33,10 @@ int main(int argc, char **argv)
    goal.setPredicate(hungry, pfalse);
 
    // Movement action.
-   //   Required: we are in location given by param 0
-   //   Outcome: we are in location given by param 1
-   ae::Action aMove("Move", 2);
-   aMove.addRequiredParam("at", 0);
-   aMove.addSetParam("at", 1);
+   //   Required: none
+   //   Outcome: we are in location given by param 0
+   ae::Action aMove("Move", 1);
+   aMove.addSetParam("at", 0);
 
    // Create some Actions to move between the three locations.
    //   Required: we are in some location
@@ -74,10 +73,11 @@ int main(int argc, char **argv)
 
    // Bundle these actions into an ActionSet.
    ae::ActionSet actions;
-   actions.push_back(&aMove1);
-   actions.push_back(&aMove2);
-   actions.push_back(&aMove3);
-   actions.push_back(&aMove4);
+   actions.push_back(&aMove);
+   //actions.push_back(&aMove1);
+   //actions.push_back(&aMove2);
+   //actions.push_back(&aMove3);
+   //actions.push_back(&aMove4);
    actions.push_back(&aTake);
    actions.push_back(&aOrder);
 
