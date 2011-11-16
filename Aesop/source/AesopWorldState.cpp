@@ -60,6 +60,13 @@ namespace ae {
          mState.erase(it);
    }
 
+   /// This method is responsible for setting the parameters in the paramlist
+   /// that are required to be a certain value in order to match this state.
+   void WorldState::actionGetParams(const ae::Action *ac, ae::paramlist &params) const
+   {
+      //
+   }
+
    /// For a 'pre-match' to be valid, we compare the Action's required
    /// predicates to the values in the current world state. All values must
    /// match for the Action to be valid.
@@ -104,7 +111,7 @@ namespace ae {
    /// values of each parameter required for the Action to result in the given
    /// world state.
    /// @todo Review complexity of this method.
-   bool WorldState::actionPostMatch(const Action *ac, paramlist *params) const
+   bool WorldState::actionPostMatch(const Action *ac, const paramlist *params) const
    {
       worldrep::const_iterator it;
       worldrep::const_iterator ait;
@@ -125,29 +132,18 @@ namespace ae {
          ait = set.find(getPName(it));
          if(ait == set.end())
          {
-            // Action does not set this predicate. Does a parameter set it?
-            plit = pset.find(getPName(it));
-            if(plit != pset.end())
-            {
-               // Make sure the parameter is of the correct value.
-               params->at(plit->second) = getPredicate(plit->first);
-               matched++;
-            }
+            // Action does not set this predicate. Does it require it?
+            rit = req.find(getPName(it));
+            if(rit == req.end())
+               // Nope. We're fine, and this prerequisite will carry over.
+               continue;
+            else if(getPVal(rit) != getPVal(it))
+               // Action requires a different predicate; bail!
+               return false;
             else
-            {
-               // Last chance: does the Action require this predicate?
-               rit = req.find(getPName(it));
-               if(rit == req.end())
-                  // Nope. We're fine, and this prerequisite will carry over.
-                  continue;
-               else if(getPVal(rit) != getPVal(it))
-                  // Action requires a different predicate; bail!
-                  return false;
-               else
-                  // Action requires predicate to be at its current value and does
-                  // not set it. Count that as a match.
-                  matched++;
-            }
+               // Action requires predicate to be at its current value and does
+               // not set it. Count that as a match.
+               matched++;
          }
          else
          {
