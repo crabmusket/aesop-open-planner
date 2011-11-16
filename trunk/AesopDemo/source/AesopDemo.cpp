@@ -7,6 +7,23 @@
 #include "AesopDemo.h"
 #include "Aesop.h"
 
+void printPlan(ae::Plan plan)
+{
+   ae::Plan::const_iterator it;
+   printf("The Plan:\n");
+   for(it = plan.begin(); it != plan.end(); it++)
+   {
+      printf("   %s", it->ac->getName().c_str());
+      if(it->params.size())
+      {
+         ae::paramlist::const_iterator pl;
+         for(pl = it->params.begin(); pl != it->params.end(); pl++)
+            printf(" %c", *pl);
+      }
+      putchar('\n');
+   }
+}
+
 int main(int argc, char **argv)
 {
    // Create several Predicate names.
@@ -63,57 +80,81 @@ int main(int argc, char **argv)
    actions.push_back(&aOrder);
 
    // Construct a logger to keep track of the planning process.
-   AesopDemoLogger logger;
+   AesopDemoContext context(false);
 
    // Make a plan to get from 'start' to 'goal'.
    ae::Planner planner(&start, &goal, &actions);
-   if(planner.plan(&logger))
+   printf("Planning with normal behaviour.\n");
+   if(planner.plan(&context))
    {
       const ae::Plan plan = planner.getPlan();
-      ae::Plan::const_iterator it;
-      printf("The Plan:\n\n");
-      for(it = plan.begin(); it != plan.end(); it++)
-      {
-         printf("%s", it->ac->getName().c_str());
-         if(it->params.size())
-         {
-            ae::paramlist::const_iterator pl;
-            for(pl = it->params.begin(); pl != it->params.end(); pl++)
-               printf(" %c", *pl);
-         }
-         putchar('\n');
-      }
+      printPlan(plan);
    }
    else
    {
       printf("No plan found to satisfy goal!\n");
    }
+   putchar('\n');
+
+   // Make a plan for a flying character.
+   AesopDemoContext fcontext(true);
+   printf("Planning with flying behaviour!\n");
+   if(planner.plan(&fcontext))
+   {
+      const ae::Plan plan = planner.getPlan();
+      printPlan(plan);
+   }
+   else
+   {
+      printf("No plan found to satisfy goal!\n");
+   }
+   putchar('\n');
+
+   // Now make a short plan where we start off with money.
+   start.setPredicate(money, ptrue);
+   printf("Planning with money in our pocket.\n");
+   if(planner.plan(&context))
+   {
+      const ae::Plan plan = planner.getPlan();
+      printPlan(plan);
+   }
+   else
+   {
+      printf("No plan found to satisfy goal!\n");
+   }
+   putchar('\n');
 
    return 0;
 }
 
 /// @class AesopDemoLogger
 ///
-/// This class demonstrates the use of the AesopLogger interface. Implement
-/// its methods in a way particular to your own application. This demo class
-/// simply prints out all the log events.
+/// This class demonstrates the use of the AesopContext interface. We simply
+/// print out all log events, while providing some additional functionality
+/// to allow planning with two different character types - flying and walking.
+/// While this seems like a pathfinding issue, the idea is to demonstrate
+/// the possibility of changing the planner's behaviour with user-defined
+/// parameters.
 
 /// In this simple implementation, we use vprintf to write the event message
 /// to stdout.
-void AesopDemoLogger::logEvent(const char *fmt, ...)
+void AesopDemoContext::logEvent(const char *fmt, ...)
 {
+   /*
    va_list args;
    va_start(args, fmt);
    vprintf(fmt, args);
    putchar('\n');
    va_end(args);
+   */
 }
 
-AesopDemoLogger::AesopDemoLogger()
+AesopDemoContext::AesopDemoContext(bool canFly)
 {
+   mFlying = canFly;
 }
 
-AesopDemoLogger::~AesopDemoLogger()
+AesopDemoContext::~AesopDemoContext()
 {
 }
 
@@ -129,15 +170,16 @@ AesopDemoLogger::~AesopDemoLogger()
 /// of name and cost. They are encouraged to set their own value of mNumParams,
 /// as particular to this implementation of an action.
 MoveAction::MoveAction(std::string name, float cost)
-: ae::Action(name, cost)
+   : ae::Action(name, cost)
 {
    mNumParams = 2;
 }
 
 /// Check to see what finishing parameter has been specified by the planner.
 /// Fill in permutations of starting locations as appropriate.
-void MoveAction::getParams(const ae::paramlist &plist, ae::paramset &pset) const
+void MoveAction::getParams(ae::AesopContext *ctx, const ae::paramlist &plist, ae::paramset &pset) const
 {
+   AesopDemoContext *dctx = (AesopDemoContext*)ctx;
    pset.clear();
    switch(plist[1])
    {
@@ -146,6 +188,13 @@ void MoveAction::getParams(const ae::paramlist &plist, ae::paramset &pset) const
       pset.push_back(ae::paramlist(mNumParams));
       pset.back()[0] = 'B';
       pset.back()[1] = 'A';
+      // But not if we're flying!
+      if(dctx->canFly())
+      {
+         pset.push_back(ae::paramlist(mNumParams));
+         pset.back()[0] = 'C';
+         pset.back()[1] = 'A';
+      }
       break;
    case 'B':
       // If we finish at B, we may have arrived from A or C.
@@ -161,6 +210,13 @@ void MoveAction::getParams(const ae::paramlist &plist, ae::paramset &pset) const
       pset.push_back(ae::paramlist(mNumParams));
       pset.back()[0] = 'B';
       pset.back()[1] = 'C';
+      // But not if we're flying!
+      if(dctx->canFly())
+      {
+         pset.push_back(ae::paramlist(mNumParams));
+         pset.back()[0] = 'A';
+         pset.back()[1] = 'C';
+      }
       break;
    }
 }

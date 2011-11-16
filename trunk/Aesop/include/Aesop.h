@@ -75,6 +75,20 @@ namespace ae {
    ///        many different parameter lists.
    typedef std::list<paramlist> paramset;
 
+   /// @brief An interface used to log the planning process.
+   /// Designed to be implemented by the end-user in a manner particular to
+   /// their application and requirements.
+   class AesopContext {
+   public:
+      /// @brief Record an event taking place. Uses printf-like syntax for now.
+      /// @param[in] fmt event format string.
+      /// @todo Make this function more useful! Also, provide more fine-grained
+      ///       logging. Possibly split over multiple methods.
+      virtual void logEvent(const char *fmt, ...) = 0;
+   protected:
+   private:
+   };
+
    /// @brief An atomic change that can be made to the world state.
    class Action {
    public:
@@ -117,12 +131,14 @@ namespace ae {
 
       /// @brief Fills in parameters this Action can take based on a given
       ///        starting set of parameters.
+      /// @param[in]  ctx   A Context object to provide implementation-specific
+      ///                   data and abilities.
       /// @param[in]  plist A single list of parameters that is required by a
       ///                   WorldState.
       /// @param[out] pset  A list of paramlist entries describing possible
       ///                   permutations of this Action's parameters, given
       ///                   the values in the starting set.
-      virtual void getParams(const paramlist &plist, paramset &pset) const = 0;
+      virtual void getParams(AesopContext *ctx, const paramlist &plist, paramset &pset) const = 0;
 
       /// @brief Get this Action's friendly name.
       /// @return This Action's name.
@@ -183,7 +199,7 @@ namespace ae {
    class DefaultAction : public Action {
    public:
       DefaultAction(std::string name, float cost = 1.0f) : Action(name, cost) { mNumParams = 0; }
-      void getParams(const paramlist &plist, paramset &pset) const {}
+      void getParams(AesopContext *ctx, const paramlist &plist, paramset &pset) const {}
    };
 
    /// @brief Represents an instance of an Action with a list of defined
@@ -303,20 +319,6 @@ namespace ae {
       void _unsetPredicate(PName pred);
    };
 
-   /// @brief An interface used to log the planning process.
-   /// Designed to be implemented by the end-user in a manner particular to
-   /// their application and requirements.
-   class AesopLogger {
-   public:
-      /// @brief Record an event taking place. Uses printf-like syntax for now.
-      /// @param[in] fmt event format string.
-      /// @todo Make this function more useful! Also, provide more fine-grained
-      ///       logging. Possibly split over multiple methods.
-      virtual void logEvent(const char *fmt, ...) = 0;
-   protected:
-   private:
-   };
-
    /// @brief A Plan is a sequence of Actions that take us from one WorldState
    ///        to another.
    typedef std::list<ActionEntry> Plan;
@@ -340,30 +342,30 @@ namespace ae {
       void setGoal(const WorldState *goal);
 
       /// @brief Create a plan.
-      /// @param[in] log Logger object to record the Planner's activity.
+      /// @param[in] ctx Context object to record the Planner's activity.
       /// @return True if the plan was successfully calculated, false if no
       ///         plan exists or something went wrong in the planning process.
-      bool plan(AesopLogger *log = NULL);
+      bool plan(AesopContext *ctx = NULL);
 
       /// @brief Start a sliced plan.
-      /// @param[in] log Logger object to record the Planner's activity.
+      /// @param[in] ctx Context object to record the Planner's activity.
       /// @return True if the plan was successfully initialised, false if
       ///         something went wrong in initialisation.
-      bool initSlicedPlan(AesopLogger *log = NULL);
+      bool initSlicedPlan(AesopContext *ctx = NULL);
 
       /// @brief Update a sliced plan.
-      /// @param[in] log Logger object to record the Planner's activity.
+      /// @param[in] ctx Context object to record the Planner's activity.
       /// @return False if a valid plan was not found; true otherwise.
-      bool updateSlicedPlan(AesopLogger *log = NULL);
+      bool updateSlicedPlan(AesopContext *ctx = NULL);
 
       /// @brief Output the result of a computed plan to 
-      /// @param[in] log Logger object to record the Planner's activity.
-      void finaliseSlicedPlan(AesopLogger *log = NULL);
+      /// @param[in] ctx Context object to record the Planner's activity.
+      void finaliseSlicedPlan(AesopContext *ctx = NULL);
 
       /// @brief US English spelling of finaliseSlicedPlan. 'Cause I'm a nice guy.
       /// @see Planner::finaliseSlicedPlan
-      inline void finalizeSlicedPlan(AesopLogger *log = NULL)
-      { finaliseSlicedPlan(log); }
+      inline void finalizeSlicedPlan(AesopContext *ctx = NULL)
+      { finaliseSlicedPlan(ctx); }
 
       /// @brief Is this Planner in the middle of processing a sliced plan?
       /// @return 
@@ -457,7 +459,7 @@ namespace ae {
       const ActionSet *mActions;
 
       /// @brief Internal function used by pathfinding.
-      void attemptIntermediate(AesopLogger *log, IntermediateState &s, const Action* ac, paramlist *plist);
+      void attemptIntermediate(AesopContext *ctx, IntermediateState &s, const Action* ac, paramlist *plist);
    };
 };
 
