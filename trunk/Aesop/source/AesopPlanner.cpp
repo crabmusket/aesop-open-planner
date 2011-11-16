@@ -158,72 +158,95 @@ namespace ae {
          ActionSet::const_iterator it;
          for(it = mActions->begin(); it != mActions->end(); it++)
          {
-            paramlist params((*it)->getNumParams());
-            if(*it && s.state.actionPostMatch(*it, &params))
+            if(!*it)
+               continue;
+            paramset pset;
+            // Get number of params and create a set of paramlists.
+            unsigned int nparams = (*it)->getNumParams();
+            if(nparams)
             {
-               IntermediateState n(mId); mId++;
-               // Copy the current state, then apply the Action to it in
-               // reverse to get the previous state.
-               n.state = s.state;
-               n.state.applyActionReverse(*it, &params);
-
-               closedlist::const_iterator cli;
-               // Check to see if the world state is in the closed list.
-               bool found = false;
-               for(cli = mClosedList.begin(); cli != mClosedList.end(); cli++)
-               {
-                  if(n.state == cli->state)
-                  {
-                     found = true;
-                     break;
-                  }
-               }
-               if(found)
-                  continue;
-
-               // H (heuristic) cost is the estimated number of Actions to get
-               // from new state to start.
-               n.H = (float)WorldState::comp(n.state, *mStart);
-               // G cost is the total weight of all Actions we've taken to get
-               // to this state. By default, the cost of an Action is 1.
-               n.G = s.G + (*it)->getCost();
-               // Save this to avoid recalculating every time.
-               n.F = n.G + n.H;
-               // Remember Action we used to to this state.
-               n.ac = *it;
-               n.params = params;
-               // Predecessor is the last state to be added to the closed list.
-               n.prev = mClosedList.size() - 1;
-
-               openlist::iterator oli;
-               // Check to see if the world state is already in the open list.
-               for(oli = mOpenList.begin(); oli != mOpenList.end(); oli++)
-               {
-                  if(n.state == oli->state && n < *oli)
-                  {
-                     // We've found a more efficient way of getting here.
-                     *oli = n;
-                     // Reorder the heap.
-                     make_heap(mOpenList.begin(), mOpenList.end(),
-                        std::greater<IntermediateState>());
-
-                     if(log) log->logEvent("Updating state %d to F=%f",
-                        oli->ID, oli->G + oli->H);
-                     break;
-                  }
-               }
-               // No match found in open list.
-               if(oli == mOpenList.end())
-               {
-                  // Add the new intermediate state to the open list.
-                  mOpenList.push_back(n);
-                  // Heapify open list.
-                  push_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
-
-                  if(log) log->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%f.",
-                     n.ID, (*it)->getName().c_str(), n.G + n.H);
-               }
+               // Get the param values that the world state requires.
+               paramlist p;
+               s.state.actionGetParams(*it, p);
+               // Allow the Action to fill in 
+               (*it)->getParams(p, pset);
             }
+            paramset::const_iterator params = pset.begin();
+            do
+            {
+               // Get a pointer to pass to functions.
+               const paramlist *plist = NULL;
+               if(params != pset.end())
+                  plist = &*params;
+               if(s.state.actionPostMatch(*it, plist))
+               {
+                  IntermediateState n(mId); mId++;
+                  // Copy the current state, then apply the Action to it in
+                  // reverse to get the previous state.
+                  n.state = s.state;
+                  n.state.applyActionReverse(*it, plist);
+
+                  closedlist::const_iterator cli;
+                  // Check to see if the world state is in the closed list.
+                  bool found = false;
+                  for(cli = mClosedList.begin(); cli != mClosedList.end(); cli++)
+                  {
+                     if(n.state == cli->state)
+                     {
+                        found = true;
+                        break;
+                     }
+                  }
+                  if(found)
+                     continue;
+
+                  // H (heuristic) cost is the estimated number of Actions to get
+                  // from new state to start.
+                  n.H = (float)WorldState::comp(n.state, *mStart);
+                  // G cost is the total weight of all Actions we've taken to get
+                  // to this state. By default, the cost of an Action is 1.
+                  n.G = s.G + (*it)->getCost();
+                  // Save this to avoid recalculating every time.
+                  n.F = n.G + n.H;
+                  // Remember Action we used to to this state.
+                  n.ac = *it;
+                  if(plist)
+                     n.params = *plist;
+                  // Predecessor is the last state to be added to the closed list.
+                  n.prev = mClosedList.size() - 1;
+
+                  openlist::iterator oli;
+                  // Check to see if the world state is already in the open list.
+                  for(oli = mOpenList.begin(); oli != mOpenList.end(); oli++)
+                  {
+                     if(n.state == oli->state && n < *oli)
+                     {
+                        // We've found a more efficient way of getting here.
+                        *oli = n;
+                        // Reorder the heap.
+                        make_heap(mOpenList.begin(), mOpenList.end(),
+                           std::greater<IntermediateState>());
+
+                        if(log) log->logEvent("Updating state %d to F=%f",
+                           oli->ID, oli->G + oli->H);
+                        break;
+                     }
+                  }
+                  // No match found in open list.
+                  if(oli == mOpenList.end())
+                  {
+                     // Add the new intermediate state to the open list.
+                     mOpenList.push_back(n);
+                     // Heapify open list.
+                     push_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
+
+                     if(log) log->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%f.",
+                        n.ID, (*it)->getName().c_str(), n.G + n.H);
+                  }
+               }
+               if(params != pset.end())
+                  params++;
+            } while(params != pset.end());
          }
       }
       else

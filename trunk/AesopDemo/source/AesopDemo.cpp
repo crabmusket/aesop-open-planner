@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 
    // Create a WorldState to represent our initial state.
    ae::WorldState start;
-   //start.setPredicate(at, loc1);
+   start.setPredicate(at, loc1);
    start.setPredicate(money, pfalse);
 
    // Create another WorldState which will be our goal.
@@ -33,31 +33,32 @@ int main(int argc, char **argv)
    goal.setPredicate(hungry, pfalse);
 
    // Movement action.
-   //   Required: none
-   //   Outcome: we are in location given by param 0
-   ae::Action aMove("Move", 1);
-   aMove.addSetParam("at", 0);
+   //   Required: we are at location given by param 0
+   //   Outcome: we are at location given by param 1
+   MoveAction aMove("Move");
+   aMove.addRequiredParam(at, 0);
+   aMove.addSetParam(at, 1);
 
    // Create some Actions to move between the three locations.
    //   Required: we are in some location
    //   Outcome:  we are in some location adjacent
-   ae::Action aMove1("Move A->B");
+   ae::DefaultAction aMove1("Move A->B");
    aMove1.addRequired(at, loc1);
    aMove1.addSet(at, loc2);
-   ae::Action aMove2("Move B->C");
+   ae::DefaultAction aMove2("Move B->C");
    aMove2.addRequired(at, loc2);
    aMove2.addSet(at, loc3);
-   ae::Action aMove3("Move C->B");
+   ae::DefaultAction aMove3("Move C->B");
    aMove3.addRequired(at, loc3);
    aMove3.addSet(at, loc2);
-   ae::Action aMove4("Move B->A");
+   ae::DefaultAction aMove4("Move B->A");
    aMove4.addRequired(at, loc2);
    aMove4.addSet(at, loc1);
 
    // Action to take money from loc3.
    //   Required: we are at loc3 and have no money
    //   Outcome:  we have money
-   ae::Action aTake("Take money");
+   ae::DefaultAction aTake("Take money");
    aTake.addRequired(at, loc3);
    aTake.addRequired(money, pfalse);
    aTake.addSet(money, ptrue);
@@ -65,7 +66,7 @@ int main(int argc, char **argv)
    // Action to buy food from loc2.
    //   Required: we are at loc2 and have money
    //   Outcome:  we have no money and are not hungry
-   ae::Action aOrder("Buy food");
+   ae::DefaultAction aOrder("Buy food");
    aOrder.addRequired(at, loc2);
    aOrder.addRequired(money, ptrue);
    aOrder.addSet(money, pfalse);
@@ -73,11 +74,11 @@ int main(int argc, char **argv)
 
    // Bundle these actions into an ActionSet.
    ae::ActionSet actions;
-   actions.push_back(&aMove);
-   //actions.push_back(&aMove1);
-   //actions.push_back(&aMove2);
-   //actions.push_back(&aMove3);
-   //actions.push_back(&aMove4);
+   //actions.push_back(&aMove);
+   actions.push_back(&aMove1);
+   actions.push_back(&aMove2);
+   actions.push_back(&aMove3);
+   actions.push_back(&aMove4);
    actions.push_back(&aTake);
    actions.push_back(&aOrder);
 
@@ -134,4 +135,43 @@ AesopDemoLogger::AesopDemoLogger()
 
 AesopDemoLogger::~AesopDemoLogger()
 {
+}
+
+/// @class MoveAction
+///
+/// A simple implementation of ae::Action.
+
+/// Subclasses of ae::Action are wise to call its constructor with their
+/// values of name and cost. They are encouraged to set their own value
+/// of mNumParams, as particular to this implementation of an action.
+MoveAction::MoveAction(std::string name, float cost)
+: ae::Action(name, cost)
+{
+   mNumParams = 2;
+}
+
+void MoveAction::getParams(const ae::paramlist &plist, ae::paramset &pset) const
+{
+   pset.clear();
+   switch(plist[1])
+   {
+   case 'A':
+      pset.push_back(ae::paramlist());
+      pset.back()[0] = 'B';
+      pset.back()[1] = 'A';
+      break;
+   case 'B':
+      pset.push_back(ae::paramlist());
+      pset.back()[0] = 'A';
+      pset.back()[1] = 'B';
+      pset.push_back(ae::paramlist());
+      pset.back()[0] = 'C';
+      pset.back()[1] = 'B';
+      break;
+   case 'C':
+      pset.push_back(ae::paramlist());
+      pset.back()[0] = 'B';
+      pset.back()[1] = 'C';
+      break;
+   }
 }

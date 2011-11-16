@@ -40,4 +40,10 @@ protected:
 private:
 };
 
+class MoveAction : public ae::Action {
+public:
+   MoveAction(std::string name, float cost = 1.0f);
+   void getParams(const ae::paramlist &plist, ae::paramset &pset) const;
+};
+
 #endif

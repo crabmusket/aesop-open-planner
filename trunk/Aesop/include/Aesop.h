@@ -71,6 +71,9 @@ namespace ae {
    typedef std::map<PName, unsigned int> actionparams;
    /// @brief A list of parameter values specific to an ActionEntry.
    typedef std::vector<PVal> paramlist;
+   /// @brief A set of paramlist objects used to evaluate a single Action with
+   ///        many different parameter lists.
+   typedef std::vector<paramlist> paramset;
 
    /// @brief An atomic change that can be made to the world state.
    class Action {
@@ -112,6 +115,15 @@ namespace ae {
       /// @param[in] pred Name of Predicate to add.
       void addClear(PName pred);
 
+      /// @brief Fills in parameters this Action can take based on a given
+      ///        starting set of parameters.
+      /// @param[in]  plist A single list of parameters that is required by a
+      ///                   WorldState.
+      /// @param[out] pset  A list of paramlist entries describing possible
+      ///                   permutations of this Action's parameters, given
+      ///                   the values in the starting set.
+      virtual void getParams(const paramlist &plist, paramset &pset) const = 0;
+
       /// @brief Get this Action's friendly name.
       /// @return This Action's name.
       const std::string& getName() const { return mName; }
@@ -129,12 +141,15 @@ namespace ae {
       /// @param[in] name   Friendly name for this Action.
       /// @param[in] params The number of variable parameters this Action has.
       /// @param[in] cost   Cost of performing this Action.
-      Action(std::string name, unsigned int params = 0, float cost = 1.0f);
+      Action(std::string name, float cost = 1.0f);
 
       /// @brief Default destructor.
       ~Action();
 
    protected:
+      /// @brief Number of parameters we operate on.
+      unsigned int mNumParams;
+
    private:
       /// @brief Friendly name of this Action.
       std::string mName;
@@ -150,9 +165,6 @@ namespace ae {
       worldrep mPostSet;
       /// @brief List of predciates that are cleared (unset) after execution.
       pnamelist mPostClear;
-
-      /// @brief Number of parameters we operate on.
-      unsigned int mNumParams;
       /// @brief Maps predicate names to parameter indices which we require the
       ///        predicate to be set to.
       /// For example, if an entry in this map is ("at", 0) then for the Action
@@ -165,6 +177,13 @@ namespace ae {
       /// predicate will be set to whatever value is in this Action's 1st param
       /// when the Action executes.
       actionparams mPostSetParam;
+   };
+
+   /// @brief A default implementation of Action that has no parameters.
+   class DefaultAction : public Action {
+   public:
+      DefaultAction(std::string name, float cost = 1.0f) : Action(name, cost) { mNumParams = 0; }
+      void getParams(const paramlist &plist, paramset &pset) const {}
    };
 
    /// @brief Represents an instance of an Action with a list of defined
@@ -205,6 +224,12 @@ namespace ae {
       /// @param[in] pred Name of the predicate to clear.
       void unsetPredicate(PName pred);
 
+      /// @brief Set the appropriate values of set parameters.
+      /// @param[in]  ac     Action that is being tested.
+      /// @param[out] params List of parameter values that this world state
+      ///                    requires.
+      void actionGetParams(const Action *ac, paramlist &params) const;
+
       /// @brief Do the given Action's pre-conditions match this world state?
       /// @param[in] ac     Action instance to test against this world state.
       /// @param[in] params Parameters to the Action instance if it takes any.
@@ -217,7 +242,7 @@ namespace ae {
       /// @param[out] params Parameters the Action must use for it to result in
       ///                    this world state.
       /// @return True iff the Action results in the current world state.
-      bool actionPostMatch(const Action *ac, paramlist *params = NULL) const;
+      bool actionPostMatch(const Action *ac, const paramlist *params = NULL) const;
 
       /// @brief Apply the given Action to this WorldState in the forwards
       ///        direction.
