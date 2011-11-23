@@ -25,7 +25,7 @@ namespace ae {
    bool WorldState::predicateSet(PName pred) const
    {
       worldrep::const_iterator it = mState.find(pred);
-      return it == mState.end();
+      return it != mState.end();
    }
 
    PVal WorldState::getPredicate(PName pred) const
