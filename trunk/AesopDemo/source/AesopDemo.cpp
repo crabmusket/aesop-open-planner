@@ -52,7 +52,7 @@ int main(int argc, char **argv)
    // Action to buy food from loc2.
    //   Required: we are at loc2 and have money
    //   Outcome:  we have no money and are not hungry
-   ae::DefaultAction aOrder("Buy food");
+   ae::Action aOrder("Buy food");
    aOrder.addRequired(at, loc2);
    aOrder.addRequired(money, ptrue);
    aOrder.addSet(money, pfalse);
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
    // Action to take money from loc3.
    //   Required: we are at loc3 and have no money
    //   Outcome:  we have money
-   ae::DefaultAction aTake("Take money");
+   ae::Action aTake("Take money");
    aTake.addRequired(at, loc3);
    aTake.addRequired(money, pfalse);
    aTake.addSet(money, ptrue);
