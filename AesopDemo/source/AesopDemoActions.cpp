@@ -23,7 +23,7 @@ MoveAction::MoveAction(std::string name, float cost)
 /// Check to see what finishing parameter has been specified by the planner.
 /// Fill in permutations of starting locations as appropriate. We can only move
 /// between adjacent locations.
-void MoveAction::getParams(ae::AesopContext *ctx, const ae::paramlist &plist, ae::paramset &pset) const
+void MoveAction::getParams(ae::Context *ctx, const ae::paramlist &plist, ae::paramset &pset) const
 {
    AesopDemoContext *dctx = (AesopDemoContext*)ctx;
    pset.clear();
@@ -64,7 +64,7 @@ FlyAction::FlyAction(std::string name, float cost)
 }
 
 /// This action allows us to move to all locations no matter where we are.
-void FlyAction::getParams(ae::AesopContext *ctx, const ae::paramlist &plist, ae::paramset &pset) const
+void FlyAction::getParams(ae::Context *ctx, const ae::paramlist &plist, ae::paramset &pset) const
 {
    AesopDemoContext *dctx = (AesopDemoContext*)ctx;
    pset.clear();

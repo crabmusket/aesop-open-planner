@@ -137,12 +137,8 @@ int main(int argc, char **argv)
 
 /// @class AesopDemoLogger
 ///
-/// This class demonstrates the use of the AesopContext interface. We simply
-/// print out all log events, while providing some additional functionality
-/// to allow planning with two different character types - flying and walking.
-/// While this seems like a pathfinding issue, the idea is to demonstrate
-/// the possibility of changing the planner's behaviour with user-defined
-/// parameters.
+/// This class demonstrates the use of the Context interface. We simply
+/// print all log events to stdout.
 
 /// In this simple implementation, we use vprintf to write the event message
 /// to stdout.
