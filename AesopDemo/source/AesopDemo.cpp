@@ -73,6 +73,13 @@ int main(int argc, char **argv)
    aMove.addRequiredParam(at, 0);
    aMove.addSetParam(at, 1);
 
+   // Flying movement action.
+   //   Required: we are at location given by param 0
+   //   Outcome: we are at location given by param 1
+   FlyAction aFly("Fly", 1.5f);
+   aFly.addRequiredParam(at, 0);
+   aFly.addSetParam(at, 1);
+
    // Bundle these actions into an ActionSet.
    ae::ActionSet actions;
    actions.push_back(&aMove);
@@ -80,7 +87,7 @@ int main(int argc, char **argv)
    actions.push_back(&aOrder);
 
    // Construct a logger to keep track of the planning process.
-   AesopDemoContext context(false);
+   AesopDemoContext context;
 
    // Make a plan to get from 'start' to 'goal'.
    ae::Planner planner(&start, &goal, &actions);
@@ -97,9 +104,9 @@ int main(int argc, char **argv)
    putchar('\n');
 
    // Make a plan for a flying character.
-   AesopDemoContext fcontext(true);
+   actions.push_back(&aFly);
    printf("Planning with flying behaviour!\n");
-   if(planner.plan(&fcontext))
+   if(planner.plan(&context))
    {
       const ae::Plan plan = planner.getPlan();
       printPlan(plan);
@@ -111,6 +118,7 @@ int main(int argc, char **argv)
    putchar('\n');
 
    // Now make a short plan where we start off with money.
+   actions.pop_back();
    start.setPredicate(money, ptrue);
    printf("Planning with money in our pocket.\n");
    if(planner.plan(&context))
@@ -140,83 +148,17 @@ int main(int argc, char **argv)
 /// to stdout.
 void AesopDemoContext::logEvent(const char *fmt, ...)
 {
-   /*
    va_list args;
    va_start(args, fmt);
    vprintf(fmt, args);
    putchar('\n');
    va_end(args);
-   */
 }
 
-AesopDemoContext::AesopDemoContext(bool canFly)
+AesopDemoContext::AesopDemoContext()
 {
-   mFlying = canFly;
 }
 
 AesopDemoContext::~AesopDemoContext()
 {
-}
-
-/// @class MoveAction
-///
-/// A simple implementation of ae::Action. Its purpose is to provide a generic
-/// 'move' Action for AesopDemo. It has two parameters, one for the starting
-/// location and one for the destination. It fills in the starting parameter
-/// based on locations adjacent to the end point. It is simplistically
-/// hard-coded to the three locations 'A', 'B' and 'C' used in the demo app.
-
-/// Subclasses of ae::Action are wise to call its constructor with their values
-/// of name and cost. They are encouraged to set their own value of mNumParams,
-/// as particular to this implementation of an action.
-MoveAction::MoveAction(std::string name, float cost)
-   : ae::Action(name, cost)
-{
-   mNumParams = 2;
-}
-
-/// Check to see what finishing parameter has been specified by the planner.
-/// Fill in permutations of starting locations as appropriate.
-void MoveAction::getParams(ae::AesopContext *ctx, const ae::paramlist &plist, ae::paramset &pset) const
-{
-   AesopDemoContext *dctx = (AesopDemoContext*)ctx;
-   pset.clear();
-   switch(plist[1])
-   {
-   case 'A':
-      // If we must finish at A, we only have one option: leave from B.
-      pset.push_back(ae::paramlist(mNumParams));
-      pset.back()[0] = 'B';
-      pset.back()[1] = 'A';
-      // But not if we're flying!
-      if(dctx->canFly())
-      {
-         pset.push_back(ae::paramlist(mNumParams));
-         pset.back()[0] = 'C';
-         pset.back()[1] = 'A';
-      }
-      break;
-   case 'B':
-      // If we finish at B, we may have arrived from A or C.
-      pset.push_back(ae::paramlist(mNumParams));
-      pset.back()[0] = 'A';
-      pset.back()[1] = 'B';
-      pset.push_back(ae::paramlist(mNumParams));
-      pset.back()[0] = 'C';
-      pset.back()[1] = 'B';
-      break;
-   case 'C':
-      // Finishing at C, we must have started at B.
-      pset.push_back(ae::paramlist(mNumParams));
-      pset.back()[0] = 'B';
-      pset.back()[1] = 'C';
-      // But not if we're flying!
-      if(dctx->canFly())
-      {
-         pset.push_back(ae::paramlist(mNumParams));
-         pset.back()[0] = 'A';
-         pset.back()[1] = 'C';
-      }
-      break;
-   }
 }

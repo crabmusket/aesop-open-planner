@@ -2,6 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 SET(AesopDemoSources
 	source/AesopDemo.cpp
+	source/AesopDemoActions.cpp
 )
 
 SET(AesopDemoHeaders
