@@ -11,4 +11,4 @@ First, grab the source code from [http://code.google.com/p/aesop-open-planner/so
 
 == Use ==
 
-See [http://code.google.com/p/aesop-open-planner/source/browse/trunk/AesopDemo/source/AesopDemo.cpp AesopDemo.cpp] for a good example usage of the classes in Aesop.
+See [http://code.google.com/p/aesop-open-planner/source/browse/trunk/AesopDemo/source/AesopDemo.cpp AesopDemo.cpp] for a good example usage of the classes in Aesop. The BasicTutorial and AdvancedTutorial pages provide an overview of the process behind creating something like the demo application.
