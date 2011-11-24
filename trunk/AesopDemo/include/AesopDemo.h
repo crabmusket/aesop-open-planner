@@ -35,17 +35,11 @@ class AesopDemoContext : public ae::AesopContext {
 public:
    void logEvent(const char *fmt, ...);
 
-   /// @brief Does this context permit flying movement?
-   /// @return True if yes.
-   bool canFly() const { return mFlying; }
-
-   /// @brief Constructor with specifier for flying movement.
-   AesopDemoContext(bool canFly);
+   /// @brief Default constructor.
+   AesopDemoContext();
    ~AesopDemoContext();
 protected:
 private:
-   /// @brief Flying movement flag.
-   bool mFlying;
 };
 
 /// @brief Implement the Action interface for a two-parameter movement action.
@@ -53,6 +47,14 @@ class MoveAction : public ae::Action {
 public:
    MoveAction(std::string name, float cost = 1.0f);
    void getParams(ae::AesopContext *ctx, const ae::paramlist &plist, ae::paramset &pset) const;
+};
+
+/// @brief Implement the Action interface for a two-parameter flying movement
+///        action.
+class FlyAction : public ae::Action {
+public:
+	FlyAction(std::string name, float cost = 1.0f);
+	void getParams(ae::AesopContext *ctx, const ae::paramlist &plist, ae::paramset &pset) const;
 };
 
 #endif
