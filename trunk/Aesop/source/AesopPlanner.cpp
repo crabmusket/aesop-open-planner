@@ -62,7 +62,7 @@ namespace ae {
 
    /// This method is actually just a wrapper for a series of calls to the
    /// sliced planning methods.
-   bool Planner::plan(AesopContext *ctx)
+   bool Planner::plan(Context *ctx)
    {
       // Try to start planning.
       if(!initSlicedPlan(ctx))
@@ -85,7 +85,7 @@ namespace ae {
       return false;
    }
 
-   bool Planner::initSlicedPlan(AesopContext *ctx)
+   bool Planner::initSlicedPlan(Context *ctx)
    {
       // Validate pointers.
       if(!mStart || !mGoal || !mActions)
@@ -111,7 +111,7 @@ namespace ae {
       return true;
    }
 
-   void Planner::finaliseSlicedPlan(AesopContext *ctx)
+   void Planner::finaliseSlicedPlan(Context *ctx)
    {
       if(ctx) ctx->logEvent("Finalising plan!");
       // Work backwards up the closed list to get the final plan.
@@ -132,7 +132,7 @@ namespace ae {
       mPlanning = false;
    }
 
-   bool Planner::updateSlicedPlan(AesopContext *ctx)
+   bool Planner::updateSlicedPlan(Context *ctx)
    {
       // Main loop of A* search.
       if(!mOpenList.empty())
@@ -186,7 +186,7 @@ namespace ae {
       return true;
    }
 
-   void Planner::attemptIntermediate(AesopContext *ctx, IntermediateState &s, const Action* ac, paramlist *plist)
+   void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action* ac, paramlist *plist)
    {
       if(!s.state.actionPostMatch(ac, plist))
          return;

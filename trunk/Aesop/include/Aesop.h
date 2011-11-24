@@ -78,7 +78,7 @@ namespace ae {
    /// @brief An interface used to log the planning process.
    /// Designed to be implemented by the end-user in a manner particular to
    /// their application and requirements.
-   class AesopContext {
+   class Context {
    public:
       /// @brief Record an event taking place. Uses printf-like syntax for now.
       /// @param[in] fmt event format string.
@@ -138,7 +138,7 @@ namespace ae {
       /// @param[out] pset  A list of paramlist entries describing possible
       ///                   permutations of this Action's parameters, given
       ///                   the values in the starting set.
-      virtual void getParams(AesopContext *ctx, const paramlist &plist, paramset &pset) const { pset.clear(); }
+      virtual void getParams(Context *ctx, const paramlist &plist, paramset &pset) const { pset.clear(); }
 
       /// @brief Get this Action's friendly name.
       /// @return This Action's name.
@@ -338,26 +338,26 @@ namespace ae {
       /// @param[in] ctx Context object to record the Planner's activity.
       /// @return True if the plan was successfully calculated, false if no
       ///         plan exists or something went wrong in the planning process.
-      bool plan(AesopContext *ctx = NULL);
+      bool plan(Context *ctx = NULL);
 
       /// @brief Start a sliced plan.
       /// @param[in] ctx Context object to record the Planner's activity.
       /// @return True if the plan was successfully initialised, false if
       ///         something went wrong in initialisation.
-      bool initSlicedPlan(AesopContext *ctx = NULL);
+      bool initSlicedPlan(Context *ctx = NULL);
 
       /// @brief Update a sliced plan.
       /// @param[in] ctx Context object to record the Planner's activity.
       /// @return False if a valid plan was not found; true otherwise.
-      bool updateSlicedPlan(AesopContext *ctx = NULL);
+      bool updateSlicedPlan(Context *ctx = NULL);
 
       /// @brief Output the result of a computed plan to 
       /// @param[in] ctx Context object to record the Planner's activity.
-      void finaliseSlicedPlan(AesopContext *ctx = NULL);
+      void finaliseSlicedPlan(Context *ctx = NULL);
 
       /// @brief US English spelling of finaliseSlicedPlan. 'Cause I'm a nice guy.
       /// @see Planner::finaliseSlicedPlan
-      inline void finalizeSlicedPlan(AesopContext *ctx = NULL)
+      inline void finalizeSlicedPlan(Context *ctx = NULL)
       { finaliseSlicedPlan(ctx); }
 
       /// @brief Is this Planner in the middle of processing a sliced plan?
@@ -452,7 +452,7 @@ namespace ae {
       const ActionSet *mActions;
 
       /// @brief Internal function used by pathfinding.
-      void attemptIntermediate(AesopContext *ctx, IntermediateState &s, const Action* ac, paramlist *plist);
+      void attemptIntermediate(Context *ctx, IntermediateState &s, const Action* ac, paramlist *plist);
    };
 };
 
