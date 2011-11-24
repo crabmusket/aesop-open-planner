@@ -138,7 +138,7 @@ namespace ae {
       /// @param[out] pset  A list of paramlist entries describing possible
       ///                   permutations of this Action's parameters, given
       ///                   the values in the starting set.
-      virtual void getParams(AesopContext *ctx, const paramlist &plist, paramset &pset) const = 0;
+      virtual void getParams(AesopContext *ctx, const paramlist &plist, paramset &pset) const { pset.clear(); }
 
       /// @brief Get this Action's friendly name.
       /// @return This Action's name.
@@ -193,13 +193,6 @@ namespace ae {
       /// predicate will be set to whatever value is in this Action's 1st param
       /// when the Action executes.
       actionparams mPostSetParam;
-   };
-
-   /// @brief A default implementation of Action that has no parameters.
-   class DefaultAction : public Action {
-   public:
-      DefaultAction(std::string name, float cost = 1.0f) : Action(name, cost) { mNumParams = 0; }
-      void getParams(AesopContext *ctx, const paramlist &plist, paramset &pset) const {}
    };
 
    /// @brief Represents an instance of an Action with a list of defined
