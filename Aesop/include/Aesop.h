@@ -316,12 +316,29 @@ namespace ae {
    ///        to another.
    typedef std::list<ActionEntry> Plan;
 
-   /// @brief An ActionSet is a bunch of Actions that we are allowed to use.
-   /// The pointers in this list are guaranteed to be non-NULL.
-   /// @todo This list should take into account a preference for each Action.
-   ///       So, certain ActionSets can prefer Actions over others, in addition
-   ///       to considering the weights of the Actions themselves.
-   typedef std::list<const Action*> ActionSet;
+   /// @brief An ActionSet is a bunch of Actions that we are allowed to use as
+   ///        well as multipliers on their cost representing user preferences.
+   class ActionSet {
+   public:
+      /// @brief Redefinition of std::map type as ActionSet.
+      typedef std::map<const Action*, float> actionmap;
+
+      /// @name STL
+      /// @{
+      typedef actionmap::const_iterator const_iterator;
+      actionmap::const_iterator begin() const { return mActions.begin(); }
+      actionmap::const_iterator end() const { return mActions.end(); }
+      /// @}
+
+      /// @brief Add an Action to this set with a given preference multiplier.
+      void add(const Action* ac, float pref = 1.0f) { if(pref < 0.0f) pref = 0.0f; mActions[ac] = pref; }
+      /// @brief Remove an Action from this set.
+      void remove(const Action *ac) { mActions.erase(ac); }
+   protected:
+   private:
+      /// @brief Store a map of Action pointers to preferences.
+      actionmap mActions;
+   };
 
    /// @brief A context in which we can make plans.
    class Planner {
@@ -452,7 +469,7 @@ namespace ae {
       const ActionSet *mActions;
 
       /// @brief Internal function used by pathfinding.
-      void attemptIntermediate(Context *ctx, IntermediateState &s, const Action* ac, paramlist *plist);
+      void attemptIntermediate(Context *ctx, IntermediateState &s, const Action* ac, float pref, paramlist *plist);
    };
 };
 
