@@ -6,6 +6,8 @@
 
 using namespace ae;
 
+/// @brief Test fixture for the Action class.
+/// @ingroup AesopTest
 class ActionTest : public ::testing::Test {
 protected:
    Action ac;

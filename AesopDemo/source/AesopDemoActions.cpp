@@ -4,6 +4,7 @@
 #include "AesopDemo.h"
 
 /// @class MoveAction
+/// @ingroup AesopDemo
 ///
 /// A simple implementation of ae::Action. Its purpose is to provide a generic
 /// 'move' Action for AesopDemo. It has two parameters, one for the starting
@@ -54,6 +55,7 @@ void MoveAction::getParams(ae::Context *ctx, const ae::paramlist &plist, ae::par
 }
 
 /// @class FlyAction
+/// @ingroup AesopDemo
 ///
 /// A simple implementation of ae::Action.
 

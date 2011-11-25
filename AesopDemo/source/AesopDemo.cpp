@@ -134,7 +134,8 @@ int main(int argc, char **argv)
    return 0;
 }
 
-/// @class AesopDemoLogger
+/// @class AesopDemoContext
+/// @ingroup AesopDemo
 ///
 /// This class demonstrates the use of the Context interface. We simply
 /// print all log events to stdout.

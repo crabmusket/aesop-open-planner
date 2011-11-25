@@ -35,6 +35,7 @@
 #include "AesopConfig.h"
 
 /// @namespace ae
+/// @ingroup Aesop
 /// @brief Includes all Aesop functions and classes.
 namespace ae {
    /// @brief Represents the name of a predicate.
