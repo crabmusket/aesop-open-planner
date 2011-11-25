@@ -27,8 +27,8 @@ protected:
 TEST_F(ActionTest, Constructor)
 {
    // Name and cost should be as specified.
-   EXPECT_EQ(ac.getName(),      std::string("action"));
-   EXPECT_EQ(ac.getCost(),      1.0f);
+   EXPECT_EQ(ac.getName(), std::string("action"));
+   EXPECT_EQ(ac.getCost(), 1.0f);
    // 0 parameters by default.
    EXPECT_EQ(ac.getNumParams(), 0);
    // All lists should be empty.
@@ -47,11 +47,11 @@ TEST_F(ActionTest, RequiredPredicates)
    EXPECT_EQ(ac.getRequired().at(pn1), pfalse);
    // Overwrite predicate, check for correctness.
    ac.addRequired(pn1, ptrue);
-   ASSERT_EQ(ac.getRequired().size(), 1);
+   EXPECT_EQ(ac.getRequired().size(), 1);
    EXPECT_EQ(ac.getRequired().at(pn1), ptrue);
    // Add a new predicate and check for correctness.
    ac.addRequired(pn2, ptrue);
-   ASSERT_EQ(ac.getRequired().size(), 2);
+   EXPECT_EQ(ac.getRequired().size(), 2);
    EXPECT_EQ(ac.getRequired().at(pn2), ptrue);
 }
 
@@ -63,11 +63,11 @@ TEST_F(ActionTest, EffectPredicates)
    EXPECT_EQ(ac.getSet().at(pn1), pfalse);
    // Overwrite predicate, check for correctness.
    ac.addSet(pn1, ptrue);
-   ASSERT_EQ(ac.getSet().size(), 1);
+   EXPECT_EQ(ac.getSet().size(), 1);
    EXPECT_EQ(ac.getSet().at(pn1), ptrue);
    // Add a new predicate and check for correctness.
    ac.addSet(pn2, ptrue);
-   ASSERT_EQ(ac.getSet().size(), 2);
+   EXPECT_EQ(ac.getSet().size(), 2);
    EXPECT_EQ(ac.getSet().at(pn2), ptrue);
    // Add a PName to clear.
    ac.addClear(pn1);

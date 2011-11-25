@@ -4,3 +4,5 @@
 #include "gtest/gtest.h"
 #include "Aesop.h"
 
+using namespace ae;
+
