@@ -6,6 +6,8 @@
 
 using namespace ae;
 
+/// @brief Test fixture for the WorldState class.
+/// @ingroup AesopTest
 class WorldStateTest : public ::testing::Test {
 protected:
    WorldState ws1;
