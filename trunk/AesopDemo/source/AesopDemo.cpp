@@ -82,9 +82,9 @@ int main(int argc, char **argv)
 
    // Bundle these actions into an ActionSet.
    ae::ActionSet actions;
-   actions.push_back(&aMove);
-   actions.push_back(&aTake);
-   actions.push_back(&aOrder);
+   actions.add(&aMove);
+   actions.add(&aTake);
+   actions.add(&aOrder);
 
    // Construct a logger to keep track of the planning process.
    AesopDemoContext context;
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
    putchar('\n');
 
    // Make a plan for a flying character.
-   actions.push_back(&aFly);
+   actions.add(&aFly);
    printf("Planning with flying behaviour!\n");
    if(planner.plan(&context))
    {
@@ -117,10 +117,9 @@ int main(int argc, char **argv)
    }
    putchar('\n');
 
-   // Now make a short plan where we start off with money.
-   actions.pop_back();
-   start.setPredicate(money, ptrue);
-   printf("Planning with money in our pocket.\n");
+   // Now reduce the cost of flying (i.e., make it more preferable).
+   actions.add(&aFly, 0.5f);
+   printf("Planning when we prefer to fly.\n");
    if(planner.plan(&context))
    {
       const ae::Plan plan = planner.getPlan();

@@ -158,26 +158,27 @@ namespace ae {
          ActionSet::const_iterator it;
          for(it = mActions->begin(); it != mActions->end(); it++)
          {
-            if(!*it)
+            const Action *ac = it->first;
+            if(!ac)
                continue;
             paramset pset;
             // Get number of params and create a set of paramlists.
-            unsigned int nparams = (*it)->getNumParams();
+            unsigned int nparams = ac->getNumParams();
             if(nparams)
             {
                // Get the param values that the world state requires.
                paramlist p;
-               s.state.actionGetParams(*it, p);
+               s.state.actionGetParams(ac, p);
                // Allow the Action to fill in the parameters after some have
                // been specified.
-               (*it)->getParams(ctx, p, pset);
+               ac->getParams(ctx, p, pset);
                // Loop on the parameter set.
                paramset::iterator pit;
                for(pit = pset.begin(); pit != pset.end(); pit++)
-                  attemptIntermediate(ctx, s, *it, &*pit);
+                  attemptIntermediate(ctx, s, ac, it->second, &*pit);
             }
             else
-               attemptIntermediate(ctx, s, *it, NULL);
+               attemptIntermediate(ctx, s, ac, it->second, NULL);
          }
       }
       else
@@ -186,7 +187,7 @@ namespace ae {
       return true;
    }
 
-   void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action* ac, paramlist *plist)
+   void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action* ac, float pref, paramlist *plist)
    {
       if(!s.state.actionPostMatch(ac, plist))
          return;
@@ -216,7 +217,7 @@ namespace ae {
       n.H = (float)WorldState::comp(n.state, *mStart);
       // G cost is the total weight of all Actions we've taken to get to this
       // state. By default, the cost of an Action is 1.
-      n.G = s.G + ac->getCost();
+      n.G = s.G + ac->getCost() * pref;
       // Save this to avoid recalculating every time.
       n.F = n.G + n.H;
       // Remember Action we used to to this state.
