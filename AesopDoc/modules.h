@@ -1,5 +1,6 @@
 ///
 /// @defgroup Aesop Aesop
+/// @brief Aesop planning library.
 ///
 /// The Aesop module contains the planner library code. When integrating Aesop
 /// into your own project, this is the code you'll need to work with.
@@ -7,6 +8,7 @@
 
 ///
 /// @defgroup AesopDemo AesopDemo
+/// @brief Aesop demo application.
 ///
 /// AesopDemo is a small example application that provides a practical
 /// implementation of Aesop's features. It is primarily used as a testbed for
@@ -16,6 +18,7 @@
 
 ///
 /// @defgroup AesopTest AesopTest
+/// @brief Aesop testing suite.
 ///
 /// This module contains a suite of unit tests written with googletest. They
 /// are used when developing, to make sure that modifications to the Aesop
