@@ -35,9 +35,11 @@
 #include "AesopConfig.h"
 
 /// @namespace ae
-/// @ingroup Aesop
 /// @brief Includes all Aesop functions and classes.
 namespace ae {
+   /// @addtogroup Aesop
+   /// @{
+
    /// @brief Represents the name of a predicate.
    typedef std::string PName;
    /// @brief Represents the value of a predicate.
@@ -450,6 +452,8 @@ namespace ae {
       /// @brief Internal function used by pathfinding.
       void attemptIntermediate(Context *ctx, IntermediateState &s, const Action* ac, float pref, paramlist *plist);
    };
+
+   /// @}
 };
 
 #endif
