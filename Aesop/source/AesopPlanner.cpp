@@ -14,7 +14,7 @@ namespace ae {
    /// It represents an entire planning state, with its own start and end
    /// states and plan-specific data.
    /// This will include, among other things, a set of vetoed Actions (for
-   /// example, Actions that we tried but failed in practis, and we now
+   /// example, Actions that we tried but failed in practiss, and we now
    /// want to exclude from our planning process temporarily).
 
    Planner::Planner(const WorldState *start, const WorldState *goal, const ActionSet *set)
@@ -260,3 +260,26 @@ namespace ae {
       }
    }
 };
+
+///
+/// @class Planner
+/// Note that careful use of the finaliseSlicedPlan() method enables a plan to
+/// be 'queued' while another plan is being stored.
+/// @code
+///    // Create some plan.
+///    planner.setStart(&start);
+///    planner.setGoal(&goal);
+///    planner.plan(&context);
+///    // Setup a new planning space.
+///    planner.setStart(&newStart);
+///    planner.setGoal(&newGoal);
+///    // Calculate the plan, but do not finalise it.
+///    planner.initSlicedPlan(&context);
+///    while(planner.isPlanning())
+///       updateSlicedPlan(context);
+/// @endcode
+/// Now, upon the next call to finaliseSlicedPlan(), the current plan will
+/// be replaced by the already-completed new one. The planning loop could be
+/// spread out over multiple loops of an application, while an agent enacts
+/// the first plan, for example.
+///
