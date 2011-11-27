@@ -1,6 +1,6 @@
 #summary A guide to writing a small planning program using Aesop.
 
-= Introduction =
+= Basic tutorial =
 
 This page is designed to be a fully detailed walkthrough that will demonstrate how to use Aesop in a small project. This tutorial covers:
 
@@ -8,3 +8,7 @@ This page is designed to be a fully detailed walkthrough that will demonstrate h
  * Defining a basic planning problem.
  * Using the instant and time-sliced planning methods.
  * Getting a result.
+
+== Getting Aesop ==
+
+See the GettingStarted page for details on how to set up Aesop in your own project.
