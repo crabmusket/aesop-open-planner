@@ -21,7 +21,7 @@
 //
 
 /// @file Aesop.h
-/// @brief Main file for Aesop open planning library.
+/// @brief Main include file for Aesop open planning library.
 
 #ifndef _AE_AESOP_H_
 #define _AE_AESOP_H_
@@ -34,8 +34,6 @@
 
 #include "AesopConfig.h"
 
-/// @namespace ae
-/// @brief Includes all Aesop functions and classes.
 namespace ae {
    /// @addtogroup Aesop
    /// @{
