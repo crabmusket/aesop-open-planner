@@ -14,7 +14,7 @@ namespace ae {
    /// It represents an entire planning state, with its own start and end
    /// states and plan-specific data.
    /// This will include, among other things, a set of vetoed Actions (for
-   /// example, Actions that we tried but failed in practiss, and we now
+   /// example, Actions that we tried but failed in practise, and we now
    /// want to exclude from our planning process temporarily).
 
    Planner::Planner(const WorldState *start, const WorldState *goal, const ActionSet *set)
