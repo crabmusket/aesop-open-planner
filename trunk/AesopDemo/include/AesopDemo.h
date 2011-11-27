@@ -28,6 +28,9 @@
 
 #include "Aesop.h"
 
+/// @ingroup AesopDemo
+/// @{
+
 /// @brief Implement the AesopContext interface and just print events to the
 ///        console. We also provide a 'flying' flag that will allow the planner
 ///        to travel between any two locations.
@@ -56,5 +59,7 @@ public:
 	FlyAction(std::string name, float cost = 1.0f);
 	void getParams(ae::Context *ctx, const ae::paramlist &plist, ae::paramset &pset) const;
 };
+
+/// @}
 
 #endif
