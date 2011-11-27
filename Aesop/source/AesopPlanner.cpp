@@ -111,6 +111,9 @@ namespace ae {
       return true;
    }
 
+   /// This method back-tracks through the planning space and extracts a plan
+   /// from the intermediate states that exist in the closed list. After that,
+   /// the open and closed lists are cleared.
    void Planner::finaliseSlicedPlan(Context *ctx)
    {
       if(ctx) ctx->logEvent("Finalising plan!");
