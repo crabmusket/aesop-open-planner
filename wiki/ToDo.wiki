@@ -6,7 +6,7 @@
     * Use STRIPS subset like [http://eecs.oregonstate.edu/ipc-learn/documents/strips-pddl-subset.pdf this] or [http://users.cecs.anu.edu.au/~patrik/pddlman/writing.html this]
  * Benchmarking app
     * Separate from demo?
-    * Possible: generate random planning problems?
+    * Possible: generate random planning problems? [http://www.loria.fr/~hoffmanj/ff-domains.html Like so]
     * Plans-per-second metric?
        * Threaded?
  * Predicates
