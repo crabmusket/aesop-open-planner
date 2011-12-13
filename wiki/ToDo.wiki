@@ -2,8 +2,14 @@
 
 = To Do =
 
- * Demo: parse PDDL files.
+ * Demo: parse PDDL files
     * Use STRIPS subset like [http://eecs.oregonstate.edu/ipc-learn/documents/strips-pddl-subset.pdf this]
- * Benchmarking app.
-    * Possible: integrate into demo.
-    * Possible: generate random planning problems.
+ * Benchmarking app
+    * Separate from demo?
+    * Possible: generate random planning problems?
+    * Plans-per-second metric?
+       * Threaded?
+ * Predicates
+    * Support flexible, user-defined predicates
+    * Retain basic, high-performance ones as well
+    * Support logical expressions in effects and preconditions
