@@ -3,8 +3,7 @@
 = To Do =
 
  * Demo: parse PDDL files.
- * Unit testing app.
-    * Implemented outside `namespace ae`.
+    * Use STRIPS subset like [http://eecs.oregonstate.edu/ipc-learn/documents/strips-pddl-subset.pdf this]
  * Benchmarking app.
     * Possible: integrate into demo.
     * Possible: generate random planning problems.
