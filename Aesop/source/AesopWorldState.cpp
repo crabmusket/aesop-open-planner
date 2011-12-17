@@ -67,17 +67,17 @@ namespace ae {
       params.resize(ac->getNumParams());
 
       // Each parameter that sets a predicate must have the correct value.
-      const actionparams &spl = ac->getSetParams();
+      const actionparams &spl = ac->getEffectParams();
       actionparams::const_iterator sit;
       for(sit = spl.begin(); sit != spl.end(); sit++)
          params[sit->second] = getPredicate(sit->first);
 
       // Each predicate required and not set must have the correct value.
-      const actionparams &rpl = ac->getRequiredParams();
+      const actionparams &rpl = ac->getConditionParams();
       actionparams::const_iterator rit;
       for(rit = rpl.begin(); rit != rpl.end(); rit++)
       {
-         const worldrep &set = ac->getSet();
+         const worldrep &set = ac->getEffects();
          if(set.find(rit->first) == set.end() &&
             spl.find(rit->first) == spl.end())
             params[rit->second] = getPredicate(rit->first);
@@ -90,7 +90,7 @@ namespace ae {
    bool WorldState::actionPreMatch(const Action *ac, const paramlist *params) const
    {
       // Check static predicates.
-      const worldrep &awr = ac->getRequired();
+      const worldrep &awr = ac->getConditions();
       worldrep::const_iterator it;
       for(it = awr.begin(); it != awr.end(); it++)
       {
@@ -105,7 +105,7 @@ namespace ae {
       // Check parameter predicates.
       if(params && params->size() == ac->getNumParams())
       {
-         const actionparams &apl = ac->getRequiredParams();
+         const actionparams &apl = ac->getConditionParams();
          actionparams::const_iterator pit;
 
          for(pit = apl.begin(); pit != apl.end(); pit++)
@@ -135,10 +135,10 @@ namespace ae {
       worldrep::const_iterator rit;
       actionparams::const_iterator plit;
 
-      const worldrep &set = ac->getSet();
-      const worldrep &req = ac->getRequired();
-      const actionparams &preq = ac->getRequiredParams();
-      const actionparams &pset = ac->getSetParams();
+      const worldrep &set = ac->getEffects();
+      const worldrep &req = ac->getConditions();
+      const actionparams &preq = ac->getConditionParams();
+      const actionparams &pset = ac->getEffectParams();
 
       unsigned int matched = 0;
 
@@ -217,22 +217,16 @@ namespace ae {
    void WorldState::applyActionForward(const Action *ac, const paramlist *params)
    {
       worldrep::const_iterator sit;
-      pnamelist::const_iterator pit;
 
       // Predicates set by this Action.
-      const worldrep &st = ac->getSet();
+      const worldrep &st = ac->getEffects();
       for(sit = st.begin(); sit != st.end(); sit++)
          _setPredicate(getPName(sit), getPVal(sit));
-
-      // Predicates unset.
-      const pnamelist &pr = ac->getCleared();
-      for(pit = pr.begin(); pit != pr.end(); pit++)
-         _unsetPredicate(*pit);
 
       // Predicate set to a parameter.
       if(params && params->size() == ac->getNumParams())
       {
-         const actionparams &pl = ac->getSetParams();
+         const actionparams &pl = ac->getEffectParams();
          actionparams::const_iterator plit;
          for(plit = pl.begin(); plit != pl.end(); plit++)
             _setPredicate(plit->first, params->at(plit->second));
@@ -250,31 +244,27 @@ namespace ae {
    void WorldState::applyActionReverse(const Action *ac, const paramlist *params)
    {
       worldrep::const_iterator sit;
-      pnamelist::const_iterator pit;
       actionparams::const_iterator plit;
 
       // Predicates that are touched by the Action are unset.
-      const worldrep &set = ac->getSet();
+      const worldrep &set = ac->getEffects();
       for(sit = set.begin(); sit != set.end(); sit++)
          _unsetPredicate(getPName(sit));
-      const pnamelist &pr = ac->getCleared();
-      for(pit = pr.begin(); pit != pr.end(); pit++)
-         _unsetPredicate(*pit);
       if(params && params->size() == ac->getNumParams())
       {
-         const actionparams &pl = ac->getSetParams();
+         const actionparams &pl = ac->getEffectParams();
          for(plit = pl.begin(); plit != pl.end(); plit++)
             _unsetPredicate(plit->first);
       }
 
       // Predicates that must be some value. This may re-set some of the
       // predicates that were unset above.
-      const worldrep &req = ac->getRequired();
+      const worldrep &req = ac->getConditions();
       for(sit = req.begin(); sit != req.end(); sit++)
          _setPredicate(getPName(sit), getPVal(sit));
       if(params && params->size() == ac->getNumParams())
       {
-         const actionparams &pl = ac->getRequiredParams();
+         const actionparams &pl = ac->getConditionParams();
          for(plit = pl.begin(); plit != pl.end(); plit++)
             _setPredicate(plit->first, params->at(plit->second));
       }
