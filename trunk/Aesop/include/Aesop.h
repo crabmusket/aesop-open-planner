@@ -54,6 +54,13 @@ namespace ae {
    ///        many different parameter lists.
    typedef std::list<paramlist> paramset;
 
+   /// @brief Get the name of the world state entry.
+   inline PName getPName(worldrep::const_iterator it)
+   { return it->first; }
+   /// @brief Get the Predicate of the world state entry.
+   inline PVal getPVal(worldrep::const_iterator it)
+   { return it->second; }
+
    /// @brief An interface used to log the planning process.
    /// Designed to be implemented by the end-user in a manner particular to
    /// their application and requirements.
@@ -72,41 +79,34 @@ namespace ae {
    class Action {
    public:
       /// @brief Get predicate->value mapping that we require to be valid.
-      const worldrep& getRequired() const { return mRequired; }
+      const worldrep& getConditions() const { return mCondition; }
       /// @brief Get the predicate->value mapping we apply when executed.
-      const worldrep& getSet()      const { return mPostSet; }
-      /// @brief Get the names of statements we unset upon execution.
-      const pnamelist& getCleared()  const { return mPostClear; }
+      const worldrep& getEffects()      const { return mEffect; }
       /// @brief Get the predicate->parameter mapping that we require.
-      const actionparams& getRequiredParams() const { return mRequiredParam; }
+      const actionparams& getConditionParams() const { return mConditionParam; }
       /// @brief Get the predicate->parameter mapping that we set.
-      const actionparams& getSetParams() const {return mPostSetParam; }
+      const actionparams& getEffectParams() const {return mEffectParam; }
 
       /// @brief Add a single statement to our list of required statements.
       /// @param[in] name Name of the predicate the statement refers to.
       /// @param[in] val  Value the predicate is required to take.
-      void addRequired(PName name, PVal val);
+      void addCondition(PName name, PVal val);
 
       /// @brief Add a mapping between a predicate and a parameter.
       /// @param[in] name  Predicate name to map to a parameter.
       /// @param[in] param Index of a parameter to map to.
-      void addRequiredParam(PName name, unsigned int param);
+      void addConditionParam(PName name, unsigned int param);
 
       /// @brief Add a single statement to our list of predicates to set after
       ///        execution.
       /// @param[in] name Name of predicate this statement refers to.
       /// @param[in] val  Value this Action changes the predicate to.
-      void addSet(PName name, PVal val);
+      void addEffect(PName name, PVal val);
 
       /// @brief Add a mapping between a predicate and a parameter.
       /// @param[in] name  Predicate name to map to a parameter.
       /// @param[in] param Index of a parameter to map to.
-      void addSetParam(PName name, unsigned int param);
-
-      /// @brief Add a single predicate to the list that we unset after
-      ///        execution.
-      /// @param[in] pred Name of Predicate to add.
-      void addClear(PName pred);
+      void addEffectParam(PName name, unsigned int param);
 
       /// @brief Fills in parameters this Action can take based on a given
       ///        starting set of parameters.
@@ -153,25 +153,25 @@ namespace ae {
 
       /// @brief Maps predicate names to the values we require for this Action
       ///        to be valid.
-      worldrep mRequired;
+      worldrep mCondition;
 
       /// @brief Maps predicate names to the values they are set to after this
       ///        Action executes successfully.
-      worldrep mPostSet;
-      /// @brief List of predciates that are cleared (unset) after execution.
-      pnamelist mPostClear;
+      worldrep mEffect;
+
       /// @brief Maps predicate names to parameter indices which we require the
       ///        predicate to be set to.
       /// For example, if an entry in this map is ("at", 0) then for the Action
       /// to be valid, the "at" predicate must be set to the value of the 0th
       /// parameter to this Action.
-      actionparams mRequiredParam;
+      actionparams mConditionParam;
+
       /// @brief Maps predicate names to parameter indices which should provide
       ///        values for them to be set to.
       /// For example, if an entry in this map is ("at", 1) then the "at"
       /// predicate will be set to whatever value is in this Action's 1st param
       /// when the Action executes.
-      actionparams mPostSetParam;
+      actionparams mEffectParam;
    };
 
    /// @brief Represents an instance of an Action with a list of defined
@@ -267,12 +267,6 @@ namespace ae {
 
    protected:
    private:
-      /// @brief Get the name of the world state entry.
-      static inline PName getPName(worldrep::const_iterator it)
-      { return it->first; }
-      /// @brief Get the Predicate of the world state entry.
-      static inline PVal getPVal(worldrep::const_iterator it)
-      { return it->second; }
       /// @brief Internal representation of world state.
       worldrep mState;
 

@@ -53,32 +53,32 @@ int main(int argc, char **argv)
    //   Required: we are at loc2 and have money
    //   Outcome:  we have no money and are not hungry
    ae::Action aOrder("Buy food");
-   aOrder.addRequired(at, loc2);
-   aOrder.addRequired(money, ptrue);
-   aOrder.addSet(money, pfalse);
-   aOrder.addSet(hungry, pfalse);
+   aOrder.addCondition(at, loc2);
+   aOrder.addCondition(money, ptrue);
+   aOrder.addEffect(money, pfalse);
+   aOrder.addEffect(hungry, pfalse);
 
    // Action to take money from loc3.
    //   Required: we are at loc3 and have no money
    //   Outcome:  we have money
    ae::Action aTake("Take money");
-   aTake.addRequired(at, loc3);
-   aTake.addRequired(money, pfalse);
-   aTake.addSet(money, ptrue);
+   aTake.addCondition(at, loc3);
+   aTake.addCondition(money, pfalse);
+   aTake.addEffect(money, ptrue);
 
    // Movement action.
    //   Required: we are at location given by param 0
    //   Outcome: we are at location given by param 1
    MoveAction aMove("Move");
-   aMove.addRequiredParam(at, 0);
-   aMove.addSetParam(at, 1);
+   aMove.addConditionParam(at, 0);
+   aMove.addEffectParam(at, 1);
 
    // Flying movement action.
    //   Required: we are at location given by param 0
    //   Outcome: we are at location given by param 1
    FlyAction aFly("Fly", 1.5f);
-   aFly.addRequiredParam(at, 0);
-   aFly.addSetParam(at, 1);
+   aFly.addConditionParam(at, 0);
+   aFly.addEffectParam(at, 1);
 
    // Bundle these actions into an ActionSet.
    ae::ActionSet actions;

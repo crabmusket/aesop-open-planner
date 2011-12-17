@@ -26,37 +26,25 @@ namespace ae {
    {
    }
 
-   void Action::addRequired(PName name, PVal val)
+   void Action::addCondition(PName name, PVal val)
    {
-      mRequired[name] = val;
+      mCondition[name] = val;
    }
 
-   void Action::addSet(PName name, PVal val)
+   void Action::addEffect(PName name, PVal val)
    {
-      mPostSet[name] = val;
-   }
- 
-   void Action::addClear(PName pred)
-   {
-      // Check if predicate name already exists in list.
-      pnamelist::const_iterator it;
-      for(it = mPostClear.begin(); it != mPostClear.end(); it++)
-         if(*it == pred)
-            break;
-      // Not found; add.
-      if(it == mPostClear.end())
-         mPostClear.push_back(pred);
+      mEffect[name] = val;
    }
 
-   void Action::addRequiredParam(PName name, unsigned int param)
+   void Action::addConditionParam(PName name, unsigned int param)
    {
       if(param < mNumParams)
-         mRequiredParam[name] = param;
+         mConditionParam[name] = param;
    }
 
-   void Action::addSetParam(PName name, unsigned int param)
+   void Action::addEffectParam(PName name, unsigned int param)
    {
       if(param < mNumParams)
-         mPostSetParam[name] = param;
+         mEffectParam[name] = param;
    }
 };
