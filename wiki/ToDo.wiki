@@ -19,7 +19,8 @@
 
 = Roadmap =
 
- * *_Pre-alpha_*: Current status.
+ * *_Pre-alpha_*:
+    * Not yet at alpha status.
  * _Alpha_:
     * Support domain-defined predicates
     * Find a better solution for getting Action parameters
