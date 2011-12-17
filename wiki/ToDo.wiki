@@ -16,6 +16,8 @@
     * Support flexible, user-defined predicates
     * Retain basic, high-performance ones as well
     * Support logical expressions in effects and preconditions
+    * How to get values for predicates?
+       * Possible: ask the domain
 
 = Roadmap =
 
@@ -29,4 +31,5 @@
     * PDDL module
     * Demo for interacting with the planner
     * Some form of benchmarking?
- * _Release_: bug-free and stable as possible
+ * _Release_:
+    * Bug-free and stable as possible
