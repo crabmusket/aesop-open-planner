@@ -31,6 +31,7 @@
 #include <map>
 #include <list>
 #include <vector>
+#include <set>
 
 #include "AesopConfig.h"
 
@@ -53,6 +54,15 @@ namespace ae {
    /// @brief A set of paramlist objects used to evaluate a single Action with
    ///        many different parameter lists.
    typedef std::list<paramlist> paramset;
+   /// @brief Enumerated values of all the requirements Aesop supports. A
+   ///        'requirement' is like a feature of a domain, a particular method
+   ///        of interaction that it allows.
+   enum requirement {
+      goap,     ///< Simplest domain. Mutually exclusive with STRIPS.
+      strips,   ///< Basic STRIPS domain.
+      equality, ///< Implements the '=' predicate.
+      typing,   ///< Objects can have types.
+   };
 
    /// @brief Get the name of the world state entry.
    inline PName getPName(worldrep::const_iterator it)
@@ -443,6 +453,32 @@ namespace ae {
 
       /// @brief Internal function used by pathfinding.
       void attemptIntermediate(Context *ctx, IntermediateState &s, const Action* ac, float pref, paramlist *plist);
+   };
+
+   /// @brief Represents a domain in which problems can be solved.
+   class Domain {
+   public:
+      /// @brief Default constructor.
+      Domain();
+      /// @brief Default destructor.
+      ~Domain();
+
+      /// @brief Adds a requirement to this Domain.
+      /// @param req The requirement to add.
+      void addRequirement(requirement req);
+
+      /// @brief Does this Domain include the given requirement?
+      /// @param req Requirement to check for.
+      /// @return True if the Domain includes the requirement; false if not.
+      bool hasRequirement(requirement req);
+
+   protected:
+   private:
+      /// @brief Store all the requirements this Domain must satisfy.
+      std::set<requirement> mRequirements;
+
+      /// @brief Actions this Domain is allowed to perform.
+      ActionSet mActionSet;
    };
 
    /// @}
