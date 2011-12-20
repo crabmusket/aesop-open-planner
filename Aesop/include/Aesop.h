@@ -481,6 +481,26 @@ namespace ae {
       ActionSet *mActionSet;
    };
 
+   /// @brief Represents a problem instance within a given Domain.
+   class Problem {
+   public:
+      /// @brief A Problem only exists within a Domain!
+      Problem(Domain &d);
+
+      /// @brief Default destructor.
+      ~Problem();
+
+      /// @brief Add a named object to this problem definition.
+      /// @param name The name of the object to add.
+      /// @param type The type of the object. Defaults to "object" as per PDDL.
+      void addObject(const char *name, const char *type = "object");
+
+   protected:
+   private:
+      /// @brief The Domain that we lie within.
+      const Domain *mDomain;
+   };
+
    /// @}
 };
 

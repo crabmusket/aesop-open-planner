@@ -4,6 +4,7 @@ SET(AesopSources
 	source/AesopAction.cpp
 	source/AesopWorldState.cpp
 	source/AesopPlanner.cpp
+   source/AesopProblem.cpp
    source/AesopDomain.cpp
 )
 
