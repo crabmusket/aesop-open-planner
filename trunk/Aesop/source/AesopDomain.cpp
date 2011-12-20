@@ -36,9 +36,9 @@ namespace ae {
    ///      predicate named '='.
    ///   </li>
 
-   Domain::Domain()
+   Domain::Domain(std::string name)
    {
-      mActionSet = NULL;
+      mName = name;
       mTypes.insert("object");
    }
 
@@ -58,11 +58,19 @@ namespace ae {
 
    void Domain::addType(const char *type)
    {
+      if(!hasRequirement(typing))
+         return;
       mTypes.insert(type);
    }
 
-   bool Domain::hasType(const char *type)
+   bool Domain::hasType(const char *type) const
    {
       return mTypes.find(type) != mTypes.end();
+   }
+
+   Action *Domain::addAction(std::string name, float cost)
+   {
+      mActions[name] = Action(name, cost);
+      return &mActions[name];
    }
 };

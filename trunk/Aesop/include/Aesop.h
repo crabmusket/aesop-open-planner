@@ -146,7 +146,7 @@ namespace ae {
       /// @param[in] name   Friendly name for this Action.
       /// @param[in] params The number of variable parameters this Action has.
       /// @param[in] cost   Cost of performing this Action.
-      Action(std::string name, float cost = 1.0f);
+      Action(std::string name = "", float cost = 1.0f);
 
       /// @brief Default destructor.
       ~Action();
@@ -459,27 +459,37 @@ namespace ae {
    class Domain {
    public:
       /// @brief Default constructor.
-      Domain();
+      Domain(std::string name);
       /// @brief Default destructor.
       ~Domain();
 
+      /// @brief Get the name of this Domain.
+      /// @return Constant pointer to this Domain's name.
+      const std::string &getName() { return mName; }
+
       /// @brief Adds a requirement to this Domain.
-      /// @param req The requirement to add.
+      /// @param[in] req The requirement to add.
       void addRequirement(requirement req);
 
       /// @brief Does this Domain include the given requirement?
-      /// @param req Requirement to check for.
+      /// @param[in] req Requirement to check for.
       /// @return True if the Domain includes the requirement; false if not.
       bool hasRequirement(requirement req) const;
 
       /// @brief Add a type to this Domain.
-      /// @param type Name of the type to add.
+      /// @param[in] type Name of the type to add.
       void addType(const char *type);
 
       /// @brief Does this Domain define the given type name?
-      /// @param type Name of the type to check.
+      /// @param[in] type Name of the type to check.
       /// @return True if the type is defined in the Domain; false if not.
-      bool hasType(const char *type);
+      bool hasType(const char *type) const;
+
+      /// @brief Add an Action to this Domain.
+      /// @param[in] name Name of the new Action.
+      /// @param[in] cost Cost of the Action.
+      /// @return Pointer to the newly-inserted Action for editing.
+      Action *addAction(std::string name, float cost);
 
    protected:
    private:
@@ -487,6 +497,11 @@ namespace ae {
       typedef std::set<requirement> requirements;
       /// @brief A set of type names.
       typedef std::set<std::string> types;
+      /// @brief A list of Actions.
+      typedef std::map<std::string, Action> actionset;
+
+      /// @brief The name of this Domain.
+      std::string mName;
 
       /// @brief Store all the requirements this Domain must satisfy.
       requirements mRequirements;
@@ -495,7 +510,7 @@ namespace ae {
       types mTypes;
 
       /// @brief Actions this Domain is allowed to perform.
-      ActionSet *mActionSet;
+      actionset mActions;
    };
 
    /// @brief Represents a problem instance within a given Domain.
@@ -508,8 +523,8 @@ namespace ae {
       ~Problem();
 
       /// @brief Add a named object to this problem definition.
-      /// @param name The name of the object to add.
-      /// @param type The type of the object. Defaults to "object" as per PDDL.
+      /// @param[in] name The name of the object to add.
+      /// @param[in] type The type of the object. Defaults to "object" as per PDDL.
       void addObject(const char *name, const char *type = "object");
 
    protected:
