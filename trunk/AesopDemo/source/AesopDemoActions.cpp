@@ -55,7 +55,7 @@ void MoveAction::getParams(ae::Context *ctx, const ae::paramlist &plist, ae::par
 
 /// @class FlyAction
 ///
-/// A simple implementation of ae::Action.
+/// A simple implementation of ae::Action. @see MoveAction.
 
 FlyAction::FlyAction(std::string name, float cost)
    : ae::Action(name, cost)
