@@ -39,6 +39,7 @@ namespace ae {
    Domain::Domain()
    {
       mActionSet = NULL;
+      mTypes.insert("object");
    }
 
    Domain::~Domain()
@@ -53,5 +54,15 @@ namespace ae {
    bool Domain::hasRequirement(requirement req) const
    {
       return mRequirements.find(req) != mRequirements.end();
+   }
+
+   void Domain::addType(const char *type)
+   {
+      mTypes.insert(type);
+   }
+
+   bool Domain::hasType(const char *type)
+   {
+      return mTypes.find(type) != mTypes.end();
    }
 };
