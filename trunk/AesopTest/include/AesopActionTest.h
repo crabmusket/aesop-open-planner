@@ -15,6 +15,7 @@ protected:
    PName pn2;
    PVal pfalse;
    PVal ptrue;
+   worldrep::const_iterator it;
 
    ActionTest()
       :ac("action", 1.0f),
@@ -34,50 +35,52 @@ TEST_F(ActionTest, Constructor)
    // 0 parameters by default.
    EXPECT_EQ(ac.getNumParams(), 0);
    // All lists should be empty.
-   EXPECT_TRUE(ac.getRequired().empty());
-   EXPECT_TRUE(ac.getSet().empty());
-   EXPECT_TRUE(ac.getCleared().empty());
-   EXPECT_TRUE(ac.getRequiredParams().empty());
-   EXPECT_TRUE(ac.getSetParams().empty());
+   EXPECT_TRUE(ac.getConditions().empty());
+   EXPECT_TRUE(ac.getEffects().empty());
+   EXPECT_TRUE(ac.getConditionParams().empty());
+   EXPECT_TRUE(ac.getEffectParams().empty());
 }
 
-TEST_F(ActionTest, RequiredPredicates)
+TEST_F(ActionTest, Conditions)
 {
    // Add a single predicate, check for correctness.
-   ac.addRequired(pn1, pfalse);
-   EXPECT_FALSE(ac.getRequired().empty());
-   EXPECT_EQ(ac.getRequired().at(pn1), pfalse);
+   ac.addCondition(pn1, pfalse);
+   EXPECT_FALSE(ac.getConditions().empty());
+   it = ac.getConditions().find(pn1);
+   ASSERT_NE(it, ac.getConditions().end());
+   EXPECT_EQ(it->second, pfalse);
    // Overwrite predicate, check for correctness.
-   ac.addRequired(pn1, ptrue);
-   EXPECT_EQ(ac.getRequired().size(), 1);
-   EXPECT_EQ(ac.getRequired().at(pn1), ptrue);
+   ac.addCondition(pn1, ptrue);
+   EXPECT_EQ(ac.getConditions().size(), 1);
+   it = ac.getConditions().find(pn1);
+   ASSERT_NE(it, ac.getConditions().end());
+   EXPECT_EQ(it->second, ptrue);
    // Add a new predicate and check for correctness.
-   ac.addRequired(pn2, ptrue);
-   EXPECT_EQ(ac.getRequired().size(), 2);
-   EXPECT_EQ(ac.getRequired().at(pn2), ptrue);
+   ac.addCondition(pn2, ptrue);
+   EXPECT_EQ(ac.getConditions().size(), 2);
+   it = ac.getConditions().find(pn2);
+   ASSERT_NE(it, ac.getConditions().end());
+   EXPECT_EQ(it->second, ptrue);
 }
 
-TEST_F(ActionTest, EffectPredicates)
+TEST_F(ActionTest, Effects)
 {
    // Add a single predicate, check for correctness.
-   ac.addSet(pn1, pfalse);
-   EXPECT_FALSE(ac.getSet().empty());
-   EXPECT_EQ(ac.getSet().at(pn1), pfalse);
+   ac.addEffect(pn1, pfalse);
+   EXPECT_FALSE(ac.getEffects().empty());
+   it = ac.getEffects().find(pn1);
+   ASSERT_NE(it, ac.getEffects().end());
+   EXPECT_EQ(it->second, pfalse);
    // Overwrite predicate, check for correctness.
-   ac.addSet(pn1, ptrue);
-   EXPECT_EQ(ac.getSet().size(), 1);
-   EXPECT_EQ(ac.getSet().at(pn1), ptrue);
+   ac.addEffect(pn1, ptrue);
+   EXPECT_EQ(ac.getEffects().size(), 1);
+   it = ac.getEffects().find(pn1);
+   ASSERT_NE(it, ac.getEffects().end());
+   EXPECT_EQ(it->second, ptrue);
    // Add a new predicate and check for correctness.
-   ac.addSet(pn2, ptrue);
-   EXPECT_EQ(ac.getSet().size(), 2);
-   EXPECT_EQ(ac.getSet().at(pn2), ptrue);
-   // Add a PName to clear.
-   ac.addClear(pn1);
-   EXPECT_EQ(ac.getCleared().size(), 1);
-   // Add the same entry; it should be rejected.
-   ac.addClear(pn1);
-   EXPECT_EQ(ac.getCleared().size(), 1);
-   // Add a new entry; the cleared list should grow.
-   ac.addClear(pn2);
-   EXPECT_EQ(ac.getCleared().size(), 2);
+   ac.addEffect(pn2, ptrue);
+   EXPECT_EQ(ac.getEffects().size(), 2);
+   it = ac.getEffects().find(pn2);
+   ASSERT_NE(it, ac.getEffects().end());
+   EXPECT_EQ(it->second, ptrue);
 }
