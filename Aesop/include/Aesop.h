@@ -472,10 +472,27 @@ namespace ae {
       /// @return True if the Domain includes the requirement; false if not.
       bool hasRequirement(requirement req) const;
 
+      /// @brief Add a type to this Domain.
+      /// @param type Name of the type to add.
+      void addType(const char *type);
+
+      /// @brief Does this Domain define the given type name?
+      /// @param type Name of the type to check.
+      /// @return True if the type is defined in the Domain; false if not.
+      bool hasType(const char *type);
+
    protected:
    private:
+      /// @brief A set of requirement IDs.
+      typedef std::set<requirement> requirements;
+      /// @brief A set of type names.
+      typedef std::set<std::string> types;
+
       /// @brief Store all the requirements this Domain must satisfy.
-      std::set<requirement> mRequirements;
+      requirements mRequirements;
+
+      /// @brief Stores all the types this Domain defines.
+      types mTypes;
 
       /// @brief Actions this Domain is allowed to perform.
       ActionSet *mActionSet;
@@ -485,7 +502,7 @@ namespace ae {
    class Problem {
    public:
       /// @brief A Problem only exists within a Domain!
-      Problem(Domain &d);
+      Problem(const Domain &d);
 
       /// @brief Default destructor.
       ~Problem();
@@ -497,8 +514,21 @@ namespace ae {
 
    protected:
    private:
+      /// @brief A set of object names.
+      typedef std::set<std::string> objectset;
+      /// @brief Maps a type name to an objectset.
+      typedef std::map<std::string, objectset> objectmap;
+
       /// @brief The Domain that we lie within.
       const Domain *mDomain;
+
+      /// @brief Stores all the objects in this problem.
+      objectmap mObjects;
+
+      /// @brief The initial state of this Problem.
+      WorldState mInit;
+      /// @brief The goal state of this Problem.
+      WorldState mGoal;
    };
 
    /// @}

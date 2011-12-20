@@ -8,7 +8,7 @@ namespace ae {
    ///
    /// Problem represents a particular problem instance within some Domain.
 
-   Problem::Problem(Domain &d)
+   Problem::Problem(const Domain &d)
    {
       mDomain = &d;
    }
@@ -19,5 +19,7 @@ namespace ae {
 
    void Problem::addObject(const char *name, const char *type)
    {
+      if(mDomain->hasType(type))
+         mObjects[type].insert(name);
    }
 };
