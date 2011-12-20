@@ -18,6 +18,7 @@
     * Support logical expressions in effects and preconditions
     * How to get values for predicates?
        * Possible: ask the domain
+       * If we have a set of objects like in PDDL, we could brute-force over objects
 
 = Roadmap =
 
