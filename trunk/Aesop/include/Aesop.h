@@ -470,7 +470,7 @@ namespace ae {
       /// @brief Does this Domain include the given requirement?
       /// @param req Requirement to check for.
       /// @return True if the Domain includes the requirement; false if not.
-      bool hasRequirement(requirement req);
+      bool hasRequirement(requirement req) const;
 
    protected:
    private:
@@ -478,7 +478,7 @@ namespace ae {
       std::set<requirement> mRequirements;
 
       /// @brief Actions this Domain is allowed to perform.
-      ActionSet mActionSet;
+      ActionSet *mActionSet;
    };
 
    /// @}
