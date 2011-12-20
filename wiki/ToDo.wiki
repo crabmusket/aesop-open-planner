@@ -5,7 +5,7 @@
  * Demo: parse PDDL files
     * Use STRIPS subset like [http://eecs.oregonstate.edu/ipc-learn/documents/strips-pddl-subset.pdf this] or [http://users.cecs.anu.edu.au/~patrik/pddlman/writing.html this]
        * Support requirements `strips`, `equality`, and maybe `typing`
-       * Implement a `substrips` requirement for very simple predicate use? (i.e., `predicate: value` instead of `predicate(value): true/false`)
+       * Implement a `substrips` (or `goap`?) requirement for very simple predicate use? (i.e., `predicate: value` instead of `predicate(value): true/false`)
     * Implement in separate project from demo as standalone library
  * Benchmarking app
     * Separate from demo?
