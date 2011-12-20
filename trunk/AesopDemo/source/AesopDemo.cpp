@@ -26,110 +26,36 @@ void printPlan(ae::Plan plan)
 
 int main(int argc, char **argv)
 {
-   // Create several Predicate names.
-   ae::PName at = "at";
-   ae::PName hungry = "hungry";
-   ae::PName money = "money";
+   // Create a Domain to solve problems in.
+   ae::Domain domain("buying-food");
 
-   // Boolean predicate values.
-   ae::PVal ptrue = 1;
-   ae::PVal pfalse = 0;
+   // Require that objects can have types.
+   domain.addRequirement(ae::typing);
 
-   // Three location names.
-   ae::PVal loc1 = 'A';
-   ae::PVal loc2 = 'B';
-   ae::PVal loc3 = 'C';
+   // Add the types relevant to our problem domain.
+   domain.addType("room");
+   domain.addType("money");
+   domain.addType("vending-machine");
 
-   // Create a WorldState to represent our initial state.
-   ae::WorldState start;
-   start.setPredicate(at, loc1);
-   start.setPredicate(money, pfalse);
+   // Create some Actions to solve problems with.
+   ae::Action *ac;
 
-   // Create another WorldState which will be our goal.
-   ae::WorldState goal;
-   goal.setPredicate(hungry, pfalse);
+   // Move Action.
+   ac = domain.addAction("move", 1.0f);
 
-   // Action to buy food from loc2.
-   //   Required: we are at loc2 and have money
-   //   Outcome:  we have no money and are not hungry
-   ae::Action aOrder("Buy food");
-   aOrder.addCondition(at, loc2);
-   aOrder.addCondition(money, ptrue);
-   aOrder.addEffect(money, pfalse);
-   aOrder.addEffect(hungry, pfalse);
+   // Create a Problem within our domain.
+   ae::Problem problem(domain);
 
-   // Action to take money from loc3.
-   //   Required: we are at loc3 and have no money
-   //   Outcome:  we have money
-   ae::Action aTake("Take money");
-   aTake.addCondition(at, loc3);
-   aTake.addCondition(money, pfalse);
-   aTake.addEffect(money, ptrue);
+   // Add our 3 locations.
+   problem.addObject("roomA", "room");
+   problem.addObject("roomB", "room");
+   problem.addObject("roomC", "room");
 
-   // Movement action.
-   //   Required: we are at location given by param 0
-   //   Outcome: we are at location given by param 1
-   MoveAction aMove("Move");
-   aMove.addConditionParam(at, 0);
-   aMove.addEffectParam(at, 1);
+   // Add our money.
+   problem.addObject("themoney", "money");
 
-   // Flying movement action.
-   //   Required: we are at location given by param 0
-   //   Outcome: we are at location given by param 1
-   FlyAction aFly("Fly", 1.5f);
-   aFly.addConditionParam(at, 0);
-   aFly.addEffectParam(at, 1);
-
-   // Bundle these actions into an ActionSet.
-   ae::ActionSet actions;
-   actions.add(&aMove);
-   actions.add(&aTake);
-   actions.add(&aOrder);
-
-   // Construct a logger to keep track of the planning process.
-   AesopDemoContext context;
-
-   // Make a plan to get from 'start' to 'goal'.
-   ae::Planner planner(&start, &goal, &actions);
-   printf("Planning with normal behaviour.\n");
-   if(planner.plan(&context))
-   {
-      const ae::Plan plan = planner.getPlan();
-      printPlan(plan);
-   }
-   else
-   {
-      printf("No plan found to satisfy goal!\n");
-   }
-   putchar('\n');
-
-   // Make a plan for a flying character.
-   actions.add(&aFly);
-   printf("Planning with flying behaviour!\n");
-   if(planner.plan(&context))
-   {
-      const ae::Plan plan = planner.getPlan();
-      printPlan(plan);
-   }
-   else
-   {
-      printf("No plan found to satisfy goal!\n");
-   }
-   putchar('\n');
-
-   // Now reduce the cost of flying (i.e., make it more preferable).
-   actions.add(&aFly, 0.5f);
-   printf("Planning when we prefer to fly.\n");
-   if(planner.plan(&context))
-   {
-      const ae::Plan plan = planner.getPlan();
-      printPlan(plan);
-   }
-   else
-   {
-      printf("No plan found to satisfy goal!\n");
-   }
-   putchar('\n');
+   // And our vending machine.
+   problem.addObject("vendor", "vending-machine");
 
    return 0;
 }
