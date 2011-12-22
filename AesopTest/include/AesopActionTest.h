@@ -2,7 +2,7 @@
 /// @brief gtest cases for Action class.
 
 #include "gtest/gtest.h"
-#include "Aesop.h"
+#include "AesopAction.h"
 
 using namespace ae;
 

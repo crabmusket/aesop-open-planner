@@ -5,7 +5,8 @@
 #include <stdarg.h>
 
 #include "AesopDemo.h"
-#include "Aesop.h"
+#include "AesopDomain.h"
+#include "AesopProblem.h"
 
 void printPlan(ae::Plan plan)
 {

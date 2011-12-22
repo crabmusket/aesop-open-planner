@@ -2,7 +2,7 @@
 /// @brief gtest cases for Planner class.
 
 #include "gtest/gtest.h"
-#include "Aesop.h"
+#include "AesopPlanner.h"
 
 using namespace ae;
 

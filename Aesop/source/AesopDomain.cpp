@@ -1,7 +1,7 @@
 /// @file AesopDomain.cpp
-/// @brief Implementation of Domain class as defined in Aesop.h
+/// @brief Implementation of Domain class as defined in AesopDomain.h
 
-#include "Aesop.h"
+#include "AesopDomain.h"
 
 namespace ae {
    /// @class Domain
