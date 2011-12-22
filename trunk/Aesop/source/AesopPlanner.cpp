@@ -1,7 +1,7 @@
 /// @file AesopPlanner.cpp
-/// @brief Implementation of Planner class as defined in Aesop.h
+/// @brief Implementation of Planner class as defined in AesopPlanner.h
 
-#include "Aesop.h"
+#include "AesopPlanner.h"
 
 #include <functional>
 #include <algorithm>

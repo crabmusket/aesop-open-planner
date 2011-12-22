@@ -27,6 +27,7 @@
 #define _AESOPDEMO_H_
 
 #include "Aesop.h"
+#include "AesopAction.h"
 
 /// @ingroup AesopDemo
 /// @{

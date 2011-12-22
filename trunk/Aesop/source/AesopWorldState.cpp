@@ -1,9 +1,9 @@
 /// @file AesopWorldState.cpp
-/// @brief Implementation of WorldState class as defined in Aesop.h
+/// @brief Implementation of WorldState class as defined in AesopWorldState.h
 
 #include <algorithm>
 
-#include "Aesop.h"
+#include "AesopWorldState.h"
 
 namespace ae {
    /// @class WorldState

@@ -1,7 +1,7 @@
 /// @file AesopProblem.cpp
-/// @brief Implementation of Problem class defined in Aesop.h
+/// @brief Implementation of Problem class defined in AesopProblem.h
 
-#include "Aesop.h"
+#include "AesopProblem.h"
 
 namespace ae {
    /// @class Problem
