@@ -63,12 +63,12 @@ namespace ae {
 
    /// @brief A Requirements for PDDL's STRIPS domain.
    const Requirements STRIPSRequirements = {
-      true, // Types enabled
-      -1,   // Any number of parameters per Action
-      true, // Parameters can appear in Action conditions
-      -1,   // Any number of predicates allowed
-      true, // Predicates can have parameters
-      false // Predicates can only be true or false
+      false, // No typing
+      -1,    // Any number of parameters per Action
+      true,  // Parameters can appear in Action conditions
+      -1,    // Any number of predicates allowed
+      true,  // Predicates can have parameters
+      false  // Predicates can only be true or false
    };
 };
 
