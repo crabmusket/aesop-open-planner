@@ -18,6 +18,10 @@ namespace ae {
       /// @param type The type of the object.
       void add(std::string name, std::string type = "");
 
+      /// @brief Remove an object.
+      /// @param name Name of the object to remove.
+      void remove(std::string name);
+
       /// @brief Do we have an object of the given name?
       /// @param name Look for objects with this name.
       /// @return True if we have an object with that name, false if not.
