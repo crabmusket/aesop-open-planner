@@ -26,6 +26,11 @@ namespace ae {
       mObjects[name] = type;
    }
 
+   void Objects::remove(std::string name)
+   {
+      mObjects.erase(name);
+   }
+
    bool Objects::has(std::string name) const
    {
       return mObjects.find(name) != mObjects.end();
