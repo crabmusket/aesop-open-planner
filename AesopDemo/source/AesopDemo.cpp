@@ -5,8 +5,9 @@
 #include <stdarg.h>
 
 #include "AesopDemo.h"
-#include "AesopDomain.h"
-#include "AesopProblem.h"
+#include "AesopWorldState.h"
+#include "AesopAction.h"
+#include "AesopPlanner.h"
 
 void printPlan(ae::Plan plan)
 {
@@ -27,85 +28,110 @@ void printPlan(ae::Plan plan)
 
 int main(int argc, char **argv)
 {
-   // Create a Domain to solve problems in.
-   ae::Domain domain("buying-food");
+   // Create several Predicate names.
+   ae::PName at = "at";
+   ae::PName hungry = "hungry";
+   ae::PName money = "money";
 
-   // Require that objects can have types.
-   domain.addRequirement(ae::typing);
-   // Require the use of the equality predicate.
-   domain.addRequirement(ae::equality);
+   // Boolean predicate values.
+   ae::PVal ptrue = 1;
+   ae::PVal pfalse = 0;
 
-   // Add the types relevant to our problem domain.
-   domain.addType("room");
-   domain.addType("physob");
-   // The next four types are subtypes of physob, whereas room and physob are
-   // subtypes of object by default.
-   domain.addType("money"/*, "physob"*/);
-   domain.addType("vending-machine"/*, "physob"*/);
-   domain.addType("person"/*, "physob"*/);
+   // Three location names.
+   ae::PVal loc1 = 'A';
+   ae::PVal loc2 = 'B';
+   ae::PVal loc3 = 'C';
 
-   // Define predicates.
-   //ae::Predicate *pr;
+   // Create a WorldState to represent our initial state.
+   ae::WorldState start;
+   start.setPredicate(at, loc1);
+   start.setPredicate(money, pfalse);
 
-   // Define adjacency of rooms.
-   //pr = domain.addPredicate("adjacent");
-   //pr->addParameter("f", "room");
-   //pr->addParameter("t", "room");
+   // Create another WorldState which will be our goal.
+   ae::WorldState goal;
+   goal.setPredicate(hungry, pfalse);
 
-   // Define an object being in a room.
-   //pr = domain.addPredicate("in");
-   //pr->addParameter("x", "physob");
-   //pr->addParameter("y", "room");
+   // Action to buy food from loc2.
+   //   Required: we are at loc2 and have money
+   //   Outcome:  we have no money and are not hungry
+   ae::Action aOrder("Buy food");
+   aOrder.addCondition(at, loc2);
+   aOrder.addCondition(money, ptrue);
+   aOrder.addEffect(money, pfalse);
+   aOrder.addEffect(hungry, pfalse);
 
-   // Is somebody hungry?
-   //pr = domain.addPredicate("hungry");
-   //pr->addParameter("w", "person");
+   // Action to take money from loc3.
+   //   Required: we are at loc3 and have no money
+   //   Outcome:  we have money
+   ae::Action aTake("Take money");
+   aTake.addCondition(at, loc3);
+   aTake.addCondition(money, pfalse);
+   aTake.addEffect(money, ptrue);
 
-   // Do we have food?
-   //pr = domain->addPredicate("havefood");
-   //pr->addParameter("w", "person");
+   // Movement action.
+   //   Required: we are at location given by param 0
+   //   Outcome: we are at location given by param 1
+   MoveAction aMove("Move");
+   aMove.addConditionParam(at, 0);
+   aMove.addEffectParam(at, 1);
 
-   // Create some Actions to solve problems with.
-   ae::Action *ac;
+   // Flying movement action.
+   //   Required: we are at location given by param 0
+   //   Outcome: we are at location given by param 1
+   FlyAction aFly("Fly", 1.5f);
+   aFly.addConditionParam(at, 0);
+   aFly.addEffectParam(at, 1);
 
-   // Move Action.
-   ac = domain.addAction("move", 1.0f);
-   //ac->addParameter("who", "person");
-   //ac->addParameter("from", "room");
-   //ac->addParameter("to",   "room");
-   //ac->addCondition(true, "in", "who", "from");
-   //ac->addCondition(false, "in", "who", "to");
-   //ac->addCondition(true, "adjacent", "from", "to");
-   //ac->addEffect(false, "in", "who", "from");
-   //ac->addEffect(true, "in", "who", "to");
+   // Bundle these actions into an ActionSet.
+   ae::ActionSet actions;
+   actions.add(&aMove);
+   actions.add(&aTake);
+   actions.add(&aOrder);
 
-   // Take money.
+   // Construct a logger to keep track of the planning process.
+   AesopDemoContext context;
 
-   // Buy food.
+   // Make a plan to get from 'start' to 'goal'.
+   ae::Planner planner(&start, &goal, &actions);
+   printf("Planning with normal behaviour.\n");
+   if(planner.plan(&context))
+   {
+      const ae::Plan plan = planner.getPlan();
+      printPlan(plan);
+   }
+   else
+   {
+      printf("No plan found to satisfy goal!\n");
+   }
+   putchar('\n');
 
-   // Eat food.
-   //ac = domain.addAction("eat", 1.0f);
-   //ac->addParameter("who", "person");
-   //ac->addCondition(true, "havefood", "who");
-   //ac->addCondition(true, "hungry", "who");
-   //ac->addEffect(false, "havefood", "who");
-   //ac->addEffect(false, "hungry", "who");
+   // Make a plan for a flying character.
+   actions.add(&aFly);
+   printf("Planning with flying behaviour!\n");
+   if(planner.plan(&context))
+   {
+      const ae::Plan plan = planner.getPlan();
+      printPlan(plan);
+   }
+   else
+   {
+      printf("No plan found to satisfy goal!\n");
+   }
+   putchar('\n');
 
-   // Create a Problem within our domain.
-   ae::Problem problem(domain);
-
-   // Add our 3 locations.
-   problem.addObject("roomA", "room");
-   problem.addObject("roomB", "room");
-   problem.addObject("roomC", "room");
-
-   // Add our money.
-   problem.addObject("money", "money");
-
-   // And our vending machine.
-   problem.addObject("vendor", "vending-machine");
-
-   // 
+   // Now reduce the cost of flying (i.e., make it more preferable).
+   actions.add(&aFly, 0.5f);
+   printf("Planning when we prefer to fly.\n");
+   if(planner.plan(&context))
+   {
+      const ae::Plan plan = planner.getPlan();
+      printPlan(plan);
+   }
+   else
+   {
+      printf("No plan found to satisfy goal!\n");
+   }
+   putchar('\n');
 
    return 0;
 }
