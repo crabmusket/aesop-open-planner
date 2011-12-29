@@ -1,5 +1,5 @@
-/// @file AesopAction.cpp
-/// @brief Implementation of Action class as defined in AesopAction.h
+/// @file AesopTypes.cpp
+/// @brief Implementation of Types class as defined in AesopTypes.h
 
 #include "AesopTypes.h"
 
@@ -23,10 +23,10 @@ namespace ae {
    void Types::add(const char *type, const char *parent)
    {
       // If the type is already defined, don't try to overwrite.
-      if(!type || has(type))
+      if(!type || have(type))
          return;
       // If the parent is undefined, bail.
-      if(parent && !has(parent))
+      if(parent && !have(parent))
          return;
       mTypes[type] = parent;
    }

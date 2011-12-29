@@ -40,6 +40,10 @@ namespace ae {
       ~Types();
 
    protected:
+      /// @brief Alternate name for has method.
+      /// @see Types::has
+      bool have(const char *type) const { return has(type); }
+
    private:
       /// @brief Maps type names to their parents' names.
       typedef std::tr1::unordered_map<std::string, std::string> typetable;
