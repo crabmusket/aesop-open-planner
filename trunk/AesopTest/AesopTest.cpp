@@ -5,9 +5,9 @@
 #include "AesopTest.h"
 
 // Test cases for each class.
-#include "AesopActionTest.h"
-#include "AesopWorldStateTest.h"
-#include "AesopPlannerTest.h"
+#include "tests/AesopActionTest.h"
+#include "tests/AesopWorldStateTest.h"
+#include "tests/AesopPlannerTest.h"
 
 int main(int argc, char **argv)
 {

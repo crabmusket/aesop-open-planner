@@ -58,7 +58,7 @@ namespace ae {
    ///        'requirement' is like a feature of a domain, a particular method
    ///        of interaction that it allows.
    enum requirement {
-      goap,     ///< Simplest domain. Mutually exclusive with STRIPS.
+      goap,     ///< Simplest domain, and default if none specified.
       strips,   ///< Basic STRIPS domain.
       equality, ///< Implements the '=' predicate.
       typing,   ///< Objects can have types.

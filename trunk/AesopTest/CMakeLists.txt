@@ -1,19 +1,18 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 SET(AesopTestSources
-	source/AesopTest.cpp
+	AesopTest.cpp
 )
 
 SET(AesopTestHeaders
-	include/AesopTest.h
-	include/AesopActionTest.h
-	include/AesopWorldStateTest.h
-	include/AesopPlannerTest.h
+	AesopTest.h
+	tests/AesopActionTest.h
+	tests/AesopWorldStateTest.h
+	tests/AesopPlannerTest.h
 )
 
 INCLUDE_DIRECTORIES(
-	include
-	../Aesop/include
+	../Aesop
 	./gtest/include
 )
 
