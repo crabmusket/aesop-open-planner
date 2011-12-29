@@ -8,6 +8,8 @@
 #include "tests/AesopActionTest.h"
 #include "tests/AesopWorldStateTest.h"
 #include "tests/AesopPlannerTest.h"
+#include "tests/AesopTypesTest.h"
+#include "tests/AesopObjectsTest.h"
 
 int main(int argc, char **argv)
 {
