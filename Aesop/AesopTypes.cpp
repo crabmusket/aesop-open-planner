@@ -10,41 +10,37 @@ namespace ae {
    /// with a parent, which implies that any objects of that type are also of
    /// the parent type.
 
+   /// I think it is desirable to always have an empty type defined. It acts as
+   /// a sort of sentinel for null types, though it may lead to undesirable
+   /// behaviour in domains with no types. We'll see.
+   /// @todo Ensure wisdom of defining a blank type.
    Types::Types(float load)
    {
       if(load > 0.0f && load <= 1.0f)
          mTypes.max_load_factor(load);
+      mTypes[""] = "";
    }
 
    Types::~Types()
    {
    }
 
-   void Types::add(const char *type, const char *parent)
+   void Types::add(std::string type, std::string parent)
    {
-      // If the type is already defined, don't try to overwrite.
-      if(!type || have(type))
-         return;
       // If the parent is undefined, bail.
-      if(parent && !have(parent))
+      if(!have(parent))
          return;
       // Associate type with parent.
-      if(parent)
-         mTypes[type] = parent;
-      else
-         mTypes[type].clear();
+      mTypes[type] = parent;
    }
 
-   bool Types::has(const char *type) const
+   bool Types::has(std::string type) const
    {
       return mTypes.find(type) != mTypes.end();
    }
 
-   bool Types::isOf(const char *type, const char *ancestor) const
+   bool Types::isOf(std::string type, std::string ancestor) const
    {
-      // Everything is a type of null, technically.
-      if(!ancestor)
-         return true;
       // Check that both type names exist.
       typetable::const_iterator t = mTypes.find(type),
          a = mTypes.find(ancestor);
@@ -52,7 +48,7 @@ namespace ae {
          return false;
       // Scan the type hierarchy.
       std::string name = type;
-      while(!name.empty())
+      do
       {
          if(!name.compare(ancestor))
             return true;
@@ -65,6 +61,7 @@ namespace ae {
                break;
          }
       }
+      while(!name.empty());
       // If we didn't return true above, we didn't find a match.
       return false;
    }
