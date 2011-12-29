@@ -7,6 +7,7 @@
 #include "AesopDemo.h"
 #include "AesopRequirements.h"
 #include "AesopTypes.h"
+#include "AesopObjects.h"
 #include "AesopWorldState.h"
 #include "AesopAction.h"
 #include "AesopPlanner.h"
@@ -31,12 +32,21 @@ void printPlan(ae::Plan plan)
 int main(int argc, char **argv)
 {
    // Create some Requirements to give our problem boundaries.
-   ae::Requirements reqs = ae::STRIPSRequirements;
+   ae::Requirements reqs = ae::DefaultRequirements;
+   reqs.predicateRealValues = false;
 
    // Define the types we will use.
    ae::Types types;
    types.add("object");
    types.add("room");
+
+   // Create some objects.
+   ae::Objects objects(types);
+   objects.add("roomA", "room");
+   objects.add("roomB", "room");
+   objects.add("roomC", "room");
+   objects.add("money", "object");
+   objects.add("vendor", "object");
 
    // Create several Predicate names.
    ae::PName at = "at";
