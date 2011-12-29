@@ -4,13 +4,14 @@ SET(AesopSources
 	source/AesopAction.cpp
 	source/AesopWorldState.cpp
 	source/AesopPlanner.cpp
-   source/AesopProblem.cpp
-   source/AesopDomain.cpp
 )
 
 SET(AesopHeaders
 	include/Aesop.h
 	include/AesopConfig.h
+	include/AesopAction.h
+	include/AesopPlanner.h
+	include/AesopWorldState.h
 )
 
 INCLUDE_DIRECTORIES(include)
