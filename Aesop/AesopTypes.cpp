@@ -28,7 +28,11 @@ namespace ae {
       // If the parent is undefined, bail.
       if(parent && !have(parent))
          return;
-      mTypes[type] = parent;
+      // Associate type with parent.
+      if(parent)
+         mTypes[type] = parent;
+      else
+         mTypes[type].clear();
    }
 
    bool Types::has(const char *type) const
