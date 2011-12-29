@@ -2,12 +2,11 @@
 
 = To Do =
 
- * Demo: parse PDDL files
+ * Parse PDDL files
     * Use STRIPS subset like [http://eecs.oregonstate.edu/ipc-learn/documents/strips-pddl-subset.pdf this] or [http://users.cecs.anu.edu.au/~patrik/pddlman/writing.html this]
        * Support requirements `strips`, `equality`, and maybe `typing`
-       * Implement a `substrips` (or `goap`?) requirement for very simple predicate use? (i.e., `predicate: value` instead of `predicate(value): true/false`)
-       * Implement an `action-costs` requirement for simple action cost definition instead of supporting fluents
     * Implement in separate project from demo as standalone library
+    * Borrow flex/bison files from [http://planning.cis.strath.ac.uk/VAL/ VAL]?
  * Benchmarking app
     * Separate from demo?
     * Possible: generate random planning problems? [http://www.loria.fr/~hoffmanj/ff-domains.html Like so]
