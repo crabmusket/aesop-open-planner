@@ -33,12 +33,27 @@ namespace ae {
 
    bool Objects::has(std::string name) const
    {
-      return mObjects.find(name) != mObjects.end();
+      for(const_iterator it = begin(); it != end(); it++)
+         if(it->second == name)
+            return true;
+      return false;
    }
 
    std::string Objects::typeof(std::string name) const
    {
-      objectmap::const_iterator it = mObjects.find(name);
-      return it == mObjects.end() ? "" : it->second;
+      for(const_iterator it = begin(); it != end(); it++)
+         if(it->second == name)
+            return it->first;
+      return "";
+   }
+
+   unsigned int Objects::size(std::string type) const
+   {
+      if(type.empty())
+         return mObjects.size();
+      unsigned int count = 0;
+      for(type_iterator it = begin(type); it != end(type); it++)
+         count++;
+      return count;
    }
 };
