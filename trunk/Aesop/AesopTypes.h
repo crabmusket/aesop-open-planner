@@ -28,6 +28,10 @@ namespace ae {
       /// @return True if 'type' is a type of 'ancestor'.
       bool isOf(std::string type, std::string ancestor = "") const;
 
+      /// @brief Get number of types defined not including "".
+      /// @return Number of user-defined types.
+      unsigned int size() const { return mTypes.size() - 1; }
+
       /// @brief Default constructor.
       /// @param load The maximum load factor for the internal hash table.
       Types(float load = -1.0f);
