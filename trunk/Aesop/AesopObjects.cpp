@@ -6,7 +6,12 @@
 namespace ae {
    /// @class Objects
    ///
-   /// A set of named objects that exist in a particular problem.
+   /// A set of named objects that exist in a particular problem. The container
+   /// is designed to offer fast iteration through all objects defined. It also
+   /// defines a 'type_iterator' for convenience, which will only produce
+   /// the names of objects of a specified type. However, iterating through a
+   /// container this way is still linear in the size of the container as a
+   /// whole, performance-wise.
 
    Objects::Objects(const Types &types)
       : mTypes(types)
@@ -33,17 +38,14 @@ namespace ae {
 
    bool Objects::has(std::string name) const
    {
-      for(const_iterator it = begin(); it != end(); it++)
-         if(it->second == name)
-            return true;
-      return false;
+      return mObjects.find(name) != mObjects.end();
    }
 
    std::string Objects::typeof(std::string name) const
    {
-      for(const_iterator it = begin(); it != end(); it++)
-         if(it->second == name)
-            return it->first;
+      objectmap::const_iterator it = mObjects.find(name);
+      if(it != mObjects.end())
+         return it->second;
       return "";
    }
 
