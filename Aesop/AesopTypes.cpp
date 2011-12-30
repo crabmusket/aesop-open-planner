@@ -46,6 +46,9 @@ namespace ae {
          a = mTypes.find(ancestor);
       if(t == mTypes.end() || a == mTypes.end())
          return false;
+      // Everything is of type null.
+      if(ancestor.empty())
+         return true;
       // Scan the type hierarchy.
       std::string name = type;
       do
@@ -60,8 +63,7 @@ namespace ae {
             else
                break;
          }
-      }
-      while(!name.empty());
+      } while(!name.empty());
       // If we didn't return true above, we didn't find a match.
       return false;
    }
