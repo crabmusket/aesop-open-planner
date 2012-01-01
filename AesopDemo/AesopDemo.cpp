@@ -8,6 +8,7 @@
 #include "AesopRequirements.h"
 #include "AesopTypes.h"
 #include "AesopObjects.h"
+#include "AesopPredicates.h"
 #include "AesopWorldState.h"
 #include "AesopAction.h"
 #include "AesopPlanner.h"
@@ -37,16 +38,28 @@ int main(int argc, char **argv)
 
    // Define the types we will use.
    ae::Types types;
-   types.add("object");
-   types.add("room");
+   types.add("physob");
+   types.add("place");
+   types.add("person", "physob");
 
    // Create some objects.
    ae::Objects objects(types);
-   objects.add("roomA", "room");
-   objects.add("roomB", "room");
-   objects.add("roomC", "room");
-   objects.add("money", "object");
-   objects.add("vendor", "object");
+   objects.add("roomA", "place");
+   objects.add("roomB", "place");
+   objects.add("roomC", "place");
+   objects.add("money", "physob");
+   objects.add("vendor", "physob");
+   objects.add("me", "person");
+
+   // Define physics in terms of predicates.
+   ae::Predicates preds(reqs, types);
+   preds.add(preds.create("in")       // A physical object can be in a place.
+      % "ob" / "physob"                  // First parameter 'ob' must be of type 'physob'.
+      % "loc" / "place");                // Second parameter 'loc' must be a 'place'.
+   preds.add(preds.create("hungry")   // A person can be hungry.
+      % "who" / "person");               // Just one argument - a 'person'.
+   preds.add(preds.create("hasMoney") // A person can posess money.
+      % "who" / "person");               // Again, just one argument.
 
    // Create several Predicate names.
    ae::PName at = "at";
