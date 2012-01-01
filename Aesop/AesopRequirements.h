@@ -31,8 +31,6 @@ namespace ae {
       /// @name Predicates
       /// @{
 
-      /// @brief Maximum number of predicates allowed.
-      int maxPredicates;
       /// @brief Do we allow predicates to have parameters?
       bool predicateParameters;
       /// @brief Can predicates take on real values, or only booleans?
@@ -46,9 +44,17 @@ namespace ae {
       true, // Types enabled
       -1,   // Any number of parameters per Action
       true, // Parameters can appear in Action conditions
-      -1,   // Any number of predicates allowed
       true, // Predicates can have parameters
       true  // Predicates can take on real values
+   };
+
+   /// @brief The smallest possible subset of Aesop's functionality.
+   const Requirements StrictRequirements = {
+      false, // No typing
+      0,     // No Action parameters
+      false, // Parameter cannot appear in Action conditions
+      false, // No parameters for predicates
+      false  // Predicates can only be true or false
    };
 
    /// @brief A Requirements that defines the simple GOAP domain.
@@ -56,7 +62,6 @@ namespace ae {
       false, // No typing
       1,     // One parameter per Action
       false, // Parameter cannot appear in Action conditions
-      -1,    // Any number of predicates allowed
       false, // No parameters for predicates
       true   // Predicates can take on real values
    };
@@ -66,7 +71,6 @@ namespace ae {
       false, // No typing
       -1,    // Any number of parameters per Action
       true,  // Parameters can appear in Action conditions
-      -1,    // Any number of predicates allowed
       true,  // Predicates can have parameters
       false  // Predicates can only be true or false
    };
