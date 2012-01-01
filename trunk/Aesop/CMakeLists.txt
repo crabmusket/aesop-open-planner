@@ -3,6 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(AesopSources
 	AesopTypes.cpp
 	AesopObjects.cpp
+	AesopPredicates.cpp
 	AesopAction.cpp
 	AesopWorldState.cpp
 	AesopPlanner.cpp
@@ -13,6 +14,7 @@ SET(AesopHeaders
 	AesopRequirements.h
 	AesopTypes.h
 	AesopObjects.h
+	AesopPredicates.h
 	AesopConfig.h
 	AesopAction.h
 	AesopPlanner.h
