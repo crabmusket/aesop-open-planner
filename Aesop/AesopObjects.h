@@ -54,12 +54,16 @@ namespace ae {
       struct type_iterator : public std::iterator<std::forward_iterator_tag,
          const element, int>
       {
+         /// @brief Default constructor
          type_iterator(const_iterator i, const Objects &o, const std::string &t)
             : it(i), objs(o), type(t)
          {
             if(it != objs.end() && !objs.getTypes().isOf(it->second,type))
                ++(*this);
          }
+
+         /// @name Iteration
+         /// @{
 
          type_iterator &operator++()
          {
@@ -76,6 +80,26 @@ namespace ae {
             return result;
          }
 
+         type_iterator &operator--()
+         {
+            it--;
+            while(it != objs.begin() && !objs.getTypes().isOf(it->second,type))
+               it--;
+            return *this;
+         }
+
+         type_iterator operator--(int)
+         {
+            type_iterator result(*this);
+            --(*this);
+            return result;
+         }
+
+         /// @}
+
+         /// @name Interface
+         /// @{
+
          bool operator==(const type_iterator &other)
          { return it == other.it; }
          bool operator!=(const type_iterator &other)
@@ -83,12 +107,17 @@ namespace ae {
 
          reference operator*()
          { return *it; }
-         reference operator->()
-         { return *(*this); }
+         const_iterator operator->()
+         { return it; }
+
+         /// @}
 
       private:
+         /// @brief Reference to the Objects we iterate over.
          const Objects &objs;
+         /// @brief Internal iterator.
          const_iterator it;
+         /// @brief Type name to restrict ourselves to.
          std::string type;
       };
 
