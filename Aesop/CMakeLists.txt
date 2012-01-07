@@ -4,7 +4,7 @@ SET(AesopSources
 	AesopTypes.cpp
 	AesopObjects.cpp
 	AesopPredicates.cpp
-	AesopAction.cpp
+	AesopActionSet.cpp
 	AesopWorldState.cpp
 	AesopPlanner.cpp
 )
@@ -16,7 +16,7 @@ SET(AesopHeaders
 	AesopObjects.h
 	AesopPredicates.h
 	AesopConfig.h
-	AesopAction.h
+	AesopActionSet.h
 	AesopPlanner.h
 	AesopWorldState.h
 )
