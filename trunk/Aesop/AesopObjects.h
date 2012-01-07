@@ -100,9 +100,9 @@ namespace ae {
          /// @name Interface
          /// @{
 
-         bool operator==(const type_iterator &other)
+         bool operator==(const type_iterator &other) const
          { return it == other.it; }
-         bool operator!=(const type_iterator &other)
+         bool operator!=(const type_iterator &other) const
          { return it != other.it; }
 
          reference operator*()
