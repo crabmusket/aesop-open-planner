@@ -52,7 +52,7 @@ TEST_F(ObjectsTest, TypedAdd)
    EXPECT_EQ(tobjs.size(), 2);
 }
 
-TEST_F(ObjectsTest, TypedSizing)
+TEST_F(ObjectsTest, TypedIteration)
 {
    /// Create a simple type hierarchy.
    types.add("object");
@@ -64,8 +64,12 @@ TEST_F(ObjectsTest, TypedSizing)
    tobjs.add("table", "object");
    tobjs.add("Smiley's People", "book");
 
-   EXPECT_EQ(tobjs.size(), 4);
-   EXPECT_EQ(tobjs.size(""), 4);
-   EXPECT_EQ(tobjs.size("object"), 2);
-   EXPECT_EQ(tobjs.size("book"), 1);
+   ASSERT_EQ(tobjs.size(), 4);
+
+   Objects::type_iterator it = tobjs.begin("object");
+   ASSERT_NE(it, tobjs.end("object"));
+   EXPECT_EQ(it->first, "Smiley's People");
+   it++;
+   ASSERT_NE(it, tobjs.end("object"));
+   EXPECT_EQ(it->first, "table");
 }
