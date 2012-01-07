@@ -21,7 +21,7 @@ namespace ae {
 
    public:
       /// @brief Add a new predicate.
-      /// @param name The name of the predicate.
+      /// @param newpred The new Predicate to add.
       void add(Predicate &newpred);
 
       /// @brief Construct a new Predicate.
@@ -33,11 +33,6 @@ namespace ae {
       /// @param name Look for predicates with this name.
       /// @return True if we have a predicate with that name, false if not.
       bool has(std::string name) const;
-
-      /// @brief Get the type of a named object.
-      /// @param name Name of the object to get the type of.
-      /// @return The object's type as a new string.
-      std::string typeof(std::string name) const;
 
       /// @brief Get our Requirements object.
       /// @return Handle of our Requirements.
@@ -106,6 +101,9 @@ namespace ae {
       /// @brief Set of defined Predicates.
       predicatemap mPredicates;
    };
+
+   /// @brief Default list of no predicates.
+   const Predicates NoPredicates;
 };
 
 #endif

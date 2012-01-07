@@ -6,7 +6,7 @@ SET(AesopTestSources
 
 SET(AesopTestHeaders
 	AesopTest.h
-	tests/AesopActionTest.h
+	tests/AesopActionSetTest.h
 	tests/AesopWorldStateTest.h
 	tests/AesopPlannerTest.h
 	tests/AesopTypesTest.h
