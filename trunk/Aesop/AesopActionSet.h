@@ -8,12 +8,80 @@
 #include "AesopPredicates.h"
 
 namespace ae {
+   struct conditions
+   {
+      conditions(bool req = true) {}
+
+      conditions & operator% (std::string s)
+      { return *this; }
+
+      conditions & operator/ (std::string s)
+      { return *this; }
+   };
+
+   struct effects
+   {
+      effects(bool req = true) {}
+
+      effects & operator% (std::string s)
+      { return *this; }
+
+      effects & operator/ (std::string s)
+      { return *this; }
+   };
+
+   /// @brief Store a Action.
+   struct Action
+   {
+      typedef std::pair<std::string, std::string> parameter;
+      typedef std::vector<parameter> paramlist;
+
+      /// @brief Name constructor.
+      Action(std::string n)
+         : mName(n)
+      {
+      }
+
+      /// @brief Default constructor.
+      Action()
+      { Action(""); }
+
+      /// @brief Modulus adds new parameters.
+      Action & operator% (std::string p)
+      {
+         mParams.push_back(std::make_pair(p, ""));
+         return *this;
+      }
+
+      /// @brief Division sets the type of the last parameter.
+      Action & operator/ (std::string t)
+      {
+         mParams.back().second = t;
+         return *this;
+      }
+
+      /// @brief Addition adds effects and conditions.
+      Action & operator+ (conditions &c)
+      { return *this; }
+      Action & operator+ (effects &c)
+      { return *this; }
+
+      /// @brief Get parameter storage.
+      paramlist & getParams() { return mParams; }
+
+      /// @brief Get name of this Action.
+      std::string & getName() { return mName; }
+
+   private:
+      /// @brief Name of this Action.
+      std::string mName;
+      /// @brief Parameters of this Action.
+      paramlist mParams;
+   };
+
    /// @brief A set of Actions defined in a particular planning problem.
    /// @ingroup Aesop
    class ActionSet {
-      struct Action;
-      typedef std::pair<std::string, std::string> parameter;
-      typedef std::vector<parameter> paramlist;
       typedef std::map<std::string, Action> actionmap;
 
    public:
@@ -58,45 +126,6 @@ namespace ae {
       bool have(std::string name) const { return has(name); }
 
    private:
-      /// @brief Store a Action.
-      struct Action
-      {
-         friend class ActionSet;
-
-         /// @brief Name constructor.
-         Action(std::string n)
-            : name(n)
-         {
-         }
-
-         /// @brief Default constructor.
-         Action()
-         { Action(""); }
-
-         /// @brief Modulus adds new parameters.
-         Action & operator% (std::string p)
-         {
-            params.push_back(std::make_pair(p, ""));
-            return *this;
-         }
-
-         /// @brief Division sets the type of the last parameter.
-         Action & operator/ (std::string t)
-         {
-            params.back().second = t;
-            return *this;
-         }
-
-         unsigned int getNumParams()
-         { return params.size(); }
-
-      private:
-         /// @brief Name of this Action.
-         std::string name;
-         /// @brief Parameters of this Action.
-         paramlist params;
-      };
-
       /// @brief Predicates to validate Action parameters.
       const Predicates &mPredicates;
 

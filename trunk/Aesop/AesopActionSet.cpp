@@ -13,23 +13,27 @@ namespace ae {
    {
    }
 
-   ActionSet::Action ActionSet::create(std::string name)
+   ActionSet::~ActionSet()
+   {
+   }
+
+   Action ActionSet::create(std::string name)
    {
       return Action(name);
    }
 
-   void ActionSet::add(ActionSet::Action &newac)
+   void ActionSet::add(Action &newac)
    {
       // Check for compliance with requirements.
-      if(getRequirements().maxActionParams >= 0 && (int)newac.getNumParams() > getRequirements().maxActionParams)
+      if(getRequirements().maxActionParams >= 0 && (int)newac.getParams().size() > getRequirements().maxActionParams)
          return;
       if(!getRequirements().typing)
       {
-         for(unsigned int i = 0; i < newac.getNumParams(); i++)
-            if(newac.params[i].second != "")
+         for(Action::paramlist::const_iterator it = newac.getParams().begin(); it != newac.getParams().end(); it++)
+            if(it->second != "")
                return;
       }
-      mActions[newac.name] = newac;
+      mActions[newac.getName()] = newac;
    }
 
    bool ActionSet::has(std::string name) const

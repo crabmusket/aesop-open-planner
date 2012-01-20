@@ -10,7 +10,7 @@ using namespace ae;
 /// @ingroup AesopTest
 class ActionSetTest : public ::testing::Test {
 protected:
-   ActionTest()
+   ActionSetTest()
    {
    }
 };
