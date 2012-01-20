@@ -7,9 +7,8 @@
 #include "AesopDemo.h"
 #include "AesopObjects.h"
 #include "AesopActionSet.h"
-#include "AesopPlanner.h"
 
-void printPlan(ae::Plan plan)
+/*void printPlan(ae::Plan plan)
 {
    ae::Plan::const_iterator it;
    printf("The Plan:\n");
@@ -24,7 +23,7 @@ void printPlan(ae::Plan plan)
       }
       putchar('\n');
    }
-}
+}*/
 
 int main(int argc, char **argv)
 {
@@ -43,52 +42,54 @@ int main(int argc, char **argv)
    objects.add("roomA", "place");
    objects.add("roomB", "place");
    objects.add("roomC", "place");
-   objects.add("money", "physob");
-   objects.add("vendor", "physob");
-   objects.add("me", "person");
 
    // Create several Predicate names, just for convenience.
    ae::PName at = "at";
+   ae::PName adj = "adjacent";
    ae::PName hungry = "hungry";
    ae::PName money = "hasmoney";
 
    // Define physics in terms of predicates.
    ae::Predicates preds(reqs, types);
-   preds.add(preds.create(at)     // A physical object can be in a place.
-      % "ob" / "physob"           // First parameter 'ob' must be of type 'physob'.
-      % "loc" / "place");         // Second parameter 'loc' must be a 'place'.
-   preds.add(preds.create(hungry) // A person can be hungry.
-      % "who" / "person");        // Just one argument - a 'person'.
-   preds.add(preds.create(money)  // A person can posess money.
-      % "who" / "person");        // Again, just one argument.
+
+   preds.add(ae::Predicate(adj)      // Two places can be adjacent.
+      % "loc1" / "place"             //    First parameter must be a place
+      % "loc2" / "place");           //    Second is the same
+
+   preds.add(ae::Predicate(at)       // Our actor can be in a place.
+      % "loc" / "place");            //    Parameter 'loc' must be a 'place'.
+
+   preds.add(ae::Predicate(hungry)); // Our actor can be hungry. No parameters.
+
+   preds.add(ae::Predicate(money));  // Our actor can posess money.
 
    // Create a set of Actions to plan with.
    ae::ActionSet actions;
 
+   actions.add(ae::Action("move") // Move action for a person between two locations
+      % "from" / "place"          //    Where are we moving from?
+      % "to" / "place"            //    Where are we moving to?
+      + ae::conditions(1)         // Conditions that must be true:
+         % at / "from"            //    we must be at "from"
+         % adj / "from" / "to"    //    "from" must be adjacent to "to"
+      + ae::effects(1)            // Predicates set by this action:
+         % at / "to"              //    "who" is now at "to"
+      + ae::effects(0)            // Predicates unset by this action:
+         % at / "from");          //    "who" is no longer at "from"
+
+   actions.add(ae::Action("takemoney") // Take the money from room C.
+      + ae::conditions(1)
+         % at / "roomC"
+      + ae::conditions(0)
+         % money
+      + ae::effects(1)
+         % money);
+
+   actions.add(ae::Action("buyfood") // Buy the food from room B.
+      + ae::conditions(1)
+         % at / "roomB"
+      +ae::effects(0)
+         % hungry);
+
    return 0;
-}
-
-/// @class AesopDemoContext
-/// @ingroup AesopDemo
-///
-/// This class demonstrates the use of the Context interface. We simply
-/// print all log events to stdout.
-
-/// In this simple implementation, we use vprintf to write the event message
-/// to stdout.
-void AesopDemoContext::logEvent(const char *fmt, ...)
-{
-   va_list args;
-   va_start(args, fmt);
-   vprintf(fmt, args);
-   putchar('\n');
-   va_end(args);
-}
-
-AesopDemoContext::AesopDemoContext()
-{
-}
-
-AesopDemoContext::~AesopDemoContext()
-{
 }

@@ -17,21 +17,21 @@ namespace ae {
    {
    }
 
-   void Predicates::add(Predicates::Predicate &newpred)
+   void Predicates::add(Predicate &newpred)
    {
       // Check for compliance with requirements.
-      if(!getRequirements().predicateParameters && newpred.getNumParams())
+      if(!getRequirements().predicateParameters && newpred.getParams().size())
          return;
       if(!getRequirements().typing)
       {
-         for(unsigned int i = 0; i < newpred.getNumParams(); i++)
-            if(newpred.params[i].second != "")
+         for(Predicate::paramlist::const_iterator it = newpred.getParams().begin(); it != newpred.getParams().end(); it++)
+            if(it->second != "")
                return;
       }
-      mPredicates[newpred.name] = newpred;
+      mPredicates[newpred.getName()] = newpred;
    }
 
-   Predicates::Predicate Predicates::create(std::string name)
+   Predicate Predicates::create(std::string name)
    {
       return Predicate(name);
    }

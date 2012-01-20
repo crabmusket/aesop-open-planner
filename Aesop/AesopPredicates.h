@@ -11,12 +11,48 @@
 #include <string>
 
 namespace ae {
+   /// @brief Store a Predicate.
+   struct Predicate
+   {
+      typedef std::pair<std::string, std::string> parameter;
+      typedef std::vector<parameter> paramlist;
+
+      Predicate(std::string n)
+         : mName(n)
+      {
+      }
+
+      Predicate()
+      { Predicate(""); }
+
+      /// @brief Modulus adds new parameters.
+      Predicate & operator% (std::string p)
+      {
+         mParams.push_back(std::make_pair(p, ""));
+         return *this;
+      }
+
+      /// @brief Division sets the type of previous parameters.
+      Predicate & operator/ (std::string t)
+      {
+         mParams.back().second = t;
+         return *this;
+      }
+
+      /// @brief Get parameter storage.
+      paramlist & getParams() { return mParams; }
+
+      /// @brief Get name of this Predicate.
+      std::string & getName() { return mName; }
+
+   private:
+      std::string mName;
+      paramlist mParams;
+   };
+
    /// @brief A set of Predicates defined in a particular planning problem.
    /// @ingroup Aesop
    class Predicates {
-      struct Predicate;
-      typedef std::pair<std::string, std::string> parameter;
-      typedef std::vector<parameter> paramlist;
       typedef std::map<std::string, Predicate> predicatemap;
 
    public:
@@ -57,40 +93,6 @@ namespace ae {
       bool have(std::string name) const { return has(name); }
 
    private:
-      /// @brief Store a Predicate.
-      struct Predicate
-      {
-         friend class Predicates;
-
-         Predicate(std::string n)
-            : name(n)
-         {
-         }
-
-         Predicate()
-         { Predicate(""); }
-
-         /// @brief Modulus adds new parameters.
-         Predicate & operator% (std::string p)
-         {
-            params.push_back(std::make_pair(p, ""));
-            return *this;
-         }
-
-         /// @brief Division sets the type of previous parameters.
-         Predicate & operator/ (std::string t)
-         {
-            params.back().second = t;
-            return *this;
-         }
-
-         unsigned int getNumParams()
-         { return params.size(); }
-
-      private:
-         std::string name;
-         paramlist params;
-      };
 
       /// @brief Types to validate predicate parameters.
       const Types &mTypes;
