@@ -17,15 +17,17 @@ namespace ae {
    {
    }
 
-   void Predicates::create(std::string name)
+   PredicatesInterface & Predicates::create(std::string name)
    {
       mCurPred = Predicate(name);
+      return *this;
    }
 
-   void Predicates::parameter(std::string name, std::string type)
+   PredicatesInterface & Predicates::parameter(std::string name, std::string type)
    {
       mCurPred.mParams.push_back(name);
       mCurPred.mTypes.push_back(type);
+      return *this;
    }
 
    void Predicates::add()
@@ -35,6 +37,36 @@ namespace ae {
    }
 
    bool Predicates::has(std::string name) const
+   {
+      return mPredicates.find(name) != mPredicates.end();
+   }
+
+   GOAPPredicates::GOAPPredicates()
+   {
+   }
+
+   GOAPPredicates::~GOAPPredicates()
+   {
+   }
+
+   PredicatesInterface & GOAPPredicates::create(std::string name)
+   {
+      mCurPred = name;
+      return *this;
+   }
+
+   PredicatesInterface & GOAPPredicates::parameter(std::string name, std::string type)
+   {
+      return *this;
+   }
+
+   void GOAPPredicates::add()
+   {
+      // Add new predicate
+      mPredicates.insert(mCurPred);
+   }
+
+   bool GOAPPredicates::has(std::string name) const
    {
       return mPredicates.find(name) != mPredicates.end();
    }

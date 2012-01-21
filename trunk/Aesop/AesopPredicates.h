@@ -8,11 +8,11 @@
 
 #include <map>
 #include <string>
+#include <set>
 
 namespace ae {
    /// @brief A set of Predicates defined in a particular planning problem.
    /// @ingroup Aesop
-   template<class ID>
    class PredicatesInterface {
    public:
       /// @name Predicate construction
@@ -20,12 +20,14 @@ namespace ae {
 
       /// @brief Construct a new Predicate.
       /// @param name Name of the new Predicate.
-      virtual void create(ID name) = 0;
+      /// @return This PredicatesInterface object.
+      virtual PredicatesInterface &create(std::string name) = 0;
 
       /// @brief Add a parameter to the Predicate under construction.
       /// @param name The name of this parameter.
       /// @param type The type of data this parameter must hold.
-      virtual void parameter(ID name, std::string type = "") = 0;
+      /// @return This PredicatesInterface object.
+      virtual PredicatesInterface &parameter(std::string name, std::string type = "") = 0;
 
       /// @brief Add the Predicate that is currently under construction.
       virtual void add() = 0;
@@ -35,22 +37,22 @@ namespace ae {
       /// @brief Do we have a predicate of the given name?
       /// @param name Look for predicates with this name.
       /// @return True if we have a predicate with that name, false if not.
-      virtual bool has(ID name) const = 0;
+      virtual bool has(std::string name) const = 0;
 
    protected:
       /// @brief Alternate name for has method.
       /// @see Predicates::has
-      bool have(ID name) const { return has(name); }
+      bool have(std::string name) const { return has(name); }
 
    private:
    };
 
    /// @brief A full implementation of the PredicatesInterface.
    /// @ingroup Aesop
-   class Predicates : public PredicatesInterface<std::string> {
+   class Predicates : public PredicatesInterface {
    public:
-      void create(std::string name);
-      void parameter(std::string name, std::string type = "");
+      PredicatesInterface &create(std::string name);
+      PredicatesInterface &parameter(std::string name, std::string type = "");
       void add();
       bool has(std::string name) const;
 
@@ -95,6 +97,34 @@ namespace ae {
 
    /// @brief Default list of no predicates.
    const Predicates NoPredicates;
+
+   /// @brief A limited, optimised Predicate container.
+   /// This container cannot store predicates with parameters.
+   /// @ingroup Aesop
+   class GOAPPredicates : public PredicatesInterface {
+   public:
+      PredicatesInterface &create(std::string name);
+      PredicatesInterface &parameter(std::string name, std::string type = "");
+      void add();
+      bool has(std::string name) const;
+
+      /// @brief Default constructor.
+      GOAPPredicates();
+
+      /// @brief Default destructor.
+      ~GOAPPredicates();
+
+   protected:
+   private:
+      /// @brief List of predicate names.
+      typedef std::set<std::string> predicatelist;
+
+      /// @brief Store our defined Predicates.
+      predicatelist mPredicates;
+
+      /// @brief Current predicate being created.
+      std::string mCurPred;
+   };
 };
 
 #endif
