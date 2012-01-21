@@ -108,10 +108,6 @@ namespace ae {
       /// @return Handle of our types.
       const Predicates &getPredicates() const { return mPredicates; }
 
-      /// @brief Get the Requirements from our Predicates.
-      /// @return Handle to our Requirements.
-      const Requirements &getRequirements() const { return getPredicates().getRequirements(); }
-
       /// @brief Default constructor.
       /// @param reqs  Requirements we must adhere to.
       /// @param types Types to validate our Action parameters.
