@@ -5,9 +5,6 @@
 #include "AesopTest.h"
 
 // Test cases for each class.
-#include "tests/AesopActionSetTest.h"
-#include "tests/AesopWorldStateTest.h"
-#include "tests/AesopPlannerTest.h"
 #include "tests/AesopTypesTest.h"
 #include "tests/AesopObjectsTest.h"
 
