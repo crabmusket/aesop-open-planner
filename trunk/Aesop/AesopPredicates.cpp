@@ -22,12 +22,17 @@ namespace ae {
       // Check for compliance with requirements.
       if(!getRequirements().predicateParameters && newpred.getParams().size())
          return;
-      if(!getRequirements().typing)
+      for(unsigned int i = 0; i < newpred.getParams().size(); i++)
       {
          for(Predicate::paramlist::const_iterator it = newpred.getParams().begin(); it != newpred.getParams().end(); it++)
             if(it->second != "")
                return;
+         if(!getRequirements().typing && newpred.getParams()[i].second != "")
+            return;
+         else if(!getTypes().has(newpred.getParams()[i].second))
+            return;
       }
+      // Add new predicate
       mPredicates[newpred.getName()] = newpred;
    }
 
