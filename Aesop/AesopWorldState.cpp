@@ -22,13 +22,13 @@ namespace ae {
    {
    }
 
-   bool WorldState::predicateSet(PName pred) const
+   bool WorldState::isSet(PName pred) const
    {
       worldrep::const_iterator it = mState.find(pred);
       return it != mState.end();
    }
 
-   PVal WorldState::getPredicate(PName pred) const
+   PVal WorldState::get(PName pred) const
    {
       worldrep::const_iterator it = mState.find(pred);
       if(it == mState.end())
@@ -36,24 +36,24 @@ namespace ae {
       return getPVal(it);
    }
 
-   void WorldState::setPredicate(PName pred, PVal val)
+   void WorldState::set(PName pred, PVal val)
    {
-      _setPredicate(pred, val);
+      _set(pred, val);
       updateHash();
    }
 
-   void WorldState::_setPredicate(PName pred, PVal val)
+   void WorldState::_set(PName pred, PVal val)
    {
       mState[pred] = val;
    }
 
-   void WorldState::unsetPredicate(PName pred)
+   void WorldState::unset(PName pred)
    {
-      _unsetPredicate(pred);
+      _unset(pred);
       updateHash();
    }
 
-   void WorldState::_unsetPredicate(PName pred)
+   void WorldState::_unset(PName pred)
    {
       worldrep::iterator it = mState.find(pred);
       if(it != mState.end())
@@ -70,7 +70,7 @@ namespace ae {
       const actionparams &spl = ac->getEffectParams();
       actionparams::const_iterator sit;
       for(sit = spl.begin(); sit != spl.end(); sit++)
-         params[sit->second] = getPredicate(sit->first);
+         params[sit->second] = get(sit->first);
 
       // Each predicate required and not set must have the correct value.
       const actionparams &rpl = ac->getConditionParams();
@@ -80,7 +80,7 @@ namespace ae {
          const worldrep &set = ac->getEffects();
          if(set.find(rit->first) == set.end() &&
             spl.find(rit->first) == spl.end())
-            params[rit->second] = getPredicate(rit->first);
+            params[rit->second] = get(rit->first);
       }
    }
 
@@ -95,10 +95,10 @@ namespace ae {
       for(it = awr.begin(); it != awr.end(); it++)
       {
          // If we don't have a mapping for this predicate then we fail.
-         if(!predicateSet(getPName(it)))
+         if(!isSet(getPName(it)))
             return false;
          // If the predicate isn't set to the right value, we fail.
-         if(getPredicate(getPName(it)) != getPVal(it))
+         if(get(getPName(it)) != getPVal(it))
             return false;
       }
 
@@ -110,10 +110,10 @@ namespace ae {
 
          for(pit = apl.begin(); pit != apl.end(); pit++)
          {
-            if(!predicateSet(pit->first))
+            if(!isSet(pit->first))
                return false;
             // If the predicate is set to the wrong value, fail.
-            if(getPredicate(pit->first) != params->at(pit->second))
+            if(get(pit->first) != params->at(pit->second))
                return false;
          }
       }
@@ -150,7 +150,7 @@ namespace ae {
          if(ait != set.end())
          {
             // Action touches this predicate; check value is correct.
-            if(getPVal(ait) == getPredicate(getPName(ait)))
+            if(getPVal(ait) == get(getPName(ait)))
             {
                matched++;
                continue;
@@ -166,7 +166,7 @@ namespace ae {
             {
                // Check if value matches.
                if(params && params->size() == ac->getNumParams() &&
-                  params->at(plit->second) == getPredicate(plit->first))
+                  params->at(plit->second) == get(plit->first))
                {
                   matched++;
                   continue;
@@ -181,7 +181,7 @@ namespace ae {
                if(rit != req.end())
                {
                   // Check to see if is is required to be the right value.
-                  if(rit->second == getPredicate(rit->first))
+                  if(rit->second == get(rit->first))
                   {
                      matched++;
                      continue;
@@ -196,7 +196,7 @@ namespace ae {
                   if(plit != preq.end())
                   {
                      if(params && params->size() == ac->getNumParams() &&
-                        params->at(plit->second) == getPredicate(plit->first))
+                        params->at(plit->second) == get(plit->first))
                      {
                         matched++;
                         continue;
@@ -221,7 +221,7 @@ namespace ae {
       // Predicates set by this Action.
       const worldrep &st = ac->getEffects();
       for(sit = st.begin(); sit != st.end(); sit++)
-         _setPredicate(getPName(sit), getPVal(sit));
+         _set(getPName(sit), getPVal(sit));
 
       // Predicate set to a parameter.
       if(params && params->size() == ac->getNumParams())
@@ -229,7 +229,7 @@ namespace ae {
          const actionparams &pl = ac->getEffectParams();
          actionparams::const_iterator plit;
          for(plit = pl.begin(); plit != pl.end(); plit++)
-            _setPredicate(plit->first, params->at(plit->second));
+            _set(plit->first, params->at(plit->second));
       }
 
       updateHash();
@@ -249,24 +249,24 @@ namespace ae {
       // Predicates that are touched by the Action are unset.
       const worldrep &set = ac->getEffects();
       for(sit = set.begin(); sit != set.end(); sit++)
-         _unsetPredicate(getPName(sit));
+         _unset(getPName(sit));
       if(params && params->size() == ac->getNumParams())
       {
          const actionparams &pl = ac->getEffectParams();
          for(plit = pl.begin(); plit != pl.end(); plit++)
-            _unsetPredicate(plit->first);
+            _unset(plit->first);
       }
 
       // Predicates that must be some value. This may re-set some of the
       // predicates that were unset above.
       const worldrep &req = ac->getConditions();
       for(sit = req.begin(); sit != req.end(); sit++)
-         _setPredicate(getPName(sit), getPVal(sit));
+         _set(getPName(sit), getPVal(sit));
       if(params && params->size() == ac->getNumParams())
       {
          const actionparams &pl = ac->getConditionParams();
          for(plit = pl.begin(); plit != pl.end(); plit++)
-            _setPredicate(plit->first, params->at(plit->second));
+            _set(plit->first, params->at(plit->second));
       }
 
       updateHash();
