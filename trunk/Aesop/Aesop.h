@@ -43,8 +43,6 @@ namespace ae {
    typedef std::string PName;
    /// @brief Represents the value of a predicate.
    typedef unsigned char PVal;
-   /// @brief Method of storing predicates and their values.
-   typedef std::map<PName, PVal> worldrep;
    /// @brief Simply stores a list of predicate names.
    typedef std::vector<PName> pnamelist;
    /// @brief Mapping of predicates to Action parameter indices.
@@ -63,13 +61,6 @@ namespace ae {
       equality, ///< Implements the '=' predicate.
       typing,   ///< Objects can have types.
    };
-
-   /// @brief Get the name of the world state entry.
-   inline PName getPName(worldrep::const_iterator it)
-   { return it->first; }
-   /// @brief Get the Predicate of the world state entry.
-   inline PVal getPVal(worldrep::const_iterator it)
-   { return it->second; }
 
    /// @brief An interface used to log the planning process.
    /// Designed to be implemented by the end-user in a manner particular to

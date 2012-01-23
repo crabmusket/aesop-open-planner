@@ -7,6 +7,7 @@
 #include "AesopDemo.h"
 #include "AesopObjects.h"
 #include "AesopPredicates.h"
+#include "AesopWorldState.h"
 
 /*void printPlan(ae::Plan plan)
 {
@@ -107,6 +108,12 @@ void simpleTest()
    // STEP 2. The Problem.
 
    // 2.1. Create initial and goal world states.
+   ae::GOAPWorldState init, goal;
+
+   init.set(haveGun, false);
+   init.set(haveTarget, true);
+
+   goal.set(targetDead, true);
 }
 
 int main(int argc, char **argv)
