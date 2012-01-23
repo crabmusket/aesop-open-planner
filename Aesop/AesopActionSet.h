@@ -111,7 +111,7 @@ namespace ae {
       /// @brief Default constructor.
       /// @param reqs  Requirements we must adhere to.
       /// @param types Types to validate our Action parameters.
-      ActionSet(const Predicates &preds = NoPredicates);
+      ActionSet(const Predicates &preds);
 
       /// @brief Default destructor.
       ~ActionSet();

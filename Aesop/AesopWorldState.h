@@ -76,8 +76,15 @@ namespace ae {
       /// @brief Boolean inequality test.
       //virtual bool operator!=(const WorldStateTemplate<n, v> &s) const = 0;
 
+      /// @brief Get the PredicatesTemplate object used by this WorldStateTemplate.
+      /// @return A PredicatesTemplate object of the same type.
+      const PredicatesTemplate<pname> &getPredicates() { return mPredicates; }
+
+      WorldStateTemplate(const PredicatesTemplate<n> &p) : mPredicates(p) {}
+
    protected:
    private:
+      const PredicatesTemplate<n> &mPredicates;
    };
 
    /// @brief Default fully-featured world state.
@@ -96,7 +103,7 @@ namespace ae {
       { return !operator==(s); }
 
       /// @brief Default constructor.
-      WorldState();
+      WorldState(const PredicatesTemplate<pname> &p);
       /// @brief Default destructor.
       ~WorldState();
    protected:
@@ -138,7 +145,7 @@ namespace ae {
       { return !operator==(s); }
 
       /// @brief Default constructor.
-      GOAPWorldState();
+      GOAPWorldState(const PredicatesTemplate<pname> &p);
       /// @brief Default destructor.
       ~GOAPWorldState();
    protected:

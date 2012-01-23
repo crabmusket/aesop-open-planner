@@ -108,7 +108,7 @@ void simpleTest()
    // STEP 2. The Problem.
 
    // 2.1. Create initial and goal world states.
-   ae::GOAPWorldState init, goal;
+   ae::GOAPWorldState init(preds), goal(preds);
 
    init.set(haveGun, false);
    init.set(haveTarget, true);
