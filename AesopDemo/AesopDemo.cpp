@@ -74,16 +74,29 @@ void simpleTest()
    // 1.1. Create predicates that describe the physics of our problem.
    ae::GOAPPredicates preds;
 
-   preds.create("fireGun").add();
-   preds.create("gunLoaded").add();
-   preds.create("gunEquipped").add();
-   preds.create("haveGun").add();
-   preds.create("fireTurret").add();
-   preds.create("mountTurret").add();
-   preds.create("findTurret").add();
-   preds.create("meleeAttack").add();
-   preds.create("haveTarget").add();
-   preds.create("targetDead").add();
+   enum {
+      fireGun,
+      gunLoaded,
+      gunEquipped,
+      haveGun,
+      fireTurret,
+      mountTurret,
+      findTurret,
+      meleeAttack,
+      haveTarget,
+      targetDead
+   };
+
+   preds.add(fireGun);
+   preds.add(gunLoaded);
+   preds.add(gunEquipped);
+   preds.add(haveGun);
+   preds.add(fireTurret);
+   preds.add(mountTurret);
+   preds.add(findTurret);
+   preds.add(meleeAttack);
+   preds.add(haveTarget);
+   preds.add(targetDead);
 
    // 1.2. Create actions to modify the world state.
 

@@ -17,13 +17,13 @@ namespace ae {
    {
    }
 
-   PredicatesInterface & Predicates::create(std::string name)
+   Predicates &Predicates::create(std::string name)
    {
       mCurPred = Predicate(name);
       return *this;
    }
 
-   PredicatesInterface & Predicates::parameter(std::string name, std::string type)
+   Predicates &Predicates::parameter(std::string name, std::string type)
    {
       mCurPred.mParams.push_back(name);
       mCurPred.mTypes.push_back(type);
@@ -36,6 +36,10 @@ namespace ae {
       mPredicates[mCurPred.mName] = mCurPred;
    }
 
+   /// Predicates is implemented using a std::set, which means some sort of
+   /// balanced binary search tree. That means performance something like
+   /// O(logn) in the number of predicate names defined. And remember that each
+   /// of those operations is a string comparison.
    bool Predicates::has(std::string name) const
    {
       return mPredicates.find(name) != mPredicates.end();
@@ -49,25 +53,17 @@ namespace ae {
    {
    }
 
-   PredicatesInterface & GOAPPredicates::create(std::string name)
+   void GOAPPredicates::add(unsigned int id)
    {
-      mCurPred = name;
-      return *this;
+      if(mPredicates.size() <= id)
+         mPredicates.resize(id + 1);
+      mPredicates[id] = true;
    }
 
-   PredicatesInterface & GOAPPredicates::parameter(std::string name, std::string type)
+   /// GOAPPredicates is just an array of flags, so the performance of this
+   /// method should be pretty much O(1).
+   bool GOAPPredicates::has(unsigned int id) const
    {
-      return *this;
-   }
-
-   void GOAPPredicates::add()
-   {
-      // Add new predicate
-      mPredicates.insert(mCurPred);
-   }
-
-   bool GOAPPredicates::has(std::string name) const
-   {
-      return mPredicates.find(name) != mPredicates.end();
+      return id < mPredicates.size() && mPredicates[id];
    }
 };
