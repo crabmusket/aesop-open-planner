@@ -17,13 +17,13 @@ namespace ae {
    {
    }
 
-   Predicates &Predicates::create(std::string name)
+   Predicates &Predicates::create(pname name)
    {
       mCurPred = Predicate(name);
       return *this;
    }
 
-   Predicates &Predicates::parameter(std::string name, std::string type)
+   Predicates &Predicates::parameter(pname name, std::string type)
    {
       mCurPred.mParams.push_back(name);
       mCurPred.mTypes.push_back(type);
@@ -40,7 +40,7 @@ namespace ae {
    /// balanced binary search tree. That means performance something like
    /// O(logn) in the number of predicate names defined. And remember that each
    /// of those operations is a string comparison.
-   bool Predicates::has(std::string name) const
+   bool Predicates::has(pname name) const
    {
       return mPredicates.find(name) != mPredicates.end();
    }
@@ -58,7 +58,7 @@ namespace ae {
       mPredicates.reserve(count);
    }
 
-   void GOAPPredicates::add(unsigned int id)
+   void GOAPPredicates::add(pname id)
    {
       if(mPredicates.size() <= id)
          mPredicates.resize(id + 1);
@@ -67,7 +67,7 @@ namespace ae {
 
    /// GOAPPredicates is just an array of flags, so the performance of this
    /// method should be pretty much O(1).
-   bool GOAPPredicates::has(unsigned int id) const
+   bool GOAPPredicates::has(pname id) const
    {
       return id < mPredicates.size() && mPredicates[id];
    }

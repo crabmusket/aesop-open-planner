@@ -11,7 +11,7 @@ namespace ae {
    /// used by individual characters as a representation of their knowledge,
    /// but is also used internally in planning.
 
-   WorldState::WorldState()
+   WorldState::WorldState(const PredicatesTemplate<pname> &p) : WorldStateTemplate(p)
    {
       mHash = 0;
    }
@@ -341,7 +341,7 @@ namespace ae {
       return score;
    }*/
 
-   GOAPWorldState::GOAPWorldState()
+   GOAPWorldState::GOAPWorldState(const PredicatesTemplate<pname> &p) : WorldStateTemplate(p)
    {
       mHash = 0;
    }

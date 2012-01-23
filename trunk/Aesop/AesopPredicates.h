@@ -13,10 +13,10 @@
 namespace ae {
    /// @brief A set of Predicates defined in a particular planning problem.
    /// @ingroup Aesop
-   template<typename p>
-   class PredicatesInterface {
+   template<typename n>
+   class PredicatesTemplate {
    public:
-      typedef p pname;
+      typedef n pname;
 
       /// @brief Do we have a predicate of the given name?
       /// @param name Look for predicates with this name.
@@ -33,7 +33,7 @@ namespace ae {
 
    /// @brief A full implementation of the PredicatesInterface.
    /// @ingroup Aesop
-   class Predicates : public PredicatesInterface<std::string> {
+   class Predicates : public PredicatesTemplate<std::string> {
    public:
       /// @name Predicate construction
       /// @{
@@ -41,20 +41,20 @@ namespace ae {
       /// @brief Construct a new Predicate.
       /// @param name Name of the new Predicate.
       /// @return This PredicatesInterface object.
-      Predicates &create(std::string name);
+      Predicates &create(pname name);
 
       /// @brief Add a parameter to the Predicate under construction.
       /// @param name The name of this parameter.
       /// @param type The type of data this parameter must hold.
       /// @return This PredicatesInterface object.
-      Predicates &parameter(std::string name, std::string type = "");
+      Predicates &parameter(pname name, std::string type = "");
 
       /// @brief Add the Predicate that is currently under construction.
       void add();
 
       /// @}
 
-      bool has(std::string name) const;
+      virtual bool has(pname name) const;
 
       /// @brief Default constructor.
       Predicates(const Types &types = NoTypes);
@@ -83,7 +83,7 @@ namespace ae {
       };
 
       /// @brief Maps predicate names to Predicate objects.
-      typedef std::map<std::string, Predicate> predicatemap;
+      typedef std::map<pname, Predicate> predicatemap;
 
       /// @brief Store our defined Predicates.
       predicatemap mPredicates;
@@ -95,13 +95,10 @@ namespace ae {
       const Types &mTypes;
    };
 
-   /// @brief Default list of no predicates.
-   const Predicates NoPredicates;
-
    /// @brief A limited, optimised Predicate container.
    /// This container cannot store predicates with parameters.
    /// @ingroup Aesop
-   class GOAPPredicates : public PredicatesInterface<unsigned int> {
+   class GOAPPredicates : public PredicatesTemplate<unsigned int> {
    public:
       /// @name Predicate construction
       /// @{
@@ -112,11 +109,11 @@ namespace ae {
 
       /// @brief Register a predicate ID for use.
       /// @param id Integer value of the predicate to use.
-      void add(unsigned int id);
+      void add(pname id);
 
       /// @}
 
-      bool has(unsigned int id) const;
+      virtual bool has(pname id) const;
 
       /// @brief Default constructor.
       GOAPPredicates();
