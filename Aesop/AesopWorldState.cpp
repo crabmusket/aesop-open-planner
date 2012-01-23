@@ -1,8 +1,6 @@
 /// @file AesopWorldState.cpp
 /// @brief Implementation of WorldState class as defined in AesopWorldState.h
 
-#include <algorithm>
-
 #include "AesopWorldState.h"
 
 namespace ae {
@@ -22,44 +20,44 @@ namespace ae {
    {
    }
 
-   bool WorldState::isSet(PName pred) const
+   bool WorldState::isSet(pname pred) const
    {
       worldrep::const_iterator it = mState.find(pred);
       return it != mState.end();
    }
 
-   PVal WorldState::get(PName pred) const
+   WorldState::pval WorldState::get(pname pred, pval def) const
    {
       worldrep::const_iterator it = mState.find(pred);
       if(it == mState.end())
-         return 0;
+         return def;
       return getPVal(it);
    }
 
-   void WorldState::set(PName pred, PVal val)
+   void WorldState::set(pname pred, pval val)
    {
       _set(pred, val);
       updateHash();
    }
 
-   void WorldState::_set(PName pred, PVal val)
+   void WorldState::_set(pname pred, pval val)
    {
       mState[pred] = val;
    }
 
-   void WorldState::unset(PName pred)
+   void WorldState::unset(pname pred)
    {
       _unset(pred);
       updateHash();
    }
 
-   void WorldState::_unset(PName pred)
+   void WorldState::_unset(pname pred)
    {
       worldrep::iterator it = mState.find(pred);
       if(it != mState.end())
          mState.erase(it);
    }
-
+/*
    /// This method is responsible for setting the parameters in the paramlist
    /// that are required to be a certain value in order to match this state.
    void WorldState::actionGetParams(const Action *ac, paramlist &params) const
@@ -271,7 +269,7 @@ namespace ae {
 
       updateHash();
    }
-
+*/
    /// This hash method sums the string hashes of all the predicate names in
    /// this state, XORing certain bits based on the values of each predicate.
    /// @todo Is there a better hash func to use? Should do some unit testing.
@@ -284,10 +282,10 @@ namespace ae {
          unsigned int l = getPName(it).length();
          while(l)
             mHash = 31 * mHash + getPName(it)[--l];
-         mHash ^= getPVal(it) << getPName(it).length() % (sizeof(unsigned int) - sizeof(PVal));
+         mHash ^= getPVal(it) << getPName(it).length() % (sizeof(unsigned int) - sizeof(pval));
       }
    }
-
+/*
    /// The difference score between two WorldStates is equal to the number of
    /// predicates which they both have defined, but to different values.
    /// Predicates that are not defined in one state, or are flagged as unset
@@ -341,5 +339,57 @@ namespace ae {
       }
 
       return score;
+   }*/
+
+   GOAPWorldState::GOAPWorldState()
+   {
+      mHash = 0;
+   }
+
+   GOAPWorldState::~GOAPWorldState()
+   {
+   }
+
+   bool GOAPWorldState::isSet(pname pred) const
+   {
+      return mState.size() < pred && mState[pred].set;
+   }
+
+   GOAPWorldState::pval GOAPWorldState::get(pname pred, pval def) const
+   {
+      return mState.size() < pred ? mState[pred].value : def;
+   }
+
+   void GOAPWorldState::set(pname pred, pval val)
+   {
+      if(pred < mState.size())
+      {
+         _set(pred, val);
+         updateHash();
+      }
+   }
+
+   void GOAPWorldState::_set(pname pred, pval val)
+   {
+      mState[pred].value = val;
+      mState[pred].set = true;
+   }
+
+   void GOAPWorldState::unset(pname pred)
+   {
+      if(pred < mState.size())
+      {
+         _unset(pred);
+         updateHash();
+      }
+   }
+
+   void GOAPWorldState::_unset(pname pred)
+   {
+      mState[pred].set = false;
+   }
+
+   void GOAPWorldState::updateHash()
+   {
    }
 };
