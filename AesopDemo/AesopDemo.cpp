@@ -87,6 +87,9 @@ void simpleTest()
       targetDead
    };
 
+   // Underestimate number of predicates as a test.
+   preds.reserve(meleeAttack);
+
    preds.add(fireGun);
    preds.add(gunLoaded);
    preds.add(gunEquipped);

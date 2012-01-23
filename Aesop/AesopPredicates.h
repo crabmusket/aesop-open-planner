@@ -13,9 +13,11 @@
 namespace ae {
    /// @brief A set of Predicates defined in a particular planning problem.
    /// @ingroup Aesop
-   template<typename pname, typename paramname, typename paramtype, typename pval>
+   template<typename p>
    class PredicatesInterface {
    public:
+      typedef p pname;
+
       /// @brief Do we have a predicate of the given name?
       /// @param name Look for predicates with this name.
       /// @return True if we have a predicate with that name, false if not.
@@ -31,7 +33,7 @@ namespace ae {
 
    /// @brief A full implementation of the PredicatesInterface.
    /// @ingroup Aesop
-   class Predicates : public PredicatesInterface<std::string, std::string, std::string, bool> {
+   class Predicates : public PredicatesInterface<std::string> {
    public:
       /// @name Predicate construction
       /// @{
@@ -99,10 +101,14 @@ namespace ae {
    /// @brief A limited, optimised Predicate container.
    /// This container cannot store predicates with parameters.
    /// @ingroup Aesop
-   class GOAPPredicates : public PredicatesInterface<unsigned int, char, char, int> {
+   class GOAPPredicates : public PredicatesInterface<unsigned int> {
    public:
       /// @name Predicate construction
       /// @{
+
+      /// @brief Prepare the object for this many predicate entries.
+      /// @param count The expected number of predicates to store.
+      void reserve(unsigned int count);
 
       /// @brief Register a predicate ID for use.
       /// @param id Integer value of the predicate to use.

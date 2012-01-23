@@ -53,6 +53,11 @@ namespace ae {
    {
    }
 
+   void GOAPPredicates::reserve(unsigned int count)
+   {
+      mPredicates.reserve(count);
+   }
+
    void GOAPPredicates::add(unsigned int id)
    {
       if(mPredicates.size() <= id)
