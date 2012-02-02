@@ -19,13 +19,13 @@ namespace ae {
    {
    }
 
-   bool AesopWorldState::isSet(pname pred) const
+   bool AesopWorldState::isSet(pname pred, pparams params) const
    {
       worldrep::const_iterator it = mState.find(pred);
       return it != mState.end();
    }
 
-   AesopWorldState::pval AesopWorldState::get(pname pred, pval def) const
+   AesopWorldState::pval AesopWorldState::get(pname pred, pparams params, pval def) const
    {
       worldrep::const_iterator it = mState.find(pred);
       if(it == mState.end())
@@ -33,20 +33,20 @@ namespace ae {
       return getPVal(it);
    }
 
-   void AesopWorldState::set(pname pred, pval val)
+   void AesopWorldState::set(pname pred, pparams params, pval val)
    {
-      _set(pred, val);
+      _set(pred, params, val);
       updateHash();
    }
 
-   void AesopWorldState::_set(pname pred, pval val)
+   void AesopWorldState::_set(pname pred, pparams params, pval val)
    {
       mState[pred] = val;
    }
 
-   void AesopWorldState::unset(pname pred)
+   void AesopWorldState::unset(pname pred, pparams params)
    {
-      _unset(pred);
+      _unset(pred, params);
       updateHash();
    }
 
@@ -355,17 +355,17 @@ namespace ae {
    {
    }
 
-   bool GOAPWorldState::isSet(pname pred) const
+   bool GOAPWorldState::isSet(pname pred, pparams params) const
    {
       return mState.size() < pred && mState[pred].set;
    }
 
-   GOAPWorldState::pval GOAPWorldState::get(pname pred, pval def) const
+   GOAPWorldState::pval GOAPWorldState::get(pname pred, pparams, pval def) const
    {
       return mState.size() < pred ? mState[pred].value : def;
    }
 
-   void GOAPWorldState::set(pname pred, pval val)
+   void GOAPWorldState::set(pname pred, pparams, pval val)
    {
       if(pred < mState.size())
       {
@@ -380,7 +380,7 @@ namespace ae {
       mState[pred].set = true;
    }
 
-   void GOAPWorldState::unset(pname pred)
+   void GOAPWorldState::unset(pname pred, pparams params)
    {
       if(pred < mState.size())
       {

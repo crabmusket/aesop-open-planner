@@ -13,41 +13,51 @@
 namespace ae {
    /// @brief A set of Predicates defined in a particular planning problem.
    /// @ingroup Aesop
-   template<typename n>
+   template<typename n, typename p>
    class Predicates {
    public:
       typedef n pname;
+      typedef p ppparam;
 
       /// @brief Do we have a predicate of the given name?
-      /// @param name Look for predicates with this name.
+      /// @param[in] name Look for predicates with this name.
       /// @return True if we have a predicate with that name, false if not.
       virtual bool has(pname name) const = 0;
+
+      /// @brief Does the predicate have a parameter of this name?
+      /// @pram[in] name   Predicate to look for.
+      /// @param[in] param Name of the parameter to test.
+      virtual bool hasParam(pname name, pparam param) const = 0;
 
    protected:
       /// @brief Alternate name for has method.
       /// @see Predicates::has
       bool have(pname name) const { return has(name); }
 
+      /// @brief Alternate name for has method.
+      /// @see Predicates::hasParam
+      bool haveParam(pname name, pparam param) const { return hasParam(name, param); }
+
    private:
    };
 
    /// @brief A full implementation of the Predicates interface.
    /// @ingroup Aesop
-   class AesopPredicates : public Predicates<std::string> {
+   class AesopPredicates : public Predicates<std::string, std::string> {
    public:
       /// @name Predicate construction
       /// @{
 
       /// @brief Construct a new Predicate.
-      /// @param name Name of the new Predicate.
+      /// @param[in] name Name of the new Predicate.
       /// @return This PredicatesInterface object.
       AesopPredicates &create(pname name);
 
       /// @brief Add a parameter to the Predicate under construction.
-      /// @param name The name of this parameter.
-      /// @param type The type of data this parameter must hold.
+      /// @param[in] name The name of this parameter.
+      /// @param[in] type The type of data this parameter must hold.
       /// @return This PredicatesInterface object.
-      AesopPredicates &parameter(pname name, std::string type = "");
+      AesopPredicates &parameter(pparam name, std::string type = "");
 
       /// @brief Add the Predicate that is currently under construction.
       void add();
@@ -55,8 +65,10 @@ namespace ae {
       /// @}
 
       virtual bool has(pname name) const;
+      virtual bool hasParam(pname name, pparam param) const;
 
       /// @brief Default constructor.
+      /// @oaram[in] types Types object to validate Predicate parameter typing.
       AesopPredicates(const Types &types = NoTypes);
 
       /// @brief Default destructor.
@@ -98,7 +110,7 @@ namespace ae {
    /// @brief A limited, optimised Predicate container.
    /// This container cannot store predicates with parameters.
    /// @ingroup Aesop
-   class GOAPPredicates : public Predicates<unsigned int> {
+   class GOAPPredicates : public Predicates<unsigned int, char> {
    public:
       /// @name Predicate construction
       /// @{
@@ -114,6 +126,7 @@ namespace ae {
       /// @}
 
       virtual bool has(pname id) const;
+      virtual bool hasParam(pname name, pparam param) const;
 
       /// @brief Default constructor.
       GOAPPredicates();

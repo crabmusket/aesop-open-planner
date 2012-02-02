@@ -16,31 +16,36 @@ namespace ae {
    /// but is also used internally in planning.
    ///
    /// @ingroup Aesop
-   template<typename n, typename v>
+   template<typename n, typename p, typename v>
    class WorldState {
    public:
       typedef n pname;
+      typedef p pparams;
       typedef v pval;
 
       /// @brief Is the predicate set to a value?
-      /// @param[in] pred Name of the predicate to check.
+      /// @param[in] pred   Name of the predicate to check.
+      /// @param[in] params Map of parameter names to values to check.
       /// @return True iff the predicate is set to some valid value.
-      virtual bool isSet(pname pred) const = 0;
+      virtual bool isSet(pname pred, pparams params) const = 0;
 
       /// @brief Get the value of a predicate.
-      /// @param[in] pred Name of predicate to check.
-      /// @param[in] def  Default predicate value if unset.
+      /// @param[in] pred   Name of predicate to check.
+      /// @param[in] params Map of parameter names to values to check.
+      /// @param[in] def    Default predicate value if unset.
       /// @return The value of the predicate
-      virtual pval get(pname pred, pval def) const = 0;
+      virtual pval get(pname pred, pparams params, pval def) const = 0;
 
       /// @brief Set the value of a predicate.
-      /// @param[in] pred Name of predicate to set.
-      /// @param[in] val Value to set the predicate to.
-      virtual void set(pname pred, pval val) = 0;
+      /// @param[in] pred   Name of predicate to set.
+      /// @param[in] params Map of parameter names to values to check.
+      /// @param[in] val    Value to set the predicate to.
+      virtual void set(pname pred, pparams param, pval val) = 0;
 
       /// @brief Remove our knowledge of a certain predicate.
-      /// @param[in] pred Name of the predicate to clear.
-      virtual void unset(pname pred) = 0;
+      /// @param[in] pred   Name of the predicate to clear.
+      /// @param[in] params Map of parameter names to values to check.
+      virtual void unset(pname pred, pparams params) = 0;
 
       /// @brief Do the given Action's pre-conditions match this world state?
       /// @param[in] ac     Action instance to test against this world state.
@@ -95,12 +100,12 @@ namespace ae {
 
    /// @brief Default fully-featured world state.
    /// @ingroup Aesop
-   class AesopWorldState : public WorldState<std::string, bool> {
+   class AesopWorldState : public WorldState<std::string, std::map<std::string, std::string>&, int> {
    public:
-      virtual bool isSet(pname pred) const;
-      virtual pval get(pname pred, pval def = false) const;
-      virtual void set(pname pred, pval val);
-      virtual void unset(pname pred);
+      virtual bool isSet(pname pred, pparams params) const;
+      virtual pval get(pname pred, pparams params, pval def = false) const;
+      virtual void set(pname pred, pparams params, pval val);
+      virtual void unset(pname pred, pparams params);
 
       /// @TODO Reinstate some form of comparison between WorldStateTemplate subclasses.
       virtual bool operator==(const WorldState &s) const
@@ -121,9 +126,9 @@ namespace ae {
       int mHash;
 
       /// @brief Set a predicate value without updating our hash.
-      void _set(pname pred, pval val);
+      void _set(pname pred, pparams params, pval val);
       /// @brief Unset a predicate value without updating our hash.
-      void _unset(pname pred);
+      void _unset(pname pred, pparams params);
 
       /// @brief Update our hash value.
       void updateHash();
@@ -138,12 +143,12 @@ namespace ae {
 
    /// @brief Performant but limited world state storage.
    /// @ingroup Aesop
-   class GOAPWorldState : public WorldState<unsigned int, int> {
+   class GOAPWorldState : public WorldState<unsigned int, char, int> {
    public:
-      virtual bool isSet(pname pred) const;
-      virtual pval get(pname pred, pval def = false) const;
-      virtual void set(pname pred, pval val);
-      virtual void unset(pname pred);
+      virtual bool isSet(pname pred, pparams params) const;
+      virtual pval get(pname pred, pparams params, pval def = false) const;
+      virtual void set(pname pred, pparams params, pval val);
+      virtual void unset(pname pred, pparams params);
 
       virtual bool operator==(const GOAPWorldState &s) const
       { return mHash != s.mHash ? false : true; }
