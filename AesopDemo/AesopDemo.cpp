@@ -36,24 +36,45 @@ void complexTest()
    types.add("physob");
    types.add("place");
    types.add("person", "physob");
+   types.add("vendor", "physob");
+   types.add("money", "physob");
+   types.add("food", "physob");
 
    // 1.2. Create predicates that describe the physics of our problem.
    ae::AesopPredicates preds;
 
+   // A physical object can be at a place
    preds.create("at");
+   preds.parameter("who", "physob");
    preds.parameter("where", "place");
    preds.add();
 
+   // Two places can be adjacent
    preds.create("adjacent");
    preds.parameter("a", "place");
    preds.parameter("b", "place");
    preds.add();
 
-   preds.create("hungry").add();
+   preds.create("hungry");
+   preds.parameter("who", "person");
+   preds.add();
 
-   preds.create("money").add();
+   preds.create("carrying");
+   preds.parameter("who", "person");
+   preds.parameter("what", "physob");
+   preds.add();
+
+   preds.create("in");
+   preds.parameter("a", "physob");
+   preds.parameter("b", "physob");
+   preds.add();
 
    // 1.3. Define actions we can use to modify the world state.
+
+   // move person place place
+   // pickup person physob
+   // eat person food
+   // purchase person vendor money physob
 
    // --------------------
    // STEP 2. The Problem.
@@ -63,6 +84,10 @@ void complexTest()
    objects.add("roomA", "place");
    objects.add("roomB", "place");
    objects.add("roomC", "place");
+   objects.add("me", "person");
+   objects.add("sandwich", "food");
+   objects.add("machine", "vendor");
+   objects.add("coins", "money");
 
    // 2.2. Create initial and goal world states.
 }
@@ -85,22 +110,12 @@ void simpleTest()
       findTurret,
       meleeAttack,
       haveTarget,
-      targetDead
+      targetDead,
+      NUMPREDS
    };
 
-   // Underestimate number of predicates as a test.
-   preds.reserve(meleeAttack);
-
-   preds.add(fireGun);
-   preds.add(gunLoaded);
-   preds.add(gunEquipped);
-   preds.add(haveGun);
-   preds.add(fireTurret);
-   preds.add(mountTurret);
-   preds.add(findTurret);
-   preds.add(meleeAttack);
-   preds.add(haveTarget);
-   preds.add(targetDead);
+   // Make room for all predicates.
+   preds.size(NUMPREDS);
 
    // 1.2. Create actions to modify the world state.
 

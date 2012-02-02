@@ -19,6 +19,10 @@ namespace ae {
       typedef n pname;
       typedef p ppparam;
 
+      /// @brief Number of predicates we define.
+      /// @return Number of predicates defined.
+      virtual unsigned int size() const = 0;
+
       /// @brief Do we have a predicate of the given name?
       /// @param[in] name Look for predicates with this name.
       /// @return True if we have a predicate with that name, false if not.
@@ -64,6 +68,7 @@ namespace ae {
 
       /// @}
 
+      virtual unsigned int size() const;
       virtual bool has(pname name) const;
       virtual bool hasParam(pname name, pparam param) const;
 
@@ -117,14 +122,11 @@ namespace ae {
 
       /// @brief Prepare the object for this many predicate entries.
       /// @param count The expected number of predicates to store.
-      void reserve(unsigned int count);
-
-      /// @brief Register a predicate ID for use.
-      /// @param id Integer value of the predicate to use.
-      void add(pname id);
+      void size(unsigned int count);
 
       /// @}
 
+      virtual unsigned int size() const;
       virtual bool has(pname id) const;
       virtual bool hasParam(pname name, pparam param) const;
 
@@ -136,11 +138,8 @@ namespace ae {
 
    protected:
    private:
-      /// @brief List of predicate IDs that are used.
-      typedef std::vector<char> predicatelist;
-
-      /// @brief Store our defined Predicates.
-      predicatelist mPredicates;
+      /// @brief Maximum predicate ID that can be used.
+      unsigned int mPredicateMax;
    };
 };
 
