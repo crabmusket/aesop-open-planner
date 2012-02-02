@@ -23,7 +23,7 @@ namespace ae {
       return *this;
    }
 
-   AesopPredicates &AesopPredicates::parameter(pname name, std::string type)
+   AesopPredicates &AesopPredicates::parameter(pparam name, std::string type)
    {
       mCurPred.mParams.push_back(name);
       mCurPred.mTypes.push_back(type);
