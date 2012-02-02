@@ -102,24 +102,61 @@ void simpleTest()
    ae::GOAPPredicates preds;
 
    enum {
-      fireGun,
       gunLoaded,
       gunEquipped,
       haveGun,
-      fireTurret,
-      mountTurret,
-      findTurret,
-      meleeAttack,
+      inTurret,
       haveTarget,
       targetDead,
       NUMPREDS
    };
 
-   // Make room for all predicates.
+   // Define all predicates.
    preds.size(NUMPREDS);
 
    // 1.2. Create actions to modify the world state.
    ae::GOAPActionSet actions(preds);
+
+   actions.create("attackRanged");
+   actions.condition(haveTarget, true);
+   actions.condition(gunLoaded, true);
+   actions.effect(targetDead, true);
+   actions.effect(gunLoaded, false);
+   actions.add();
+
+   actions.create("attackMelee");
+   actions.condition(haveTarget, true);
+   actions.condition();
+   actions.effect(targetDead, true);
+   actions.add();
+
+   actions.create("attackTurret");
+   actions.condition(haveTarget, true);
+   actions.condition();
+   actions.effect(targetDead, true);
+   actions.add();
+
+   actions.create("loadGun");
+   actions.condition(gunEquipped, true);
+   actions.condition(gunLoaded, false);
+   actions.effect(gunLoaded, true);
+   actions.add();
+
+   actions.create("drawGun");
+   actions.condition(haveGun, true);
+   actions.condition(gunEquipped, false);
+   actions.effect(gunEquipped, true);
+   actions.add();
+
+   actions.create("findGun");
+   actions.condition(haveGun, false);
+   actions.effect(haveGun, true);
+   actions.add();
+
+   actions.create("findTurret");
+   actions.condition(inTurret, false);
+   actions.effect(inTurret, true);
+   actions.add();
 
    // --------------------
    // STEP 2. The Problem.
@@ -128,9 +165,12 @@ void simpleTest()
    ae::GOAPWorldState init(preds), goal(preds);
 
    init.set(false, haveGun);
-   init.set(false, haveTarget);
+   init.set(true, haveTarget);
 
    goal.set(true, targetDead);
+
+   // --------------------
+   // STEP 3. The Solution.
 }
 
 int main(int argc, char **argv)
