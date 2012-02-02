@@ -6,7 +6,6 @@ SET(AesopSources
 	AesopPredicates.cpp
 	AesopActionSet.cpp
 	AesopWorldState.cpp
-	AesopPlanner.cpp
 )
 
 SET(AesopHeaders
@@ -16,7 +15,6 @@ SET(AesopHeaders
 	AesopPredicates.h
 	AesopConfig.h
 	AesopActionSet.h
-	AesopPlanner.h
 	AesopWorldState.h
 )
 

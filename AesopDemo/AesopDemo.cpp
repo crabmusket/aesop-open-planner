@@ -7,6 +7,7 @@
 #include "AesopDemo.h"
 #include "AesopObjects.h"
 #include "AesopPredicates.h"
+#include "AesopActionSet.h"
 #include "AesopWorldState.h"
 
 /*void printPlan(ae::Plan plan)
@@ -118,6 +119,7 @@ void simpleTest()
    preds.size(NUMPREDS);
 
    // 1.2. Create actions to modify the world state.
+   ae::GOAPActionSet actions(preds);
 
    // --------------------
    // STEP 2. The Problem.
@@ -125,10 +127,10 @@ void simpleTest()
    // 2.1. Create initial and goal world states.
    ae::GOAPWorldState init(preds), goal(preds);
 
-   init.set(haveGun, false);
-   init.set(haveTarget, true);
+   init.set(false, haveGun);
+   init.set(false, haveTarget);
 
-   goal.set(targetDead, true);
+   goal.set(true, targetDead);
 }
 
 int main(int argc, char **argv)
