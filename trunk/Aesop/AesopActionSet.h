@@ -65,6 +65,11 @@ namespace ae {
       /// @return This object.
       GOAPActionSet &effect(pname cond, bool set);
 
+      /// @brief Set the cost of the action we're constructing.
+      /// @param[in] cost Cost of the new action.
+      /// @return This object.
+      GOAPActionSet &cost(float cost);
+
       /// @brief Add the action that is currently being constructed.
       void add();
 
@@ -88,6 +93,8 @@ namespace ae {
       /// @brief Stores the details of a GOAP action.
       struct GOAPAction {
          std::string name;
+         float cost;
+         GOAPAction() : name(""), cost(0.0f) {}
       };
 
       /// @brief The action under construction.

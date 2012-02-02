@@ -33,6 +33,15 @@ namespace ae {
       return *this;
    }
 
+   GOAPActionSet &GOAPActionSet::const(float cost)
+   {
+      if(cost > 0.0f)
+         mCurrAction.cost = cost;
+      else
+         mCurrAction.cost = 0.0f;
+      return *this;
+   }
+
    void GOAPActionSet::add()
    {
       mActions.push_back(mCurrAction);
