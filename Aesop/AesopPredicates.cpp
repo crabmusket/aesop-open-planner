@@ -4,33 +4,33 @@
 #include "AesopPredicates.h"
 
 namespace ae {
-   /// @class Predicates
+   /// @class AesopPredicates
    ///
    /// 
 
-   Predicates::Predicates(const Types &types)
+   AesopPredicates::AesopPredicates(const Types &types)
       : mTypes(types)
    {
    }
 
-   Predicates::~Predicates()
+   AesopPredicates::~AesopPredicates()
    {
    }
 
-   Predicates &Predicates::create(pname name)
+   AesopPredicates &AesopPredicates::create(pname name)
    {
       mCurPred = Predicate(name);
       return *this;
    }
 
-   Predicates &Predicates::parameter(pname name, std::string type)
+   AesopPredicates &AesopPredicates::parameter(pname name, std::string type)
    {
       mCurPred.mParams.push_back(name);
       mCurPred.mTypes.push_back(type);
       return *this;
    }
 
-   void Predicates::add()
+   void AesopPredicates::add()
    {
       // Add new predicate
       mPredicates[mCurPred.mName] = mCurPred;
@@ -40,10 +40,14 @@ namespace ae {
    /// balanced binary search tree. That means performance something like
    /// O(logn) in the number of predicate names defined. And remember that each
    /// of those operations is a string comparison.
-   bool Predicates::has(pname name) const
+   bool AesopPredicates::has(pname name) const
    {
       return mPredicates.find(name) != mPredicates.end();
    }
+   
+   /// @class GOAPPredicates
+   ///
+   /// 
 
    GOAPPredicates::GOAPPredicates()
    {

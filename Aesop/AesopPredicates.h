@@ -14,7 +14,7 @@ namespace ae {
    /// @brief A set of Predicates defined in a particular planning problem.
    /// @ingroup Aesop
    template<typename n>
-   class PredicatesTemplate {
+   class Predicates {
    public:
       typedef n pname;
 
@@ -31,9 +31,9 @@ namespace ae {
    private:
    };
 
-   /// @brief A full implementation of the PredicatesInterface.
+   /// @brief A full implementation of the Predicates interface.
    /// @ingroup Aesop
-   class Predicates : public PredicatesTemplate<std::string> {
+   class AesopPredicates : public Predicates<std::string> {
    public:
       /// @name Predicate construction
       /// @{
@@ -41,13 +41,13 @@ namespace ae {
       /// @brief Construct a new Predicate.
       /// @param name Name of the new Predicate.
       /// @return This PredicatesInterface object.
-      Predicates &create(pname name);
+      AesopPredicates &create(pname name);
 
       /// @brief Add a parameter to the Predicate under construction.
       /// @param name The name of this parameter.
       /// @param type The type of data this parameter must hold.
       /// @return This PredicatesInterface object.
-      Predicates &parameter(pname name, std::string type = "");
+      AesopPredicates &parameter(pname name, std::string type = "");
 
       /// @brief Add the Predicate that is currently under construction.
       void add();
@@ -57,10 +57,10 @@ namespace ae {
       virtual bool has(pname name) const;
 
       /// @brief Default constructor.
-      Predicates(const Types &types = NoTypes);
+      AesopPredicates(const Types &types = NoTypes);
 
       /// @brief Default destructor.
-      ~Predicates();
+      ~AesopPredicates();
 
    protected:
    private:
@@ -98,7 +98,7 @@ namespace ae {
    /// @brief A limited, optimised Predicate container.
    /// This container cannot store predicates with parameters.
    /// @ingroup Aesop
-   class GOAPPredicates : public PredicatesTemplate<unsigned int> {
+   class GOAPPredicates : public Predicates<unsigned int> {
    public:
       /// @name Predicate construction
       /// @{
