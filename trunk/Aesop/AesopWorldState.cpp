@@ -349,6 +349,7 @@ namespace ae {
    GOAPWorldState::GOAPWorldState(const Predicates<pname> &p) : WorldState(p)
    {
       mHash = 0;
+      mState.resize(mPredicates.size());
    }
 
    GOAPWorldState::~GOAPWorldState()
@@ -357,17 +358,17 @@ namespace ae {
 
    bool GOAPWorldState::isSet(pname pred, pparams params) const
    {
-      return mState.size() < pred && mState[pred].set;
+      return mPredicates.has(pred) && mState[pred].set;
    }
 
    GOAPWorldState::pval GOAPWorldState::get(pname pred, pparams, pval def) const
    {
-      return mState.size() < pred ? mState[pred].value : def;
+      return mPredicates.has(pred) ? mState[pred].value : def;
    }
 
    void GOAPWorldState::set(pname pred, pparams, pval val)
    {
-      if(pred < mState.size())
+      if(mPredicates.has(pred))
       {
          _set(pred, val);
          updateHash();
@@ -382,7 +383,7 @@ namespace ae {
 
    void GOAPWorldState::unset(pname pred, pparams params)
    {
-      if(pred < mState.size())
+      if(mPredicates.has(pred))
       {
          _unset(pred);
          updateHash();

@@ -36,6 +36,11 @@ namespace ae {
       mPredicates[mCurPred.mName] = mCurPred;
    }
 
+   unsigned int AesopPredicates::size()
+   {
+      return mPredicates.size();
+   }
+
    /// Predicates is implemented using a std::set, which means some sort of
    /// balanced binary search tree. That means performance something like
    /// O(logn) in the number of predicate names defined. And remember that each
@@ -51,28 +56,27 @@ namespace ae {
 
    GOAPPredicates::GOAPPredicates()
    {
+      mPredicateMax = 0;
    }
 
    GOAPPredicates::~GOAPPredicates()
    {
    }
 
-   void GOAPPredicates::reserve(unsigned int count)
+   unsigned int GOAPPredicates::size()
    {
-      mPredicates.reserve(count);
+      return mPredicateMax + 1;
    }
 
-   void GOAPPredicates::add(pname id)
+   void GOAPPredicates::size(unsigned int count)
    {
-      if(mPredicates.size() <= id)
-         mPredicates.resize(id + 1);
-      mPredicates[id] = true;
+      mPredicateMax = count;
    }
 
    /// GOAPPredicates is just an array of flags, so the performance of this
    /// method should be pretty much O(1).
    bool GOAPPredicates::has(pname id) const
    {
-      return id < mPredicates.size() && mPredicates[id];
+      return id <= mPredicateMax;
    }
 };
