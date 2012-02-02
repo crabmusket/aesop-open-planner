@@ -17,7 +17,7 @@ namespace ae {
    class Predicates {
    public:
       typedef n pname;
-      typedef p ppparam;
+      typedef p pparam;
 
       /// @brief Number of predicates we define.
       /// @return Number of predicates defined.

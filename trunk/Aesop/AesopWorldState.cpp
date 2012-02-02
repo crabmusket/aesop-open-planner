@@ -10,7 +10,7 @@ namespace ae {
    /// strings, handles any number of parameters and arbitrary value
    /// assignments to each predicate.
 
-   AesopWorldState::AesopWorldState(const Predicates<pname> &p) : WorldState(p)
+   AesopWorldState::AesopWorldState(const preds &p) : WorldState(p)
    {
       mHash = 0;
    }
@@ -19,13 +19,13 @@ namespace ae {
    {
    }
 
-   bool AesopWorldState::isSet(pname pred, pparams params) const
+   bool AesopWorldState::isSet(pname pred, const pparams &params) const
    {
       worldrep::const_iterator it = mState.find(pred);
       return it != mState.end();
    }
 
-   AesopWorldState::pval AesopWorldState::get(pname pred, pparams params, pval def) const
+   AesopWorldState::pval AesopWorldState::get(pname pred, const pparams &params, pval def) const
    {
       worldrep::const_iterator it = mState.find(pred);
       if(it == mState.end())
@@ -33,24 +33,24 @@ namespace ae {
       return getPVal(it);
    }
 
-   void AesopWorldState::set(pname pred, pparams params, pval val)
+   void AesopWorldState::set(pval val, pname pred, const pparams &params)
    {
-      _set(pred, params, val);
+      _set(val, pred, params);
       updateHash();
    }
 
-   void AesopWorldState::_set(pname pred, pparams params, pval val)
+   void AesopWorldState::_set(pval val, pname pred, const pparams &params)
    {
       mState[pred] = val;
    }
 
-   void AesopWorldState::unset(pname pred, pparams params)
+   void AesopWorldState::unset(pname pred, const pparams &params)
    {
       _unset(pred, params);
       updateHash();
    }
 
-   void AesopWorldState::_unset(pname pred)
+   void AesopWorldState::_unset(pname pred, const pparams &params)
    {
       worldrep::iterator it = mState.find(pred);
       if(it != mState.end())
@@ -271,7 +271,7 @@ namespace ae {
 */
    /// This hash method sums the string hashes of all the predicate names in
    /// this state, XORing certain bits based on the values of each predicate.
-   /// @todo Is there a better hash func to use? Should do some unit testing.
+   /// @todo Is there a better hash func to use?
    void AesopWorldState::updateHash()
    {
       mHash = 0;
@@ -346,44 +346,44 @@ namespace ae {
    /// Predicates using integers. Each predicate may be assigned an integral
    /// value when set.
 
-   GOAPWorldState::GOAPWorldState(const Predicates<pname> &p) : WorldState(p)
+   GOAPWorldState::GOAPWorldState(const preds &p) : WorldState(p)
    {
       mHash = 0;
-      mState.resize(mPredicates.size());
+      mState.resize(getPredicates().size());
    }
 
    GOAPWorldState::~GOAPWorldState()
    {
    }
 
-   bool GOAPWorldState::isSet(pname pred, pparams params) const
+   bool GOAPWorldState::isSet(pname pred, const pparams&) const
    {
-      return mPredicates.has(pred) && mState[pred].set;
+      return getPredicates().has(pred) && mState[pred].set;
    }
 
-   GOAPWorldState::pval GOAPWorldState::get(pname pred, pparams, pval def) const
+   GOAPWorldState::pval GOAPWorldState::get(pname pred, const pparams&, pval def) const
    {
-      return mPredicates.has(pred) ? mState[pred].value : def;
+      return getPredicates().has(pred) ? mState[pred].value : def;
    }
 
-   void GOAPWorldState::set(pname pred, pparams, pval val)
+   void GOAPWorldState::set(pval val, pname pred, const pparams&)
    {
-      if(mPredicates.has(pred))
+      if(getPredicates().has(pred))
       {
-         _set(pred, val);
+         _set(val, pred);
          updateHash();
       }
    }
 
-   void GOAPWorldState::_set(pname pred, pval val)
+   void GOAPWorldState::_set(pval val, pname pred)
    {
       mState[pred].value = val;
       mState[pred].set = true;
    }
 
-   void GOAPWorldState::unset(pname pred, pparams params)
+   void GOAPWorldState::unset(pname pred, const pparams&)
    {
-      if(mPredicates.has(pred))
+      if(getPredicates().has(pred))
       {
          _unset(pred);
          updateHash();

@@ -1,34 +1,45 @@
 /// @file AesopActionSet.cpp
-/// @brief Implementation of ActionSet class as defined in AesopActionSet.h
+/// @brief Implementation of GOAPActionSet class as defined in AesopActionSet.h
 
 #include "AesopActionSet.h"
 
 namespace ae {
-   /// @class ActionSet
+   /// @class GOAPGOAPActionSet
    ///
    /// 
 
-   ActionSet::ActionSet(const Predicates &preds)
-      : mPredicates(preds)
+   GOAPActionSet::GOAPActionSet(const preds &pr)
+      : ActionSet(pr)
    {
    }
 
-   ActionSet::~ActionSet()
+   GOAPActionSet::~GOAPActionSet()
    {
    }
 
-   Action ActionSet::create(std::string name)
+   GOAPActionSet &GOAPActionSet::create(std::string name)
    {
-      return Action(name);
+      mCurrAction.name = name;
+      return *this;
    }
 
-   void ActionSet::add(Action &newac)
+   GOAPActionSet &GOAPActionSet::condition(pname cond, bool set)
    {
-      mActions[newac.getName()] = newac;
+      return *this;
    }
 
-   bool ActionSet::has(std::string name) const
+   GOAPActionSet &GOAPActionSet::effect(pname eff, bool set)
    {
-      return mActions.find(name) != mActions.end();
+      return *this;
+   }
+
+   void GOAPActionSet::add()
+   {
+      mActions.push_back(mCurrAction);
+   }
+
+   bool GOAPActionSet::has(aname id) const
+   {
+      return id < mActions.size();
    }
 };

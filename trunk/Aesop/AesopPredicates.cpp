@@ -36,7 +36,7 @@ namespace ae {
       mPredicates[mCurPred.mName] = mCurPred;
    }
 
-   unsigned int AesopPredicates::size()
+   unsigned int AesopPredicates::size() const
    {
       return mPredicates.size();
    }
@@ -48,6 +48,11 @@ namespace ae {
    bool AesopPredicates::has(pname name) const
    {
       return mPredicates.find(name) != mPredicates.end();
+   }
+
+   bool AesopPredicates::hasParam(pname name, pparam param) const
+   {
+      return false;
    }
    
    /// @class GOAPPredicates
@@ -63,7 +68,7 @@ namespace ae {
    {
    }
 
-   unsigned int GOAPPredicates::size()
+   unsigned int GOAPPredicates::size() const
    {
       return mPredicateMax + 1;
    }
@@ -78,5 +83,10 @@ namespace ae {
    bool GOAPPredicates::has(pname id) const
    {
       return id <= mPredicateMax;
+   }
+
+   bool GOAPPredicates::hasParam(pname id, pparam param) const
+   {
+      return false;
    }
 };

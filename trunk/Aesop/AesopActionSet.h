@@ -8,125 +8,93 @@
 #include "AesopPredicates.h"
 
 namespace ae {
-   struct conditions
-   {
-      conditions(bool req = true) {}
-
-      conditions & operator% (std::string s)
-      { return *this; }
-
-      conditions & operator/ (std::string s)
-      { return *this; }
-   };
-
-   struct effects
-   {
-      effects(bool req = true) {}
-
-      effects & operator% (std::string s)
-      { return *this; }
-
-      effects & operator/ (std::string s)
-      { return *this; }
-   };
-
-   /// @brief Store a Action.
-   struct Action
-   {
-      typedef std::pair<std::string, std::string> parameter;
-      typedef std::vector<parameter> paramlist;
-
-      /// @brief Name constructor.
-      Action(std::string n)
-         : mName(n)
-      {
-      }
-
-      /// @brief Default constructor.
-      Action()
-      { Action(""); }
-
-      /// @brief Modulus adds new parameters.
-      Action & operator% (std::string p)
-      {
-         mParams.push_back(std::make_pair(p, ""));
-         return *this;
-      }
-
-      /// @brief Division sets the type of the last parameter.
-      Action & operator/ (std::string t)
-      {
-         mParams.back().second = t;
-         return *this;
-      }
-
-      /// @brief Addition adds effects and conditions.
-      Action & operator+ (conditions &c)
-      { return *this; }
-      Action & operator+ (effects &c)
-      { return *this; }
-
-      /// @brief Get parameter storage.
-      paramlist & getParams() { return mParams; }
-
-      /// @brief Get name of this Action.
-      std::string & getName() { return mName; }
-
-   private:
-      /// @brief Name of this Action.
-      std::string mName;
-      /// @brief Parameters of this Action.
-      paramlist mParams;
-   };
-
    /// @brief A set of Actions defined in a particular planning problem.
    /// @ingroup Aesop
+   template<typename preds_t, typename an, typename ap>
    class ActionSet {
-      typedef std::map<std::string, Action> actionmap;
-
    public:
-      /// @brief Add a new Action.
-      /// @param newac The new Action to add.
-      void add(Action &newac);
+      typedef preds_t preds;
+      typedef typename preds_t::pname pname;
+      typedef typename preds_t::pparam pparam;
+      typedef an aname;
+      typedef ap aparam;
 
-      /// @brief Construct a new Action.
-      /// @param name Name of the new Action.
-      /// @return A fresh Action object.
-      Action create(std::string name);
+      /// @brief Do we have an action of the given name?
+      /// @param[in] name Look for actions with this name.
+      /// @return True if we have an action with that name, false if not.
+      virtual bool has(aname name) const = 0;
 
-      /// @brief Do we have a Action of the given name?
-      /// @param name Look for Actions with this name.
-      /// @return True if we have a Action with that name, false if not.
-      bool has(std::string name) const;
-
-      /// @brief Get the type of a named object.
-      /// @param name Name of the object to get the type of.
-      /// @return The object's type as a new string.
-      std::string typeof(std::string name) const;
-
-      /// @brief Get our types object.
-      /// @return Handle of our types.
-      const Predicates &getPredicates() const { return mPredicates; }
+      /// @brief Get our Predicates object.
+      /// @return Handle of our Predicates.
+      const preds &getPredicates() const { return mPredicates; }
 
       /// @brief Default constructor.
-      /// @param reqs  Requirements we must adhere to.
-      /// @param types Types to validate our Action parameters.
-      ActionSet(const Predicates &preds);
-
-      /// @brief Default destructor.
-      ~ActionSet();
+      /// @param[in] preds Set of Predicates that define what our actions can do.
+      ActionSet(const preds &p) : mPredicates(p) {}
 
    protected:
       /// @brief Alternate name for has method.
       /// @see ActionSet::has
-      bool have(std::string name) const { return has(name); }
+      bool have(aname name) const { return has(name); }
 
    private:
       /// @brief Predicates to validate Action parameters.
-      const Predicates &mPredicates;
+      const preds &mPredicates;
+   };
 
-      /// @brief Set of defined Actions.
-      actionmap mActions;
+   class GOAPActionSet : public ActionSet<Predicates<unsigned int, char>, unsigned int, char> {
+   public:
+      /// @name Action creation
+      /// @{
+
+      /// @brief Create a new action.
+      /// @param[in] name Name of the new action to create.
+      /// @return This object.
+      GOAPActionSet &create(std::string name);
+
+      /// @brief Add a precondition to the action under construction.
+      /// @param[in] cond The ID of the predicate that must be set to allow
+      ///                 this action.
+      /// @param[in] set  Whether the predicate must be set or unset.
+      /// @return This object.
+      GOAPActionSet &condition(pname cond, bool set);
+
+      /// @brief Add an effect to the action under construction.
+      /// @param[in] eff The ID of the predicate this action affects.
+      /// @param[in] set Whether to set or unset this predicate.
+      /// @return This object.
+      GOAPActionSet &effect(pname cond, bool set);
+
+      /// @brief Add the action that is currently being constructed.
+      void add();
+
+      /// @}
+
+      /// @name ActionSet
+      /// @{
+
+      bool has(aname name) const;
+
+      /// @}
+
+      /// @brief Default constructor.
+      GOAPActionSet(const preds &pr);
+
+      /// @brief Default destructor.
+      ~GOAPActionSet();
+
+   protected:
+   private:
+      /// @brief Stores the details of a GOAP action.
+      struct GOAPAction {
+         std::string name;
+      };
+
+      /// @brief The action under construction.
+      GOAPAction mCurrAction;
+
+      /// @brief All actions that have been defined.
+      std::vector<GOAPAction> mActions;
    };
 };
 
