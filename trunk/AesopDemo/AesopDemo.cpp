@@ -38,7 +38,7 @@ void complexTest()
    types.add("person", "physob");
 
    // 1.2. Create predicates that describe the physics of our problem.
-   ae::Predicates preds;
+   ae::AesopPredicates preds;
 
    preds.create("at");
    preds.parameter("where", "place");

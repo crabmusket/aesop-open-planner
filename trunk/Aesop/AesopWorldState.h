@@ -9,9 +9,15 @@
 
 namespace ae {
    /// @brief Knowledge about a state of the world, current or possible.
+   ///
+   /// This class represents a set of knowledge (facts, or predicates) about
+   /// the state of the world that we are planning within. A WorldState can be
+   /// used by individual characters as a representation of their knowledge,
+   /// but is also used internally in planning.
+   ///
    /// @ingroup Aesop
    template<typename n, typename v>
-   class WorldStateTemplate {
+   class WorldState {
    public:
       typedef n pname;
       typedef v pval;
@@ -76,20 +82,20 @@ namespace ae {
       /// @brief Boolean inequality test.
       //virtual bool operator!=(const WorldStateTemplate<n, v> &s) const = 0;
 
-      /// @brief Get the PredicatesTemplate object used by this WorldStateTemplate.
-      /// @return A PredicatesTemplate object of the same type.
-      const PredicatesTemplate<pname> &getPredicates() { return mPredicates; }
+      /// @brief Get the Predicates object used by this WorldState.
+      /// @return A Predicates object of the same type.
+      const Predicates<pname> &getPredicates() { return mPredicates; }
 
-      WorldStateTemplate(const PredicatesTemplate<n> &p) : mPredicates(p) {}
+      WorldState(const Predicates<n> &p) : mPredicates(p) {}
 
    protected:
    private:
-      const PredicatesTemplate<n> &mPredicates;
+      const Predicates<n> &mPredicates;
    };
 
    /// @brief Default fully-featured world state.
    /// @ingroup Aesop
-   class WorldState : public WorldStateTemplate<std::string, bool> {
+   class AesopWorldState : public WorldState<std::string, bool> {
    public:
       virtual bool isSet(pname pred) const;
       virtual pval get(pname pred, pval def = false) const;
@@ -103,9 +109,9 @@ namespace ae {
       { return !operator==(s); }
 
       /// @brief Default constructor.
-      WorldState(const PredicatesTemplate<pname> &p);
+      AesopWorldState(const Predicates<pname> &p);
       /// @brief Default destructor.
-      ~WorldState();
+      ~AesopWorldState();
    protected:
    private:
       typedef std::map<pname, pval> worldrep;
@@ -132,7 +138,7 @@ namespace ae {
 
    /// @brief Performant but limited world state storage.
    /// @ingroup Aesop
-   class GOAPWorldState : public WorldStateTemplate<unsigned int, int> {
+   class GOAPWorldState : public WorldState<unsigned int, int> {
    public:
       virtual bool isSet(pname pred) const;
       virtual pval get(pname pred, pval def = false) const;

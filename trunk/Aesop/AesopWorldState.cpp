@@ -4,29 +4,28 @@
 #include "AesopWorldState.h"
 
 namespace ae {
-   /// @class WorldState
+   /// @class AesopWorldState
    ///
-   /// This class represents a set of knowledge (facts, or predicates) about
-   /// the state of the world that we are planning within. A WorldState can be
-   /// used by individual characters as a representation of their knowledge,
-   /// but is also used internally in planning.
+   /// This fully-featured implementation of WorldState stores Predicates as
+   /// strings, handles any number of parameters and arbitrary value
+   /// assignments to each predicate.
 
-   WorldState::WorldState(const PredicatesTemplate<pname> &p) : WorldStateTemplate(p)
+   AesopWorldState::AesopWorldState(const Predicates<pname> &p) : WorldState(p)
    {
       mHash = 0;
    }
 
-   WorldState::~WorldState()
+   AesopWorldState::~AesopWorldState()
    {
    }
 
-   bool WorldState::isSet(pname pred) const
+   bool AesopWorldState::isSet(pname pred) const
    {
       worldrep::const_iterator it = mState.find(pred);
       return it != mState.end();
    }
 
-   WorldState::pval WorldState::get(pname pred, pval def) const
+   AesopWorldState::pval AesopWorldState::get(pname pred, pval def) const
    {
       worldrep::const_iterator it = mState.find(pred);
       if(it == mState.end())
@@ -34,24 +33,24 @@ namespace ae {
       return getPVal(it);
    }
 
-   void WorldState::set(pname pred, pval val)
+   void AesopWorldState::set(pname pred, pval val)
    {
       _set(pred, val);
       updateHash();
    }
 
-   void WorldState::_set(pname pred, pval val)
+   void AesopWorldState::_set(pname pred, pval val)
    {
       mState[pred] = val;
    }
 
-   void WorldState::unset(pname pred)
+   void AesopWorldState::unset(pname pred)
    {
       _unset(pred);
       updateHash();
    }
 
-   void WorldState::_unset(pname pred)
+   void AesopWorldState::_unset(pname pred)
    {
       worldrep::iterator it = mState.find(pred);
       if(it != mState.end())
@@ -273,7 +272,7 @@ namespace ae {
    /// This hash method sums the string hashes of all the predicate names in
    /// this state, XORing certain bits based on the values of each predicate.
    /// @todo Is there a better hash func to use? Should do some unit testing.
-   void WorldState::updateHash()
+   void AesopWorldState::updateHash()
    {
       mHash = 0;
       worldrep::const_iterator it;
@@ -341,7 +340,13 @@ namespace ae {
       return score;
    }*/
 
-   GOAPWorldState::GOAPWorldState(const PredicatesTemplate<pname> &p) : WorldStateTemplate(p)
+   /// @class GOAPSWorldState
+   ///
+   /// This is a fairly limited implementation of WorldState that identifies
+   /// Predicates using integers. Each predicate may be assigned an integral
+   /// value when set.
+
+   GOAPWorldState::GOAPWorldState(const Predicates<pname> &p) : WorldState(p)
    {
       mHash = 0;
    }
