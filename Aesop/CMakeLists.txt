@@ -11,7 +11,6 @@ SET(AesopSources
 
 SET(AesopHeaders
 	Aesop.h
-	AesopRequirements.h
 	AesopTypes.h
 	AesopObjects.h
 	AesopPredicates.h
