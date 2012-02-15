@@ -4,7 +4,7 @@
 #include "gtest/gtest.h"
 #include "AesopTypes.h"
 
-using namespace ae;
+using namespace Aesop;
 
 /// @brief Test fixture for the Types class.
 /// @ingroup AesopTest

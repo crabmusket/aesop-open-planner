@@ -4,10 +4,11 @@
 #ifndef _AE_WORLDSTATE_H_
 #define _AE_WORLDSTATE_H_
 
+#include <vector>
 #include "AesopPredicates.h"
-#include "AesopActionSet.h"
+#include "AesopObjects.h"
 
-namespace ae {
+namespace Aesop {
    /// @brief Knowledge about a state of the world, current or possible.
    ///
    /// This class represents a set of knowledge (facts, or predicates) about
@@ -16,172 +17,113 @@ namespace ae {
    /// but is also used internally in planning.
    ///
    /// @ingroup Aesop
-   template<typename preds_t, typename p, typename v>
    class WorldState {
    public:
-      typedef preds_t preds;
-      typedef typename preds_t::pname pname;
-      typedef typename preds_t::pparam pparam;
-      typedef p pparams;
-      typedef v pval;
+      typedef std::vector<Objects::objectID> paramlist;
 
-      /// @brief Is the predicate set to a value?
+      /// @brief Is the predicate set?
       /// @param[in] pred   Name of the predicate to check.
-      /// @param[in] params Map of parameter names to values to check.
-      /// @return True iff the predicate is set to some valid value.
-      virtual bool isSet(pname pred, const pparams &params) const = 0;
+      /// @param[in] params List of parameter values to check.
+      /// @return True iff the predicate is set with the given parameters.
+      virtual bool isSet(Predicates::predID pred, const paramlist &params) const = 0;
 
-      /// @brief Get the value of a predicate.
-      /// @param[in] pred   Name of predicate to check.
-      /// @param[in] params Map of parameter names to values to check.
-      /// @param[in] def    Default predicate value if unset.
-      /// @return The value of the predicate
-      virtual pval get(pname pred, const pparams &params, pval def) const = 0;
-
-      /// @brief Set the value of a predicate.
+      /// @brief Set a predicate with specific parameters.
       /// @param[in] pred   Name of predicate to set.
       /// @param[in] params Map of parameter names to values to check.
-      /// @param[in] val    Value to set the predicate to.
-      virtual void set(pval val, pname pred, const pparams &param) = 0;
+      virtual void set(Predicates::predID pred, const paramlist &params) = 0;
 
-      /// @brief Remove our knowledge of a certain predicate.
+      /// @brief Unset a predicate with specific paramaters.
       /// @param[in] pred   Name of the predicate to clear.
       /// @param[in] params Map of parameter names to values to check.
-      virtual void unset(pname pred, const pparams &params) = 0;
+      virtual void unset(Predicates::predID pred, const paramlist &params) = 0;
 
-      /// @brief Do the given Action's pre-conditions match this world state?
-      /// @param[in] ac     Action instance to test against this world state.
-      /// @param[in] params Parameters to the Action instance if it takes any.
-      /// @return True iff the Action is valid under the current world state.
-      //virtual bool actionPreMatch(const Action &ac, const paramlist *params = NULL) const = 0;
+      /// @brief Make a copy of this WorldState.
+      /// @return A pointer to a new WorldState of the same class as this one,
+      ///         initialised to the same value.
+      virtual WorldState *clone() const = 0;
 
-      /// @brief Does the given Action, executed from an arbitrary world state,
-      ///        result in this world state?
-      /// @param[in]  ac     Action to compare.
-      /// @param[out] params Parameters the Action must use for it to result in
-      ///                    this world state.
-      /// @return True iff the Action results in the current world state.
-      //virtual bool actionPostMatch(const Action &ac, const paramlist *params = NULL) const = 0;
+      /// @brief Get a string representation of this WorldState.
+      /// @return A string representing this state.
+      virtual std::string repr() const = 0;
 
-      /// @brief Apply the given Action to this WorldState in the forwards
-      ///        direction.
-      /// @param[in] ac     Action to apply to the current state of the world.
-      /// @param[in] params Parameters to the Action instance if it takes any.
-      //virtual void applyActionForward(const Action &ac, const paramlist *params = NULL) = 0;
+      /// @brief Quantify the difference betweeh this WorldState and another.
+      /// @param[in] other The WorldState to compare with.
+      /// @return A numerical representation of the differences between these
+      ///         states.
+      virtual unsigned int compare(const WorldState &other) const = 0;
 
-      /// @brief Remove the effects of the given Action from the world.
-      /// @param[in] ac     Action to remove from the current state.
-      /// @param[in] params Parameters to the Action instance if it takes any.
-      //virtual void applyActionReverse(const Action &ac, const paramlist *params = NULL) = 0;
-
-      /// @brief Compare two world states.
-      /// @param[in] ws1 First WorldState to compare.
-      /// @param[in] ws2 Another WorldState to compare.
-      /// @return Number of predicates that differ in value between states.
-      //static unsigned int comp(const WorldState<n, v> &ws1, const WorldState<n, v> &ws2) = 0;
-
-      /// @brief Boolean equality test.
-      /// This equality test will compare WorldStates based on their hash codes,
-      /// providing a faster negative result. If their hash codes are equal, then
-      /// WorldState::comp is used to verify.
-      //virtual bool operator==(const WorldStateTemplate<n, v> &s) const = 0;
-
-      /// @brief Boolean inequality test.
-      //virtual bool operator!=(const WorldStateTemplate<n, v> &s) const = 0;
+      virtual bool operator==(const WorldState &other) const = 0;
+      virtual bool operator!=(const WorldState &other) const = 0;
 
       /// @brief Get the Predicates object used by this WorldState.
-      /// @return A Predicates object of the same type.
-      const preds &getPredicates() const { return mPredicates; }
-
-      WorldState(const preds &pr) : mPredicates(pr) {}
-
-   protected:
-   private:
-      const preds &mPredicates;
-   };
-
-   /// @brief Default fully-featured world state.
-   /// @ingroup Aesop
-   class AesopWorldState : public WorldState<Predicates<std::string, std::string>, std::map<std::string, std::string>, int> {
-   public:
-      virtual bool isSet(pname pred, const pparams &params) const;
-      virtual pval get(pname pred, const pparams &params, pval def = false) const;
-      virtual void set(pval val, pname pred, const pparams &params);
-      virtual void unset(pname pred, const pparams &params);
-
-      /// @TODO Reinstate some form of comparison between WorldState subclasses.
-      virtual bool operator==(const AesopWorldState &s) const
-      { return mHash != s.mHash ? false : true; }
-      virtual bool operator!=(const AesopWorldState &s) const
-      { return !operator==(s); }
+      /// @return A Predicates object.
+      const Predicates &getPredicates() const { return mPredicates; }
 
       /// @brief Default constructor.
-      AesopWorldState(const preds &p);
-      /// @brief Default destructor.
-      ~AesopWorldState();
+      /// @param[in] p Predicates object to validate our state.
+      WorldState(const Predicates &p) : mPredicates(p) {}
+
    protected:
    private:
-      typedef std::map<pname, pval> worldrep;
-      /// @brief Stores representation of world state.
-      worldrep mState;
-      /// @brief Computed hash value of this WorldState.
+      /// @brief Handle to our Predicates object.
+      const Predicates &mPredicates;
+   };
+
+   /// @brief Simplest WorldState implementation.
+   /// @ingroup Aesop
+   class SimpleWorldState : public WorldState {
+   public:
+      /// @name WorldState
+      /// @{
+
+      virtual bool isSet(Predicates::predID pred, const paramlist &params = paramlist()) const;
+      virtual void set(Predicates::predID pred, const paramlist &params = paramlist());
+      virtual void unset(Predicates::predID pred, const paramlist &params = paramlist());
+      virtual WorldState *clone() const;
+      virtual std::string repr() const;
+
+      unsigned int compare(const WorldState &other) const;
+
+      virtual bool operator==(const WorldState &other) const
+      {
+         const SimpleWorldState *ws = dynamic_cast<const SimpleWorldState*>(&other);
+         return ws != 0 && mHash != ws->mHash ? false : compare(*ws) == 0;
+      }
+      virtual bool operator!=(const WorldState &other) const
+      {
+         const SimpleWorldState *ws = dynamic_cast<const SimpleWorldState*>(&other);
+         return ws == 0 || mHash != ws->mHash ? true : compare(*ws) != 0;
+      }
+
+      /// @}
+
+      SimpleWorldState(const Predicates &p);
+      ~SimpleWorldState();
+
+   protected:
+   private:
+      /// @brief Set a predicate without updating our hash.
+      /// @see WorldState::set
+      void _set(Predicates::predID pred, const paramlist &params);
+      /// @brief Unset a predicate without updating our hash.
+      /// @see WorldState::unset
+      void _unset(Predicates::predID pred, const paramlist &params);
+
+      /// @brief Hashed representation of this state, used for quick comparison.
       int mHash;
-
-      /// @brief Set a predicate value without updating our hash.
-      void _set(pval val, pname pred, const pparams &params);
-      /// @brief Unset a predicate value without updating our hash.
-      void _unset(pname pred, const pparams &params);
-
       /// @brief Update our hash value.
       void updateHash();
 
-      /// @brief Get the name of the world state entry.
-      inline pname getPName(worldrep::const_iterator it) const
-      { return it->first; }
-      /// @brief Get the Predicate of the world state entry.
-      inline pval getPVal(worldrep::const_iterator it) const
-      { return it->second; }
-   };
-
-   /// @brief Performant but limited world state storage.
-   /// @ingroup Aesop
-   class GOAPWorldState : public WorldState<Predicates<unsigned int, char>, char, int> {
-   public:
-      virtual bool isSet(pname pred, const pparams &params = '\0') const;
-      virtual pval get(pname pred, const pparams &params = '\0', pval def = false) const;
-      virtual void set(pval val, pname pred, const pparams &params = '\0');
-      virtual void unset(pname pred, const pparams &params = '\0');
-
-      virtual bool operator==(const GOAPWorldState &s) const
-      { return mHash != s.mHash ? false : true; }
-      virtual bool operator!=(const GOAPWorldState &s) const
-      { return !operator==(s); }
-
-      /// @brief Default constructor.
-      GOAPWorldState(const preds &p);
-      /// @brief Default destructor.
-      ~GOAPWorldState();
-   protected:
-   private:
       /// @brief Store a fact about the world.
       struct fact {
+         /// @brief Is this predicate set?
          bool set;
-         pval value;
-         fact() : set(false), value() {}
+         fact() : set(false) {}
       };
+      /// @brief Our world representation is simply a list of facts.
       typedef std::vector<fact> worldrep;
       /// @brief Stores representation of world state.
       worldrep mState;
-      /// @brief Computed hash value of this WorldState.
-      int mHash;
-
-      /// @brief Set a predicate value without updating our hash.
-      void _set(pval val, pname pred);
-      /// @brief Unset a predicate value without updating our hash.
-      void _unset(pname pred);
-
-      /// @brief Update our hash value.
-      void updateHash();
    };
 };
 

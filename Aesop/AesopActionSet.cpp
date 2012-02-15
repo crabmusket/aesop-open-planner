@@ -1,39 +1,65 @@
 /// @file AesopActionSet.cpp
-/// @brief Implementation of GOAPActionSet class as defined in AesopActionSet.h
+/// @brief Implementation of ActionSet class as defined in AesopActionSet.h
 
+#include <algorithm>
 #include "AesopActionSet.h"
 
-namespace ae {
-   /// @class GOAPGOAPActionSet
+namespace Aesop {
+   /// @class SimpleActionSet
    ///
    /// 
 
-   GOAPActionSet::GOAPActionSet(const preds &pr)
-      : ActionSet(pr)
+   SimpleActionSet::SimpleActionSet(const Predicates &p)
+      : ActionSet(p)
    {
    }
 
-   GOAPActionSet::~GOAPActionSet()
+   SimpleActionSet::~SimpleActionSet()
    {
    }
 
-   GOAPActionSet &GOAPActionSet::create(std::string name)
+   SimpleActionSet &SimpleActionSet::create(std::string name)
    {
+      mCurrAction = SimpleAction();
       mCurrAction.name = name;
       return *this;
    }
 
-   GOAPActionSet &GOAPActionSet::condition(pname cond, bool set)
+   SimpleActionSet &SimpleActionSet::condition(Predicates::predID cond, bool set)
    {
+      SimpleAction::predslist::iterator it;
+      for(it = mCurrAction.predicates.begin(); it != mCurrAction.predicates.end(); it++)
+      {
+         if(it->pred == cond)
+         {
+            it->cond = (SimpleAction::settype)set;
+            return *this;
+         }
+      }
+      mCurrAction.predicates.push_back(SimpleAction::predicate());
+      mCurrAction.predicates.back().pred = cond;
+      mCurrAction.predicates.back().cond = (SimpleAction::settype)set;
       return *this;
    }
 
-   GOAPActionSet &GOAPActionSet::effect(pname eff, bool set)
+   SimpleActionSet &SimpleActionSet::effect(Predicates::predID eff, bool set)
    {
+      SimpleAction::predslist::iterator it;
+      for(it = mCurrAction.predicates.begin(); it != mCurrAction.predicates.end(); it++)
+      {
+         if(it->pred == eff)
+         {
+            it->eff = (SimpleAction::settype)set;
+            return *this;
+         }
+      }
+      mCurrAction.predicates.push_back(SimpleAction::predicate());
+      mCurrAction.predicates.back().pred = eff;
+      mCurrAction.predicates.back().eff = (SimpleAction::settype)set;
       return *this;
    }
 
-   GOAPActionSet &GOAPActionSet::const(float cost)
+   SimpleActionSet &SimpleActionSet::cost(float cost)
    {
       if(cost > 0.0f)
          mCurrAction.cost = cost;
@@ -42,13 +68,79 @@ namespace ae {
       return *this;
    }
 
-   void GOAPActionSet::add()
+   void SimpleActionSet::add()
    {
       mActions.push_back(mCurrAction);
    }
 
-   bool GOAPActionSet::has(aname id) const
+   bool SimpleActionSet::has(actionID ac) const
    {
-      return id < mActions.size();
+      return ac < mActions.size();
+   }
+
+   void SimpleActionSet::getParamList(const_iterator ac, paramcombos &list, const Objects &objects) const
+   {
+      list.clear();
+      list.push_back(WorldState::paramlist());
+   }
+
+   bool SimpleActionSet::preMatch(const_iterator ac, const WorldState::paramlist &params, const WorldState &state) const
+   {
+      const SimpleAction &action = mActions[ac];
+      SimpleAction::predslist::const_iterator it;
+      for(it = action.predicates.begin(); it != action.predicates.end(); it++)
+      {
+         // If we do not have a condition for this predicate, ignore.
+         if(it->cond == SimpleAction::None)
+            continue;
+         // Make sure that predicate is in correct state.
+         if((int)state.isSet(it->pred, WorldState::paramlist()) != it->cond)
+            return false;
+      }
+      // No objections.
+      return true;
+   }
+
+   bool SimpleActionSet::postMatch(const_iterator ac, const WorldState::paramlist &params, const WorldState &state) const
+   {
+      const SimpleAction &action = mActions[ac];
+      SimpleAction::predslist::const_iterator it;
+      for(it = action.predicates.begin(); it != action.predicates.end(); it++)
+      {
+         // If we do not have an effect for this predicate, don't worry about it.
+         if(it->eff == SimpleAction::None)
+            continue;
+         // Make sure that predicate is in correct state.
+         else if((int)state.isSet(it->pred, WorldState::paramlist()) != it->eff)
+            return false;
+      }
+      // No objections.
+      return true;
+   }
+
+   void SimpleActionSet::applyForward(const_iterator ac, const WorldState::paramlist &params, WorldState &ns) const
+   {
+      const SimpleAction &action = mActions[ac];
+      SimpleAction::predslist::const_iterator it;
+      for(it = action.predicates.begin(); it != action.predicates.end(); it++)
+      {
+         if(it->eff == SimpleAction::Set)
+            ns.set(it->pred, WorldState::paramlist());
+         else if(it->eff == SimpleAction::Unset)
+            ns.unset(it->pred, WorldState::paramlist());
+      }
+   }
+
+   void SimpleActionSet::applyReverse(const_iterator ac, const WorldState::paramlist &params, WorldState &ns) const
+   {
+      const SimpleAction &action = mActions[ac];
+      SimpleAction::predslist::const_iterator it;
+      for(it = action.predicates.begin(); it != action.predicates.end(); it++)
+      {
+         if(it->cond == SimpleAction::Set)
+            ns.set(it->pred, WorldState::paramlist());
+         else if(it->cond == SimpleAction::Unset)
+            ns.unset(it->pred, WorldState::paramlist());
+      }
    }
 };

@@ -6,16 +6,19 @@ SET(AesopSources
 	AesopPredicates.cpp
 	AesopActionSet.cpp
 	AesopWorldState.cpp
+	AesopProblem.cpp
+	AesopPlan.cpp
 )
 
 SET(AesopHeaders
-	Aesop.h
 	AesopTypes.h
 	AesopObjects.h
 	AesopPredicates.h
-	AesopConfig.h
 	AesopActionSet.h
 	AesopWorldState.h
+	AesopProblem.h
+	AesopPlan.h
+	AesopReverseAstar.h
 )
 
 INCLUDE_DIRECTORIES(.)
