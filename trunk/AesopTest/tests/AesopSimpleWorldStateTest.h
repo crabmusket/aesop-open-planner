@@ -8,14 +8,10 @@ using namespace Aesop;
 
 /// @brief Test fixture for the WorldState class.
 /// @ingroup AesopTest
-class WorldStateTest : public ::testing::Test {
+class SimpleWorldStateTest : public ::testing::Test {
 protected:
-   WorldState ws1;
-   WorldState ws2;
-   PName pn1;
-   PName pn2;
-   PVal ptrue;
-   PVal pfalse;
+   SimpleWorldState ws1;
+   SimpleWorldState ws2;
 
    WorldStateTest()
       :pn1("pred1"),

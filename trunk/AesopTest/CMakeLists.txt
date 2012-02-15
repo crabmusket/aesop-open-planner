@@ -11,6 +11,7 @@ SET(AesopTestHeaders
 	tests/AesopPlannerTest.h
 	tests/AesopTypesTest.h
 	tests/AesopObjectsTest.h
+	tests/AesopSimpleWorldStateTest.h
 )
 
 INCLUDE_DIRECTORIES(

@@ -6,37 +6,23 @@
 
 #include "AesopTypes.h"
 
-#include <map>
-#include <iterator>
-
-namespace ae {
+namespace Aesop {
    /// @brief A set of objects defined in a particular planning problem.
    /// @ingroup Aesop
    class Objects {
-      /// @brief Internal storage. Maps object names to their types.
-      typedef std::map<std::string, std::string> objectmap;
-      /// @brief Element type.
-      typedef std::pair<std::string, std::string> element;
-
    public:
-      /// @brief Add a new object.
-      /// @param name The name of the new object.
-      /// @param type The type of the object.
-      void add(std::string name, std::string type = "");
+      /// @brief Objects must be identifiable.
+      typedef unsigned int objectID;
 
-      /// @brief Remove an object.
-      /// @param name Name of the object to remove.
-      void remove(std::string name);
+      /// @brief Do we have an object of the given identifier?
+      /// @param obj Look for an object with this identifier.
+      /// @return True if we have an object with that identifier, false if not.
+      virtual bool has(objectID obj) const = 0;
 
-      /// @brief Do we have an object of the given name?
-      /// @param name Look for objects with this name.
-      /// @return True if we have an object with that name, false if not.
-      bool has(std::string name) const;
-
-      /// @brief Get the type of a named object.
-      /// @param name Name of the object to get the type of.
-      /// @return The object's type as a new string.
-      std::string typeof(std::string name) const;
+      /// @brief Get the type of an object.
+      /// @param obj Identifier of the object to get the type of.
+      /// @return The object's type.
+      virtual Types::typeID typeof(objectID obj) const = 0;
 
       /// @brief Get our types object.
       /// @return Handle of our types.
@@ -45,20 +31,26 @@ namespace ae {
       /// @name Partial STL interface
       /// @{
 
-      typedef objectmap::const_iterator const_iterator;
-      const_iterator begin() const { return mObjects.begin(); }
-      const_iterator end() const { return mObjects.end(); }
-      unsigned int size(std::string type = "") const;
+      /// @brief Iteration simply uses an ID.
+      typedef objectID const_iterator;
+      /// @brief Return the number of objects stored.
+      virtual unsigned int size() const = 0;
+      /// @brief Iterator to first object.
+      virtual const_iterator begin() const = 0;
+      /// @brief Iterator to one-after-last object.
+      virtual const_iterator end() const = 0;
 
       /// @brief Iterator that sticks to a particular type and its descendents.
-      struct type_iterator : public std::iterator<std::forward_iterator_tag,
-         const element, int>
+      struct type_iterator
       {
-         /// @brief Default constructor
-         type_iterator(const_iterator i, const Objects &o, const std::string &t)
+         /// @brief Default constructor.
+         /// @param[in] i Index to start at. 
+         /// @param[in] o Objects this iterator operates on.
+         /// @param[in] t Type to restrict our iteration to.
+         type_iterator(const_iterator i, const Objects &o, const Types::typeID &t)
             : it(i), objs(o), type(t)
          {
-            if(it != objs.end() && !objs.getTypes().isOf(it->second,type))
+            if(it != objs.end() && !objs.getTypes().isOf(it, type))
                ++(*this);
          }
 
@@ -68,7 +60,7 @@ namespace ae {
          type_iterator &operator++()
          {
             it++;
-            while(it != objs.end() && !objs.getTypes().isOf(it->second,type))
+            while(it != objs.end() && !objs.getTypes().isOf(it, type))
                it++;
             return *this;
          }
@@ -77,21 +69,6 @@ namespace ae {
          {
             type_iterator result(*this);
             ++(*this);
-            return result;
-         }
-
-         type_iterator &operator--()
-         {
-            it--;
-            while(it != objs.begin() && !objs.getTypes().isOf(it->second,type))
-               it--;
-            return *this;
-         }
-
-         type_iterator operator--(int)
-         {
-            type_iterator result(*this);
-            --(*this);
             return result;
          }
 
@@ -105,11 +82,6 @@ namespace ae {
          bool operator!=(const type_iterator &other) const
          { return it != other.it; }
 
-         reference operator*()
-         { return *it; }
-         const_iterator operator->()
-         { return it; }
-
          /// @}
 
       private:
@@ -118,33 +90,45 @@ namespace ae {
          /// @brief Internal iterator.
          const_iterator it;
          /// @brief Type name to restrict ourselves to.
-         std::string type;
+         Types::typeID type;
       };
 
-      type_iterator begin(std::string type) const { return type_iterator(begin(), *this, type); }
-      type_iterator end(std::string type) const { return type_iterator(end(), *this, type); }
+      /// @brief Iterator to the first object of a particular type.
+      type_iterator begin(Types::typeID type) const { return type_iterator(begin(), *this, type); }
+      /// @brief Iterator to the one-after-last object.
+      type_iterator end(Types::typeID type) const { return type_iterator(end(), *this, type); }
 
       /// @}
 
       /// @brief Default constructor.
-      /// @param types Types set to validate objects.
-      Objects(const Types &types = NoTypes);
-
-      /// @brief Default destructor.
-      ~Objects();
+      /// @param[in] types Types set to validate objects.
+      Objects(const Types &types = NoTypes) : mTypes(types) {}
 
    protected:
       /// @brief Alternate name for has method.
       /// @see Objects::has
-      bool have(std::string name) const { return has(name); }
+      bool have(Types::typeID name) const { return has(name); }
 
    private:
       /// @brief Types that validate our objects.
       const Types &mTypes;
-
-      /// @brief Map of defined objects and their types.
-      objectmap mObjects;
    };
+
+   /// @brief No objects.
+   /// @ingroup Aesop
+   class NullObjects : public Objects {
+   public:
+      bool has(objectID obj) const { return false; }
+      Types::typeID typeof(objectID obj) const { return Types::NullType; }
+      unsigned int size() const { return 0; }
+      const_iterator begin() const { return 0; }
+      const_iterator end() const { return 0; }
+   protected:
+   private:
+   };
+
+   /// @brief No objects.
+   const NullObjects NoObjects;
 };
 
 #endif

@@ -5,7 +5,7 @@
 #include "AesopObjects.h"
 #include "AesopTypes.h"
 
-using namespace ae;
+using namespace Aesop;
 
 /// @brief Test fixture for the Objects class.
 /// @ingroup AesopTest

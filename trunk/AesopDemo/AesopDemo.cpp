@@ -9,29 +9,32 @@
 #include "AesopPredicates.h"
 #include "AesopActionSet.h"
 #include "AesopWorldState.h"
+#include "AesopReverseAstar.h"
 
-/*void printPlan(ae::Plan plan)
+namespace ae = Aesop;
+
+void printPlan(const ae::Plan &plan, const ae::ActionSet &actions)
 {
+   printf("The plan:\n");
    ae::Plan::const_iterator it;
-   printf("The Plan:\n");
    for(it = plan.begin(); it != plan.end(); it++)
    {
-      printf("   %s", it->ac->getName().c_str());
-      if(it->params.size())
+      printf("   %s", actions.repr(it->action).c_str());
+      if(it->parameters.size())
       {
-         ae::paramlist::const_iterator pl;
-         for(pl = it->params.begin(); pl != it->params.end(); pl++)
-            printf(" %c", *pl);
+         ae::WorldState::paramlist::const_iterator pl;
+         for(pl = it->parameters.begin(); pl != it->parameters.end(); pl++)
+            printf(" %d", *pl);
       }
       putchar('\n');
    }
-}*/
+}
 
 void complexTest()
 {
    // --------------------
    // STEP 1. The Domain.
-
+/*
    // 1.1. Define the types of objects that can exist.
    ae::Types types;
    types.add("physob");
@@ -89,7 +92,7 @@ void complexTest()
    objects.add("sandwich", "food");
    objects.add("machine", "vendor");
    objects.add("coins", "money");
-
+*/
    // 2.2. Create initial and goal world states.
 }
 
@@ -99,7 +102,7 @@ void simpleTest()
    // STEP 1. The Domain.
 
    // 1.1. Create predicates that describe the physics of our problem.
-   ae::GOAPPredicates preds;
+   ae::SimplePredicates preds;
 
    enum {
       gunLoaded,
@@ -112,27 +115,31 @@ void simpleTest()
    };
 
    // Define all predicates.
-   preds.size(NUMPREDS);
+   preds.define(NUMPREDS);
 
    // 1.2. Create actions to modify the world state.
-   ae::GOAPActionSet actions(preds);
+   ae::SimpleActionSet actions(preds);
 
    actions.create("attackRanged");
    actions.condition(haveTarget, true);
    actions.condition(gunLoaded, true);
+   actions.condition(targetDead, false);
    actions.effect(targetDead, true);
    actions.effect(gunLoaded, false);
    actions.add();
 
    actions.create("attackMelee");
    actions.condition(haveTarget, true);
-   actions.condition();
+   actions.condition(targetDead, false);
+   //actions.condition();
    actions.effect(targetDead, true);
-   actions.add();
+   //actions.add();
 
    actions.create("attackTurret");
    actions.condition(haveTarget, true);
-   actions.condition();
+   actions.condition(inTurret, true);
+   actions.condition(targetDead, false);
+   //actions.condition();
    actions.effect(targetDead, true);
    actions.add();
 
@@ -156,21 +163,25 @@ void simpleTest()
    actions.create("findTurret");
    actions.condition(inTurret, false);
    actions.effect(inTurret, true);
-   actions.add();
+   //actions.add();
 
    // --------------------
    // STEP 2. The Problem.
 
    // 2.1. Create initial and goal world states.
-   ae::GOAPWorldState init(preds), goal(preds);
+   ae::SimpleWorldState init(preds), goal(preds);
 
-   init.set(false, haveGun);
-   init.set(true, haveTarget);
+   init.set(haveTarget);
 
-   goal.set(true, targetDead);
+   goal.set(targetDead);
 
    // --------------------
    // STEP 3. The Solution.
+   ae::Plan plan;
+   if(ae::ReverseAstarSolve(init, goal, actions, ae::NoObjects, plan))
+      printPlan(plan, actions);
+   else
+      printf("No valid plan was found.\n");
 }
 
 int main(int argc, char **argv)

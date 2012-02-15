@@ -5,8 +5,6 @@
 #include "AesopTest.h"
 
 // Test cases for each class.
-#include "tests/AesopTypesTest.h"
-#include "tests/AesopObjectsTest.h"
 
 int main(int argc, char **argv)
 {

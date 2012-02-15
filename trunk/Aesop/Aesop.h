@@ -33,8 +33,6 @@
 #include <vector>
 #include <set>
 
-#include "AesopConfig.h"
-
 namespace ae {
    /// @addtogroup Aesop
    /// @{

@@ -4,7 +4,7 @@
 #include "gtest/gtest.h"
 #include "AesopActionSet.h"
 
-using namespace ae;
+using namespace Aesop;
 
 /// @brief Test fixture for the ActionSet class.
 /// @ingroup AesopTest
