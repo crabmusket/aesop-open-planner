@@ -102,6 +102,8 @@ void simpleTest()
       gunLoaded,
       gunEquipped,
       haveGun,
+      haveMelee,
+      meleeEquipped,
       inTurret,
       haveTarget,
       targetDead,
@@ -125,9 +127,10 @@ void simpleTest()
    actions.create("attackMelee");
    actions.condition(haveTarget, true);
    actions.condition(targetDead, false);
+   actions.condition(meleeEquipped, true);
    //actions.condition();
    actions.effect(targetDead, true);
-   //actions.add();
+   actions.add();
 
    actions.create("attackTurret");
    actions.condition(haveTarget, true);
@@ -152,6 +155,17 @@ void simpleTest()
    actions.create("findGun");
    actions.condition(haveGun, false);
    actions.effect(haveGun, true);
+   actions.add();
+
+   actions.create("drawMelee");
+   actions.condition(haveMelee, true);
+   actions.condition(meleeEquipped, false);
+   actions.effect(meleeEquipped, true);
+   actions.add();
+
+   actions.create("findMelee");
+   actions.condition(haveMelee, false);
+   actions.effect(haveMelee, true);
    actions.add();
 
    actions.create("findTurret");
