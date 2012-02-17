@@ -20,11 +20,15 @@ namespace Aesop {
    /// @param[out] prob Problem object to initialise.
    /// @param[out] ctx  Context for logging and profiling.
    /// @return True if initialisation was successful, false if not.
-   bool ReverseAstarInit(const WorldState &init, const WorldState &goal, Problem &prob, Context &ctx = Context())
+   bool ReverseAstarInit(const WorldState &init, const WorldState &goal, Problem &prob, Context &ctx = NullContext())
    {
       // Check that the predicates used by each state match.
       if(init.getPredicates() != goal.getPredicates())
+      {
+         //ctx.
          return false;
+      }
+      ctx.beginPlanning();
       // Goal is actually initial state since we're doing a regressive search.
       prob.goal = &init;
       // Clear problem data.
@@ -43,11 +47,14 @@ namespace Aesop {
    /// @param[un] objects Set of objects that exist in the problem.
    /// @param[out] ctx    Context for logging and profiling.
    /// @return True if the algorithm should continue, false if not.
-   bool ReverseAstarIteration(Problem &prob, const ActionSet &actions, const Objects &objects, Context &ctx = Context())
+   bool ReverseAstarIteration(Problem &prob, const ActionSet &actions, const Objects &objects, Context &ctx = NullContext())
    {
+      ctx.beginIteration();
+
       if(prob.open.empty())
       {
          ctx.failure();
+         ctx.endIteration();
          return false;
       }
 
@@ -61,6 +68,7 @@ namespace Aesop {
       if(*s.state == *prob.goal)
       {
          ctx.success();
+         ctx.endIteration();
          prob.success = true;
          return false;
       }
@@ -93,7 +101,7 @@ namespace Aesop {
             {
                if(*n.state == *cli->state)
                {
-                  printf("    State already exists in closed list; aborting.\n");
+                  //ctx.
                   delete n.state;
                   break;
                }
@@ -114,7 +122,7 @@ namespace Aesop {
             {
                if(*n.state == *oli->state && n < *oli)
                {
-                  printf("Updating state %s with action %s", n.state->repr().c_str(), actions.repr(it).c_str());
+                  //ctx.
                   // We've found a more efficient way of getting here.
                   *oli = n;
                   // Reorder the heap.
@@ -126,13 +134,14 @@ namespace Aesop {
             // Push onto the open list if not already in it.
             if(oli == prob.open.end())
             {
-               printf("    Pushing new state onto open list with cost %.3f\n", n.cost);
+               //ctx.
                prob.open.push_back(n);
                push_heap(prob.open.begin(), prob.open.end(), std::greater<Problem::openstate>());
             }
          }
       }
 
+      ctx.endIteration();
       return true;
    }
 
@@ -140,18 +149,20 @@ namespace Aesop {
    /// @param[in]  prob Problem to operate on.
    /// @param[out] plan Plan to operate on.
    /// @param[out] ctx  Context for logging and profiling.
-   void ReverseAstarFinalise(const Problem &prob, Plan &plan, Context &ctx = Context())
+   void ReverseAstarFinalise(const Problem &prob, Plan &plan, Context &ctx = NullContext())
    {
-      if(!prob.closed.size())
-         return;
-      unsigned int i = prob.closed.size() - 1;
-      while(i)
+      if(prob.success)
       {
-         // Extract the action performed at this step and its parameters.
-         plan.push(prob.closed[i].action, prob.closed[i].params);
-         // Iterate.
-         i = prob.closed[i].parent;
+         unsigned int i = prob.closed.size() - 1;
+         while(i)
+         {
+            // Extract the action performed at this step and its parameters.
+            plan.push(prob.closed[i].action, prob.closed[i].params);
+            // Iterate.
+            i = prob.closed[i].parent;
+         }
       }
+      ctx.endPlanning();
    }
 
    /// @brief Perform a complete regressive A* search.
@@ -166,7 +177,7 @@ namespace Aesop {
                           const ActionSet &actions,
                           const Objects &objects,
                           Plan &plan,
-                          Context &ctx = Context())
+                          Context &ctx = NullContext())
    {
       // Initialise problem with initial and goal states.
       Problem prob;
@@ -177,8 +188,7 @@ namespace Aesop {
       while(ReverseAstarIteration(prob, actions, objects, ctx)) {}
 
       // Finalise and return success.
-      if(prob.success)
-         ReverseAstarFinalise(prob, plan, ctx);
+      ReverseAstarFinalise(prob, plan, ctx);
       return prob.success;
    }
 };
