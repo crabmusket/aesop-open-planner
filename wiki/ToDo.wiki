@@ -1,5 +1,20 @@
 #summary Itinerary of tasks and improvements.
 
+= Roadmap =
+
+ * *_Pre-alpha_*:
+    * Not yet at alpha status.
+ * _Alpha_:
+    * Support single-parameter predicates and world states
+    * Include regressive and progressive A* algorithms
+ * _Beta_:
+    * PDDL module
+    * Demo, hopefully interactive
+    * Some form of benchmarking?
+    * Complete unit tests
+ * _Release_:
+    * Bug-free and stable as possible
+
 = To Do =
 
  * Parse PDDL files
@@ -11,26 +26,8 @@
     * Separate from demo?
     * Possible: generate random planning problems? [http://www.loria.fr/~hoffmanj/ff-domains.html Like so]
     * Plans-per-second metric?
-       * Threaded?
+    * Threaded?
  * Predicates
-    * Support flexible, user-defined predicates
+    * Support flexible user-defined predicates
+       * Support logical expressions in effects and preconditions
     * Retain basic, high-performance ones as well
-    * Support logical expressions in effects and preconditions
- * How to get values for predicates?
-    * Possible: ask the domain
-    * If we have a set of objects like in PDDL, we could brute-force over objects
-
-= Roadmap =
-
- * *_Pre-alpha_*:
-    * Not yet at alpha status.
- * _Alpha_:
-    * Support domain-defined predicates
-    * Find a better solution for getting Action parameters
-    * Complete unit tests
- * _Beta_:
-    * PDDL module
-    * Demo for interacting with the planner
-    * Some form of benchmarking?
- * _Release_:
-    * Bug-free and stable as possible
