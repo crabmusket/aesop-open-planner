@@ -11,18 +11,18 @@
 #include "AesopWorldState.h"
 #include "AesopReverseAstar.h"
 
-namespace ae = Aesop;
+using namespace Aesop;
 
-void printPlan(const ae::Plan &plan, const ae::ActionSet &actions)
+void printPlan(const Plan &plan, const ActionSet &actions)
 {
    printf("The plan:\n");
-   ae::Plan::const_iterator it;
+   Plan::const_iterator it;
    for(it = plan.begin(); it != plan.end(); it++)
    {
       printf("   %s", actions.repr(it->action).c_str());
       if(it->parameters.size())
       {
-         ae::WorldState::paramlist::const_iterator pl;
+         WorldState::paramlist::const_iterator pl;
          for(pl = it->parameters.begin(); pl != it->parameters.end(); pl++)
             printf(" %d", *pl);
       }
@@ -44,12 +44,12 @@ void subSTRIPSTest()
    // STEP 1. The Domain.
 /*
    // 1.1. Define the types of objects that can exist.
-   ae::NamedTypes types;
+   NamedTypes types;
    types.add("object");
-   ae::Types::typeID place = types.add("place");
+   Types::typeID place = types.add("place");
 
    // 1.2. Create predicates that describe the physics of our problem.
-   ae::AesopPredicates preds;
+   AesopPredicates preds;
 
    // A physical object can be at a place
    preds.create("at");
@@ -61,10 +61,10 @@ void subSTRIPSTest()
    preds.add();
 
    preds.create("high");
-   ae::Predicates::predicateID high = preds.add();
+   Predicates::predicateID high = preds.add();
 
    // 1.3. Define actions we can use to modify the world state.
-   ae::SingleParamActionSet actions;
+   SingleParamActionSet actions;
 
    actions.create("move");
    actions.parameter(place);
@@ -82,7 +82,7 @@ void subSTRIPSTest()
    // STEP 2. The Problem.
 
    // 2.1. Create some objects.
-   ae::Objects objects(types);
+   Objects objects(types);
    objects.add("roomA", place);
    objects.add("roomB", place);
    objects.add("roomC", place);
@@ -96,7 +96,7 @@ void simpleTest()
    // STEP 1. The Domain.
 
    // 1.1. Create predicates that describe the physics of our problem.
-   ae::SimplePredicates preds;
+   SimplePredicates preds;
 
    enum {
       gunLoaded,
@@ -114,7 +114,7 @@ void simpleTest()
    preds.define(NUMPREDS);
 
    // 1.2. Create actions to modify the world state.
-   ae::SimpleActionSet actions(preds);
+   SimpleActionSet actions(preds);
 
    actions.create("attackRanged");
    actions.condition(haveTarget, true);
@@ -177,7 +177,7 @@ void simpleTest()
    // STEP 2. The Problem.
 
    // 2.1. Create initial and goal world states.
-   ae::SimpleWorldState init(preds), goal(preds);
+   SimpleWorldState init(preds), goal(preds);
 
    init.set(haveTarget);
 
@@ -185,9 +185,9 @@ void simpleTest()
 
    // --------------------
    // STEP 3. The Solution.
-   ae::Plan plan;
-   ae::FileWriterContext context(*stdout);
-   if(ae::ReverseAstarSolve(init, goal, actions, ae::NoObjects, plan, context))
+   Plan plan;
+   FileWriterContext context(*stdout);
+   if(ReverseAstarSolve(init, goal, actions, NoObjects, plan, context))
       printPlan(plan, actions);
    else
       printf("No valid plan was found.\n");
