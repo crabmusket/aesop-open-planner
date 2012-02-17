@@ -8,6 +8,7 @@ SET(AesopSources
 	AesopWorldState.cpp
 	AesopProblem.cpp
 	AesopPlan.cpp
+	AesopContext.cpp
 )
 
 SET(AesopHeaders
@@ -18,6 +19,7 @@ SET(AesopHeaders
 	AesopWorldState.h
 	AesopProblem.h
 	AesopPlan.h
+	AesopContext.h
 	AesopReverseAstar.h
 )
 

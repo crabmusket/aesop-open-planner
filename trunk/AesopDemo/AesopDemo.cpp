@@ -32,66 +32,60 @@ void printPlan(const ae::Plan &plan, const ae::ActionSet &actions)
 
 void complexTest()
 {
+}
+
+void STRIPSTest()
+{
+}
+
+void subSTRIPSTest()
+{
    // --------------------
    // STEP 1. The Domain.
 /*
    // 1.1. Define the types of objects that can exist.
-   ae::Types types;
-   types.add("physob");
-   types.add("place");
-   types.add("person", "physob");
-   types.add("vendor", "physob");
-   types.add("money", "physob");
-   types.add("food", "physob");
+   ae::NamedTypes types;
+   types.add("object");
+   ae::Types::typeID place = types.add("place");
 
    // 1.2. Create predicates that describe the physics of our problem.
    ae::AesopPredicates preds;
 
    // A physical object can be at a place
    preds.create("at");
-   preds.parameter("who", "physob");
-   preds.parameter("where", "place");
+   preds.parameter("place");
    preds.add();
 
-   // Two places can be adjacent
-   preds.create("adjacent");
-   preds.parameter("a", "place");
-   preds.parameter("b", "place");
+   preds.create("box-at");
+   preds.parameter("place");
    preds.add();
 
-   preds.create("hungry");
-   preds.parameter("who", "person");
-   preds.add();
-
-   preds.create("carrying");
-   preds.parameter("who", "person");
-   preds.parameter("what", "physob");
-   preds.add();
-
-   preds.create("in");
-   preds.parameter("a", "physob");
-   preds.parameter("b", "physob");
-   preds.add();
+   preds.create("high");
+   ae::Predicates::predicateID high = preds.add();
 
    // 1.3. Define actions we can use to modify the world state.
+   ae::SingleParamActionSet actions;
 
-   // move person place place
-   // pickup person physob
-   // eat person food
-   // purchase person vendor money physob
+   actions.create("move");
+   actions.parameter(place);
+   actions.add();
+
+   actions.create("move-box");
+   actions.parameter(place);
+   actions.add();
+
+   actions.create("climb-box");
+   preds.effect(high);
+   actions.add();
 
    // --------------------
    // STEP 2. The Problem.
 
    // 2.1. Create some objects.
    ae::Objects objects(types);
-   objects.add("roomA", "place");
-   objects.add("roomB", "place");
-   objects.add("roomC", "place");
-   objects.add("me", "person");
-   objects.add("sandwich", "food");
-   objects.add("machine", "vendor");
-   objects.add("coins", "money");
+   objects.add("roomA", place);
+   objects.add("roomB", place);
+   objects.add("roomC", place);
 */
    // 2.2. Create initial and goal world states.
 }
@@ -178,7 +172,8 @@ void simpleTest()
    // --------------------
    // STEP 3. The Solution.
    ae::Plan plan;
-   if(ae::ReverseAstarSolve(init, goal, actions, ae::NoObjects, plan))
+   ae::FileWriterContext context(*stdout);
+   if(ae::ReverseAstarSolve(init, goal, actions, ae::NoObjects, plan, context))
       printPlan(plan, actions);
    else
       printf("No valid plan was found.\n");

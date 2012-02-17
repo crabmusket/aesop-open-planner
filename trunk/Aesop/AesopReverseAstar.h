@@ -11,14 +11,16 @@
 #include "AesopObjects.h"
 #include "AesopProblem.h"
 #include "AesopPlan.h"
+#include "AesopContext.h"
 
 namespace Aesop {
    /// @brief Initialise a regressive A* solution.
    /// @param[in]  init Initial world state for this problem.
    /// @param[in]  goal Desired world state for this problem.
    /// @param[out] prob Problem object to initialise.
+   /// @param[out] ctx  Context for logging and profiling.
    /// @return True if initialisation was successful, false if not.
-   bool ReverseAstarInit(const WorldState &init, const WorldState &goal, Problem &prob)
+   bool ReverseAstarInit(const WorldState &init, const WorldState &goal, Problem &prob, Context &ctx = Context())
    {
       // Check that the predicates used by each state match.
       if(init.getPredicates() != goal.getPredicates())
@@ -39,12 +41,13 @@ namespace Aesop {
    /// @param     prob    Problem to operate on.
    /// @param[in] actions Set of actions to operate with.
    /// @param[un] objects Set of objects that exist in the problem.
+   /// @param[out] ctx    Context for logging and profiling.
    /// @return True if the algorithm should continue, false if not.
-   bool ReverseAstarIteration(Problem &prob, const ActionSet &actions, const Objects &objects)
+   bool ReverseAstarIteration(Problem &prob, const ActionSet &actions, const Objects &objects, Context &ctx = Context())
    {
       if(prob.open.empty())
       {
-         printf("Open list is empty. Finishing.\n");
+         ctx.failure();
          return false;
       }
 
@@ -52,12 +55,12 @@ namespace Aesop {
       Problem::openstate s = prob.open.back();
       prob.open.pop_back();
 
-      printf("Transferring state %s to closed list.\n", s.state->repr().c_str());
+      ctx.toClosed(s.ID);
       prob.closed.push_back(s);
 
       if(*s.state == *prob.goal)
       {
-         printf("    State matches goal. Finishing.\n");
+         ctx.success();
          prob.success = true;
          return false;
       }
@@ -78,11 +81,12 @@ namespace Aesop {
                continue;
             // Create a new world state by applying the action in reverse.
             Problem::openstate n;
+            n.ID = prob.lastID++;
             n.state = s.state->clone();
             actions.applyReverse(it, *p, *n.state);
             n.action = it;
             n.params = *p;
-            printf("Creating new state %s via action %s.\n", n.state->repr().c_str(), actions.repr(it).c_str());
+            ctx.newState(n);
             // If the new state is already in the closed list, continue.
             Problem::list::const_iterator cli;
             for(cli = prob.closed.begin(); cli != prob.closed.end(); cli++)
@@ -135,7 +139,8 @@ namespace Aesop {
    /// @brief Finalise a completed Problem into a Plan.
    /// @param[in]  prob Problem to operate on.
    /// @param[out] plan Plan to operate on.
-   void ReverseAstarFinalise(const Problem &prob, Plan &plan)
+   /// @param[out] ctx  Context for logging and profiling.
+   void ReverseAstarFinalise(const Problem &prob, Plan &plan, Context &ctx = Context())
    {
       if(!prob.closed.size())
          return;
@@ -155,23 +160,25 @@ namespace Aesop {
    /// @param[in]  actions Set of actions to operate with.
    /// @param[in]  objects Set of objects that exist in the problem.
    /// @param[out] plan    Plan output.
+   /// @param[out] ctx     Context for logging and profiling.
    /// @return True if a valid plan was found, false if not.
    bool ReverseAstarSolve(const WorldState &init, const WorldState &goal,
                           const ActionSet &actions,
                           const Objects &objects,
-                          Plan &plan)
+                          Plan &plan,
+                          Context &ctx = Context())
    {
       // Initialise problem with initial and goal states.
       Problem prob;
-      if(!ReverseAstarInit(init, goal, prob))
+      if(!ReverseAstarInit(init, goal, prob, ctx))
          return false;
 
       // Iterate.
-      while(ReverseAstarIteration(prob, actions, objects)) {}
+      while(ReverseAstarIteration(prob, actions, objects, ctx)) {}
 
       // Finalise and return success.
       if(prob.success)
-         ReverseAstarFinalise(prob, plan);
+         ReverseAstarFinalise(prob, plan, ctx);
       return prob.success;
    }
 };
