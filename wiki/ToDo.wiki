@@ -8,11 +8,11 @@
     * Support single-parameter predicates and world states
     * Include regressive and progressive A`*` algorithms
  * _Beta_:
-    * PDDL module
     * Demo, hopefully interactive
     * Some form of benchmarking?
     * Complete unit tests
  * _Release_:
+    * PDDL module
     * Bug-free and stable as possible
 
 = To Do =
