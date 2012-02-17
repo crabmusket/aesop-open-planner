@@ -4,5 +4,5 @@
 #include "AesopPredicates.h"
 
 namespace Aesop {
-
+   const Predicates::predID Predicates::NullPredicate = -1;
 };
