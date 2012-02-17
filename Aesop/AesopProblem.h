@@ -30,6 +30,9 @@ namespace Aesop {
          /// @brief Intermediate WorldState.
          WorldState *state;
 
+         /// @brief Identifier of this state.
+         unsigned int ID;
+
          /// @brief Total cost of this intermediate state.
          float cost,
          /// @brief Cost accrued to get to this state.
@@ -49,6 +52,7 @@ namespace Aesop {
          /// @brief Default constructor.
          openstate()
          {
+            ID = 0;
             state = NULL;
             cost = G = H = 0.0f;
             parent = 0;
@@ -80,6 +84,9 @@ namespace Aesop {
 
       /// @brief Closed list.
       list closed;
+
+      /// @brief ID counter for states.
+      unsigned int lastID;
    protected:
    private:
    };

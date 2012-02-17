@@ -9,6 +9,7 @@ namespace Aesop {
    {
       goal = NULL;
       success = false;
+      lastID = 0;
    }
 
    Problem::~Problem()
