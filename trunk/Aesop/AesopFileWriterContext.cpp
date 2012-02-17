@@ -1,9 +1,9 @@
-/// @file AesopContext.h
-/// @brief Definition of Context class.
+/// @file AesopFileWriterContext.cpp
+/// @brief Implementation of FileWriterContext class.
 
 #include <stdio.h>
 #include <time.h>
-#include "AesopContext.h"
+#include "AesopFileWriterContext.h"
 
 namespace Aesop {
    FileWriterContext::FileWriterContext(FILE &file)
