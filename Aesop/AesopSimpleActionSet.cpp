@@ -1,8 +1,8 @@
-/// @file AesopActionSet.cpp
-/// @brief Implementation of ActionSet class as defined in AesopActionSet.h
+/// @file AesopSimpleActionSet.cpp
+/// @brief Implementation of SimpleActionSet class as defined in AesopSimpleActionSet.h
 
 #include <algorithm>
-#include "AesopActionSet.h"
+#include "AesopSimpleActionSet.h"
 
 namespace Aesop {
    /// @class SimpleActionSet

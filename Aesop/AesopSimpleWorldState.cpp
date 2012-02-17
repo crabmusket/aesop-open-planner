@@ -1,7 +1,7 @@
-/// @file AesopWorldState.cpp
-/// @brief Implementation of WorldState class as defined in AesopWorldState.h
+/// @file AesopSimpleWorldState.cpp
+/// @brief Implementation of SimpleWorldState class as defined in AesopSimpleWorldState.h
 
-#include "AesopWorldState.h"
+#include "AesopSimpleWorldState.h"
 
 namespace Aesop {
    SimpleWorldState::SimpleWorldState(const Predicates &p) : WorldState(p)

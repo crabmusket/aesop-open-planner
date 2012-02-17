@@ -5,10 +5,10 @@
 #include <stdarg.h>
 
 #include "AesopDemo.h"
-#include "AesopObjects.h"
-#include "AesopPredicates.h"
-#include "AesopActionSet.h"
-#include "AesopWorldState.h"
+#include "AesopSimplePredicates.h"
+#include "AesopSimpleActionSet.h"
+#include "AesopSimpleWorldState.h"
+#include "AesopFileWriterContext.h"
 #include "AesopReverseAstar.h"
 
 using namespace Aesop;
