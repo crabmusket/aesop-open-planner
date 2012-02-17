@@ -6,7 +6,7 @@
     * Not yet at alpha status.
  * _Alpha_:
     * Support single-parameter predicates and world states
-    * Include regressive and progressive A* algorithms
+    * Include regressive and progressive A`*` algorithms
  * _Beta_:
     * PDDL module
     * Demo, hopefully interactive
