@@ -1,5 +1,5 @@
 /// @file AesopProblem.cpp
-/// @brief Implementation of Problem class from AesopProblem.h
+/// Implementation of Problem class from AesopProblem.h
 
 #include "AesopProblem.h"
 #include <algorithm>

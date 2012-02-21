@@ -1,5 +1,5 @@
 /// @file AesopSimpleWorldState.cpp
-/// @brief Implementation of SimpleWorldState class as defined in AesopSimpleWorldState.h
+/// Implementation of SimpleWorldState class as defined in AesopSimpleWorldState.h
 
 #include "AesopSimpleWorldState.h"
 

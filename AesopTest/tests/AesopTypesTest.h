@@ -1,12 +1,12 @@
 /// @file AesopTypesTest.h
-/// @brief gtest cases for Types class.
+/// gtest cases for Types class.
 
 #include "gtest/gtest.h"
 #include "AesopTypes.h"
 
 using namespace Aesop;
 
-/// @brief Test fixture for the Types class.
+/// Test fixture for the Types class.
 /// @ingroup AesopTest
 class TypesTest : public ::testing::Test {
 protected:

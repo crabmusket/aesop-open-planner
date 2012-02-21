@@ -1,5 +1,5 @@
 /// @file AesopSimpleActionSet.cpp
-/// @brief Implementation of SimpleActionSet class as defined in AesopSimpleActionSet.h
+/// Implementation of SimpleActionSet class as defined in AesopSimpleActionSet.h
 
 #include <algorithm>
 #include "AesopSimpleActionSet.h"

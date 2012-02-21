@@ -1,5 +1,5 @@
 // @file AesopDemo.cpp
-// @brief A small test application for the Aesop library.
+// A small test application for the Aesop library.
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -34,48 +34,79 @@ void complexTest()
 {
 }
 
+/// Subclass categories!
+/// The 'Simple' prefixed classes represent the simplest planning logic that
+/// is useful. WorldStates are lists of mutually exclusive boolean states.
+/// Actions simply flip the states of these booleans.
+/// The 'GOAPS' set of classes are designed to mimic the implementation in
+/// F.E.A.R. and provide predicates with a maximum of one parameter each. A
+/// predicate can only be instanced with one parameter at a time. For example,
+/// if a WorldState contains (at X), and you set (at Y), then (at X) is no
+/// longer true.
+/// The 'STRIPS' family of actions are basically full planning with arbitrary
+/// parameters and stuff.
+
 void STRIPSTest()
 {
-}
-
-void subSTRIPSTest()
-{
+/*
    // --------------------
    // STEP 1. The Domain.
-/*
+
    // 1.1. Define the types of objects that can exist.
    NamedTypes types;
    types.add("object");
    Types::typeID place = types.add("place");
 
    // 1.2. Create predicates that describe the physics of our problem.
-   AesopPredicates preds;
+   STRIPSPredicates preds;
 
    // A physical object can be at a place
    preds.create("at");
-   preds.parameter("place");
+   Predicates::predicateID at = preds.parameter(place);
    preds.add();
 
    preds.create("box-at");
-   preds.parameter("place");
+   Predicates::predicateID boxat = preds.parameter(place);
    preds.add();
 
    preds.create("high");
    Predicates::predicateID high = preds.add();
 
+   preds.create("have-bananas");
+   Predicates::predicateID bananas = preds.add();
+
    // 1.3. Define actions we can use to modify the world state.
-   SingleParamActionSet actions;
+   STRIPSActionSet actions;
 
    actions.create("move");
    actions.parameter(place);
+   actions.parameter(place);
+   actons.condition(at).param(0).set();
+   actions.effect(at).param(1).set();
+   actions.effect(at).param(0).unset();
    actions.add();
 
    actions.create("move-box");
    actions.parameter(place);
+   actions.parameter(place);
+   actons.condition(at).param(0).set();
+   actons.condition(boxat).param(0).set();
+   actions.effect(at).param(1).set();
+   actions.effect(boxat).param(1).set();
+   actions.effect(at).param(0).unset();
+   actions.effect(boxat).param(0).unset();
    actions.add();
 
    actions.create("climb-box");
-   preds.effect(high);
+   actopns.condition(at).equals(boxat).set();
+   actions.condition(high).unset();
+   actions.effect(high).set();
+   actions.add();
+
+   actions.create("take-bananas");
+   actions.condition(high).set();
+   actions.condition(bananas).unset();
+   actions.effect(bananas).set();
    actions.add();
 
    // --------------------
@@ -83,11 +114,25 @@ void subSTRIPSTest()
 
    // 2.1. Create some objects.
    Objects objects(types);
-   objects.add("roomA", place);
-   objects.add("roomB", place);
-   objects.add("roomC", place);
-*/
+   Objects::objectID a = objects.add("roomA", place);
+   Objects::objectID b = objects.add("roomB", place);
+   Objects::objectID c = objects.add("roomC", place);
+
    // 2.2. Create initial and goal world states.
+   STRIPSWorldState init, goal;
+   STRIPSWorldState::paramlist l;
+
+   l.push_back(a);
+   init.set(at, l);
+   init.set(bananasat, l);
+   l.clear();
+
+   l.push_back(c);
+   init.set(boxat, l);
+   l.clear();
+
+   goal.set(bananas);
+*/
 }
 
 void simpleTest()

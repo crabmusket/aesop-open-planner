@@ -1,5 +1,5 @@
 /// @file AesopObjects.h
-/// @brief Definition of Objects class.
+/// Definition of Objects class.
 
 #ifndef _AE_OBJECTS_H_
 #define _AE_OBJECTS_H_
@@ -7,43 +7,43 @@
 #include "AesopTypes.h"
 
 namespace Aesop {
-   /// @brief A set of objects defined in a particular planning problem.
+   /// A set of objects defined in a particular planning problem.
    /// @ingroup Aesop
    class Objects {
    public:
-      /// @brief Objects must be identifiable.
+      /// Objects must be identifiable.
       typedef unsigned int objectID;
 
-      /// @brief Do we have an object of the given identifier?
+      /// Do we have an object of the given identifier?
       /// @param obj Look for an object with this identifier.
       /// @return True if we have an object with that identifier, false if not.
       virtual bool has(objectID obj) const = 0;
 
-      /// @brief Get the type of an object.
+      /// Get the type of an object.
       /// @param obj Identifier of the object to get the type of.
       /// @return The object's type.
       virtual Types::typeID typeof(objectID obj) const = 0;
 
-      /// @brief Get our types object.
+      /// Get our types object.
       /// @return Handle of our types.
       const Types &getTypes() const { return mTypes; }
 
       /// @name Partial STL interface
       /// @{
 
-      /// @brief Iteration simply uses an ID.
+      /// Iteration simply uses an ID.
       typedef objectID const_iterator;
-      /// @brief Return the number of objects stored.
+      /// Return the number of objects stored.
       virtual unsigned int size() const = 0;
-      /// @brief Iterator to first object.
+      /// Iterator to first object.
       virtual const_iterator begin() const = 0;
-      /// @brief Iterator to one-after-last object.
+      /// Iterator to one-after-last object.
       virtual const_iterator end() const = 0;
 
-      /// @brief Iterator that sticks to a particular type and its descendents.
+      /// Iterator that sticks to a particular type and its descendents.
       struct type_iterator
       {
-         /// @brief Default constructor.
+         /// Default constructor.
          /// @param[in] i Index to start at. 
          /// @param[in] o Objects this iterator operates on.
          /// @param[in] t Type to restrict our iteration to.
@@ -85,36 +85,36 @@ namespace Aesop {
          /// @}
 
       private:
-         /// @brief Reference to the Objects we iterate over.
+         /// Reference to the Objects we iterate over.
          const Objects &objs;
-         /// @brief Internal iterator.
+         /// Internal iterator.
          const_iterator it;
-         /// @brief Type name to restrict ourselves to.
+         /// Type name to restrict ourselves to.
          Types::typeID type;
       };
 
-      /// @brief Iterator to the first object of a particular type.
+      /// Iterator to the first object of a particular type.
       type_iterator begin(Types::typeID type) const { return type_iterator(begin(), *this, type); }
-      /// @brief Iterator to the one-after-last object.
+      /// Iterator to the one-after-last object.
       type_iterator end(Types::typeID type) const { return type_iterator(end(), *this, type); }
 
       /// @}
 
-      /// @brief Default constructor.
+      /// Default constructor.
       /// @param[in] types Types set to validate objects.
       Objects(const Types &types = NoTypes) : mTypes(types) {}
 
    protected:
-      /// @brief Alternate name for has method.
+      /// Alternate name for has method.
       /// @see Objects::has
       bool have(Types::typeID name) const { return has(name); }
 
    private:
-      /// @brief Types that validate our objects.
+      /// Types that validate our objects.
       const Types &mTypes;
    };
 
-   /// @brief No objects.
+   /// No objects.
    /// @ingroup Aesop
    class NullObjects : public Objects {
    public:
@@ -127,7 +127,7 @@ namespace Aesop {
    private:
    };
 
-   /// @brief No objects.
+   /// No objects.
    const NullObjects NoObjects;
 };
 
