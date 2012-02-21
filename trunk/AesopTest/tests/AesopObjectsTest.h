@@ -1,5 +1,5 @@
 /// @file AesopObjectsTest.h
-/// @brief gtest cases for Objects class.
+/// gtest cases for Objects class.
 
 #include "gtest/gtest.h"
 #include "AesopObjects.h"
@@ -7,7 +7,7 @@
 
 using namespace Aesop;
 
-/// @brief Test fixture for the Objects class.
+/// Test fixture for the Objects class.
 /// @ingroup AesopTest
 class ObjectsTest : public ::testing::Test {
 protected:

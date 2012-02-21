@@ -1,5 +1,5 @@
 /// @file AesopTest.cpp
-/// @brief Main file of AesopTest module.
+/// Main file of AesopTest module.
 
 #include "gtest/gtest.h"
 #include "AesopTest.h"

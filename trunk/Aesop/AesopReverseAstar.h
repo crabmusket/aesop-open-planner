@@ -1,5 +1,5 @@
 /// @file AesopReverseAstar.h
-/// @brief Implementation of regressive A* search algorithm.
+/// Implementation of regressive A* search algorithm.
 
 #ifndef _AE_REVERSE_ASTAR_H_
 #define _AE_REVERSE_ASTAR_H_
@@ -14,7 +14,7 @@
 #include "AesopContext.h"
 
 namespace Aesop {
-   /// @brief Initialise a regressive A* solution.
+   /// Initialise a regressive A* solution.
    /// @param[in]  init Initial world state for this problem.
    /// @param[in]  goal Desired world state for this problem.
    /// @param[out] prob Problem object to initialise.
@@ -41,7 +41,7 @@ namespace Aesop {
       return true;
    }
 
-   /// @brief Perform a single iteration in a regressive A* search.
+   /// Perform a single iteration in a regressive A* search.
    /// @param     prob    Problem to operate on.
    /// @param[in] actions Set of actions to operate with.
    /// @param[un] objects Set of objects that exist in the problem.
@@ -145,7 +145,7 @@ namespace Aesop {
       return true;
    }
 
-   /// @brief Finalise a completed Problem into a Plan.
+   /// Finalise a completed Problem into a Plan.
    /// @param[in]  prob Problem to operate on.
    /// @param[out] plan Plan to operate on.
    /// @param[out] ctx  Context for logging and profiling.
@@ -165,7 +165,7 @@ namespace Aesop {
       ctx.endPlanning();
    }
 
-   /// @brief Perform a complete regressive A* search.
+   /// Perform a complete regressive A* search.
    /// @param[in]  init    Initial world state.
    /// @param[in]  goal    Desired world state.
    /// @param[in]  actions Set of actions to operate with.

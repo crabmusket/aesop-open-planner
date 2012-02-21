@@ -1,5 +1,5 @@
 /// @file AesopProblem.h
-/// @brief Declaration of Problem class and functions.
+/// Declaration of Problem class and functions.
 
 #ifndef _AE_PROBLEM_H_
 #define _AE_PROBLEM_H_
@@ -9,47 +9,47 @@
 #include "AesopActionSet.h"
 
 namespace Aesop {
-   /// @brief Stores planner instance data used by the planning algorithms.
+   /// Stores planner instance data used by the planning algorithms.
    /// @ingroup Aesop
    class Problem {
    public:
-      /// @brief Was a plan successfully created?
+      /// Was a plan successfully created?
       bool success;
 
-      /// @brief State this problem is trying to reach.
+      /// State this problem is trying to reach.
       const WorldState *goal;
 
-      /// @brief Default constructor.
+      /// Default constructor.
       Problem();
 
-      /// @brief Default destructor.
+      /// Default destructor.
       ~Problem();
 
-      /// @brief Store world states in the open list.
+      /// Store world states in the open list.
       struct openstate {
-         /// @brief Intermediate WorldState.
+         /// Intermediate WorldState.
          WorldState *state;
 
-         /// @brief Identifier of this state.
+         /// Identifier of this state.
          unsigned int ID;
 
-         /// @brief Total cost of this intermediate state.
+         /// Total cost of this intermediate state.
          float cost,
-         /// @brief Cost accrued to get to this state.
+         /// Cost accrued to get to this state.
             G,
-         /// @brief Heuristic cost to get to goal state.
+         /// Heuristic cost to get to goal state.
             H;
 
-         /// @brief State in the closed list that this state is reached from.
+         /// State in the closed list that this state is reached from.
          unsigned int parent;
 
-         /// @brief The action used to get here from the previous state.
+         /// The action used to get here from the previous state.
          ActionSet::const_iterator action;
 
-         /// @brief Parameters to our action.
+         /// Parameters to our action.
          WorldState::paramlist params;
 
-         /// @brief Default constructor.
+         /// Default constructor.
          openstate()
          {
             ID = 0;
@@ -60,15 +60,15 @@ namespace Aesop {
             params = WorldState::paramlist();
          }
 
-         /// @brief Compare based on cost.
+         /// Compare based on cost.
          bool operator>(const openstate &s) const
          { return cost > s.cost; }
 
-         /// @brief Compare based on cost.
+         /// Compare based on cost.
          bool operator<(const openstate &s) const
          { return cost < s.cost; }
 
-         /// @brief Equality is based on the state represented, not auxiliary
+         /// Equality is based on the state represented, not auxiliary
          ///        data.
          bool operator==(const openstate &s) const
          { return state == s.state; }
@@ -76,16 +76,16 @@ namespace Aesop {
          { return !operator==(s); }
       };
 
-      /// @brief Open and closed lists use the same data type.
+      /// Open and closed lists use the same data type.
       typedef std::vector<openstate> list;
 
-      /// @brief Open list.
+      /// Open list.
       list open;
 
-      /// @brief Closed list.
+      /// Closed list.
       list closed;
 
-      /// @brief ID counter for states.
+      /// ID counter for states.
       unsigned int lastID;
    protected:
    private:

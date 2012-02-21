@@ -1,5 +1,5 @@
 /// @file AesopTypes.cpp
-/// @brief Implementation of Types class as defined in AesopTypes.h
+/// Implementation of Types class as defined in AesopTypes.h
 
 #include "AesopTypes.h"
 

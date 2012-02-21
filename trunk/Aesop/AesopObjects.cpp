@@ -1,5 +1,5 @@
 /// @file AesopObjects.cpp
-/// @brief Implementation of Objectss class as defined in AesopObjects.h
+/// Implementation of Objectss class as defined in AesopObjects.h
 
 #include "AesopObjects.h"
 

@@ -1,5 +1,5 @@
 /// @file AesopContext.h
-/// @brief Definition of Context class.
+/// Definition of Context class.
 
 #ifndef _AE_CONTEXT_H_
 #define _AE_CONTEXT_H_
@@ -9,7 +9,7 @@
 #include "AesopProblem.h"
 
 namespace Aesop {
-   /// @brief Provides logging and profiling for Aesop functions.
+   /// Provides logging and profiling for Aesop functions.
    /// @ingroup Aesop
    class Context {
    public:
@@ -25,7 +25,7 @@ namespace Aesop {
    private:
    };
 
-   /// @brief Context that does nothing.
+   /// Context that does nothing.
    class NullContext : public Context {
    public:
       virtual void success() {}

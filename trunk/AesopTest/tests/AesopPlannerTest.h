@@ -1,5 +1,5 @@
 /// @file AesopPlannerTest.h
-/// @brief gtest cases for Planner class.
+/// gtest cases for Planner class.
 
 #include "gtest/gtest.h"
 #include "AesopPlanner.h"

@@ -1,5 +1,5 @@
 /// @file AesopFileWriterContext.cpp
-/// @brief Implementation of FileWriterContext class.
+/// Implementation of FileWriterContext class.
 
 #include <stdio.h>
 #include <time.h>

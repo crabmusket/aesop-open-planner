@@ -1,5 +1,5 @@
 /// @file AesopFileWriterContext.h
-/// @brief Definition of FileWriterContext class.
+/// Definition of FileWriterContext class.
 
 #ifndef _AE_FILE_WRITER_CONTEXT_H_
 #define _AE_FILE_WRITER_CONTEXT_H_
@@ -9,7 +9,7 @@
 #include "AesopContext.h"
 
 namespace Aesop {
-   /// @brief Example implementation of Context that writes output to a file.
+   /// Example implementation of Context that writes output to a file.
    class FileWriterContext : public Context {
    public:
       /// @name Context
@@ -26,18 +26,18 @@ namespace Aesop {
 
       /// @}
 
-      /// @brief Default constructor.
+      /// Default constructor.
       /// @param[in] file File to write output to.
       FileWriterContext(FILE &file);
    protected:
    private:
-      /// @brief File handle to write to.
+      /// File handle to write to.
       FILE &mFile;
 
-      /// @brief Time at start of planning.
+      /// Time at start of planning.
       clock_t mPlanStart;
 
-      /// @brief Number of iterations performed.
+      /// Number of iterations performed.
       unsigned int mIters;
    };
 };
