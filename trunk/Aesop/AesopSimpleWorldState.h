@@ -16,6 +16,8 @@ namespace Aesop {
       /// @{
 
       virtual bool isSet(Predicates::predID pred, const paramlist &params = paramlist()) const;
+      virtual bool isUnset(Predicates::predID pred, const paramlist &params = paramlist()) const
+      { return !isSet(pred, params); }
       virtual void set(Predicates::predID pred, const paramlist &params = paramlist());
       virtual void unset(Predicates::predID pred, const paramlist &params = paramlist());
       virtual WorldState *clone() const;

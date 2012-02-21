@@ -27,6 +27,14 @@ namespace Aesop {
       /// @return True iff the predicate is set with the given parameters.
       virtual bool isSet(Predicates::predID pred, const paramlist &params) const = 0;
 
+      /// @brief Is the predicate unset?
+      /// In some types of worlds, being unset is not necessarily the opposite
+      /// of being set.
+      /// @param[in] pred   Name of the predicate to check.
+      /// @param[in] params List of parameter values to check.
+      /// @return True iff the predicate is unset with the given parameters.
+      virtual bool isUnset(Predicates::predID pred, const paramlist &params) const = 0;
+
       /// @brief Set a predicate with specific parameters.
       /// @param[in] pred   Name of predicate to set.
       /// @param[in] params Map of parameter names to values to check.
