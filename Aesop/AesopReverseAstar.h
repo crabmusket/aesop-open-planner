@@ -20,7 +20,7 @@ namespace Aesop {
    /// @param[out] prob Problem object to initialise.
    /// @param[out] ctx  Context for logging and profiling.
    /// @return True if initialisation was successful, false if not.
-   bool ReverseAstarInit(const WorldState &init, const WorldState &goal, Problem &prob, Context &ctx = NullContext())
+   bool ReverseAstarInit(const WorldState &init, const WorldState &goal, Problem &prob, Context &ctx)
    {
       // Check that the predicates used by each state match.
       if(init.getPredicates() != goal.getPredicates())
@@ -47,7 +47,7 @@ namespace Aesop {
    /// @param[un] objects Set of objects that exist in the problem.
    /// @param[out] ctx    Context for logging and profiling.
    /// @return True if the algorithm should continue, false if not.
-   bool ReverseAstarIteration(Problem &prob, const ActionSet &actions, const Objects &objects, Context &ctx = NullContext())
+   bool ReverseAstarIteration(Problem &prob, const ActionSet &actions, const Objects &objects, Context &ctx)
    {
       ctx.beginIteration();
 
@@ -149,7 +149,7 @@ namespace Aesop {
    /// @param[in]  prob Problem to operate on.
    /// @param[out] plan Plan to operate on.
    /// @param[out] ctx  Context for logging and profiling.
-   void ReverseAstarFinalise(const Problem &prob, Plan &plan, Context &ctx = NullContext())
+   void ReverseAstarFinalise(const Problem &prob, Plan &plan, Context &ctx)
    {
       if(prob.success)
       {
@@ -177,7 +177,7 @@ namespace Aesop {
                           const ActionSet &actions,
                           const Objects &objects,
                           Plan &plan,
-                          Context &ctx = NullContext())
+                          Context &ctx)
    {
       // Initialise problem with initial and goal states.
       Problem prob;
