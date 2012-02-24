@@ -5,6 +5,7 @@
 #define _AE_WORLDSTATE_H_
 
 #include <vector>
+#include <string>
 #include "AesopPredicates.h"
 #include "AesopObjects.h"
 
