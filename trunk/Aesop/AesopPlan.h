@@ -5,8 +5,8 @@
 #define _AE_PLAN_H_
 
 #include <vector>
-#include "AesopWorldState.h"
-#include "AesopActionSet.h"
+#include "abstract/AesopWorldState.h"
+#include "abstract/AesopActionSet.h"
 
 namespace Aesop {
    class Plan {

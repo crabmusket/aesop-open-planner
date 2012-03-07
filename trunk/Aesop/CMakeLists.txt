@@ -1,25 +1,25 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 SET(AesopHeaders
-	AesopTypes.h
-	AesopObjects.h
-	AesopPredicates.h
+	abstract/AesopTypes.h
+	abstract/AesopObjects.h
+	abstract/AesopPredicates.h
 		AesopSimplePredicates.h
 		AesopNamedPredicates.h
-	AesopActionSet.h
+	abstract/AesopActionSet.h
 		AesopSimpleActionSet.h
-	AesopWorldState.h
+	abstract/AesopWorldState.h
 		AesopSimpleWorldState.h
 	AesopProblem.h
 	AesopPlan.h
-	AesopContext.h
+	abstract/AesopContext.h
 		AesopFileWriterContext.h
 	AesopReverseAstar.h
 )
 
 SET(AesopSources
-	AesopTypes.cpp
-	AesopObjects.cpp
+	abstract/AesopTypes.cpp
+	abstract/AesopObjects.cpp
 	AesopNamedPredicates.cpp
 	AesopSimpleActionSet.cpp
 	AesopSimpleWorldState.cpp

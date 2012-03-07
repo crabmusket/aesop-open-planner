@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <time.h>
-#include "AesopContext.h"
+#include "abstract/AesopContext.h"
 
 namespace Aesop {
    /// Example implementation of Context that writes output to a file.
