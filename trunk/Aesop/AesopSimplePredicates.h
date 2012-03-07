@@ -1,5 +1,5 @@
 /// @file AesopSimplePredicates.h
-/// Definition of SimplePredicates class.
+/// Definition and implementation of SimplePredicates class.
 
 #ifndef _AE_SIMPLE_PREDICATES_H_
 #define _AE_SIMPLE_PREDICATES_H_
