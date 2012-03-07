@@ -5,7 +5,7 @@
 #define _AE_SIMPLE_ACTIONSET_H_
 
 #include <vector>
-#include "AesopActionSet.h"
+#include "abstract/AesopActionSet.h"
 
 namespace Aesop {
    /// A very simple ActionSet that does not allow actions to use

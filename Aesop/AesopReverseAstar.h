@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <functional>
-#include "AesopWorldState.h"
-#include "AesopActionSet.h"
-#include "AesopObjects.h"
+#include "abstract/AesopWorldState.h"
+#include "abstract/AesopActionSet.h"
+#include "abstract/AesopObjects.h"
 #include "AesopProblem.h"
 #include "AesopPlan.h"
-#include "AesopContext.h"
+#include "abstract/AesopContext.h"
 
 namespace Aesop {
    /// Initialise a regressive A* solution.

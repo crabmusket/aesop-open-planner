@@ -5,7 +5,7 @@
 #define _AE_SIMPLE_WORLDSTATE_H_
 
 #include <vector>
-#include "AesopWorldState.h"
+#include "abstract/AesopWorldState.h"
 
 namespace Aesop {
    /// Simplest WorldState implementation.

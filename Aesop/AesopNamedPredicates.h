@@ -6,7 +6,7 @@
 
 #include <string>
 #include <map>
-#include "AesopPredicates.h"
+#include "abstract/AesopPredicates.h"
 
 namespace Aesop {
    /// Predicates identified by name.

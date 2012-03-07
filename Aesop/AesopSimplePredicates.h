@@ -4,7 +4,7 @@
 #ifndef _AE_SIMPLE_PREDICATES_H_
 #define _AE_SIMPLE_PREDICATES_H_
 
-#include "AesopPredicates.h"
+#include "abstract/AesopPredicates.h"
 
 namespace Aesop {
    /// Simplest Predicates implementation.
