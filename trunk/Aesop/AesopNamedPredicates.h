@@ -23,7 +23,7 @@ namespace Aesop {
       /// Find a predicate with the given name.
       /// @param[in] n Name of the predicate to look for.
       /// @return The ID of the predicate if found, or else NullPredicate.
-      predID find(name n);
+      predID find(name n) const;
 
       /// @name Predicates
       /// @{
@@ -37,7 +37,7 @@ namespace Aesop {
 
    protected:
       /// Map predicate names to predicate ID numbers.
-      typedef std::map<std::string, predID> predicatemap;
+      typedef std::map<predID, std::string> predicatemap;
 
       /// Store predicates.
       predicatemap mPredicates;
