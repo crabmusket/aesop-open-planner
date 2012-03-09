@@ -55,7 +55,7 @@ namespace Aesop {
       /// @return A string representing this state.
       virtual std::string repr() const = 0;
 
-      /// Quantify the difference betweeh this WorldState and another.
+      /// Quantify the difference between this WorldState and another.
       /// @param[in] other The WorldState to compare with.
       /// @return A numerical representation of the differences between these
       ///         states.

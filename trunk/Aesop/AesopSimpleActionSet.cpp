@@ -7,7 +7,9 @@
 namespace Aesop {
    /// @class SimpleActionSet
    ///
-   /// 
+   /// Each action in this class of ActionSet may be conditional upon predicates
+   /// being set or unset with no parameters. Actions may also set these
+   /// predicates to true or false with no parameters.
 
    SimpleActionSet::SimpleActionSet(const Predicates &p)
       : ActionSet(p)
