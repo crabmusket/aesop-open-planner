@@ -10,6 +10,7 @@
 
 namespace Aesop {
    /// Predicates identified by name.
+   /// @ingroup Aesop
    class NamedPredicates : public Predicates {
    public:
       /// Predicate names are stored as strings.
@@ -37,7 +38,7 @@ namespace Aesop {
 
    protected:
       /// Map predicate names to predicate ID numbers.
-      typedef std::map<predID, std::string> predicatemap;
+      typedef std::map<std::string, predID> predicatemap;
 
       /// Store predicates.
       predicatemap mPredicates;
