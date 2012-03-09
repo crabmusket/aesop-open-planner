@@ -8,6 +8,13 @@
 
 namespace Aesop {
    /// Simplest Predicates implementation.
+   ///
+   /// This Predicates implementation allows the user to define a certain
+   /// number of predicates, whose ID numbers will simply run from 0 to one
+   /// less than the number defined. This makes SimplePredicates ideal to use
+   /// when predicates are defined in an enum{}. Predicates act as simple
+   /// boolean flags - they may not have parameters.
+   ///
    /// @ingroup Aesop
    class SimplePredicates : public Predicates {
    public:
@@ -32,7 +39,7 @@ namespace Aesop {
 
       /// @}
 
-      /// Default constructor.
+      /// Default constructor. Zero predicates are defined.
       SimplePredicates() : mNumPredicates(0) {}
    protected:
    private:

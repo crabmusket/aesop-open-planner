@@ -8,8 +8,7 @@
 #include "abstract/AesopActionSet.h"
 
 namespace Aesop {
-   /// A very simple ActionSet that does not allow actions to use
-   ///        parameters.
+   /// A very simple ActionSet that does not allow actions to use parameters.
    /// @ingroup Aesop
    class SimpleActionSet : public ActionSet {
    public:

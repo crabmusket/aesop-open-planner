@@ -11,8 +11,8 @@
 namespace Aesop {
    class Plan {
    public:
-      /// Represents an instance of an action, the building block of a
-      ///        plan.
+      /// Represents an instance of an action, the building block of a plan.
+      /// @ingroup Aesop
       struct actionentry {
          /// Store the action used at this step of the plan.
          ActionSet::actionID action;

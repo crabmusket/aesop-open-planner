@@ -5,8 +5,8 @@
 #define _AE_PROBLEM_H_
 
 #include <vector>
-#include "AesopWorldState.h"
-#include "AesopActionSet.h"
+#include "abstract/AesopWorldState.h"
+#include "abstract/AesopActionSet.h"
 
 namespace Aesop {
    /// Stores planner instance data used by the planning algorithms.

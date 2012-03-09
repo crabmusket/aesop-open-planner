@@ -4,6 +4,11 @@
 #include "AesopSimpleWorldState.h"
 
 namespace Aesop {
+   /// @class SimpleWorldState
+   ///
+   /// This WorldState operates on predicates that are simple boolean flags -
+   /// it ignores parameters.
+
    SimpleWorldState::SimpleWorldState(const Predicates &p) : WorldState(p)
    {
       mHash = 0;
