@@ -4,23 +4,27 @@
 #include "AesopNamedPredicates.h"
 
 namespace Aesop {
+   /// @class NamedPredicates
+   ///
+   /// This class works similarly to SimplePredicates in that its predicates
+   /// are simple flags and indexed by their ID numbers. However, this class
+   /// allows each ID number to be associated with a name.
+
    /// When a predicate name is defined, NamedPredicates stores it as the value
    /// in a map where the key is the predicate ID, a number which is auto-
    /// incremented as you add predicates.
    NamedPredicates &NamedPredicates::define(name n)
    {
-      mPredicates[mPredicates.size()] = n;
+      mPredicates[n] = mPredicates.size();
       return *this;
    }
 
-   /// This method takes linear time in the number of predicates defined, since
-   /// the storage map is keyed to a predicate's ID, not its name.
+   /// This method takes logarithmic time in the number of predicates defined.
    Predicates::predID NamedPredicates::find(name n) const
    {
       predicatemap::const_iterator it = mPredicates.begin();
-      for(; it != mPredicates.end(); it++)
-         if(it->second == n)
-            return it->first;
+      if(it != mPredicates.end())
+         return it->second;
       return NullPredicate;
    }
 
@@ -29,11 +33,10 @@ namespace Aesop {
       return mPredicates.size();
    }
 
-   /// This method takes logarithmic time in the number of predicates defined.
-   /// A possible improvement would be to use an unordered_map.
+   /// This method takes constant time.
    bool NamedPredicates::has(predID pred) const
    {
-      return mPredicates.find(pred) != mPredicates.end();
+      return pred < size();
    }
 
    bool NamedPredicates::operator==(const Predicates &other) const
