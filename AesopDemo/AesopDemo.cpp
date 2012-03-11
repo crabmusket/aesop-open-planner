@@ -5,6 +5,7 @@
 #include <stdarg.h>
 
 #include "AesopDemo.h"
+#include "AesopSimpleTypes.h"
 #include "AesopSimplePredicates.h"
 #include "AesopSimpleActionSet.h"
 #include "AesopSimpleWorldState.h"
@@ -238,8 +239,20 @@ void simpleTest()
       printf("No valid plan was found.\n");
 }
 
+void typedTest()
+{
+   enum {
+      Box,
+      Room,
+      NumTypes
+   };
+
+   SimpleTypes types;
+   types.define(NumTypes);
+}
+
 int main(int argc, char **argv)
 {
-   simpleTest();
+   typedTest();
    return 0;
 }

@@ -15,14 +15,16 @@ namespace Aesop {
       static const typeID NullType;
 
       /// Is the type defined?
+      /// Must always return trye if 'type' is NullType.
       /// @param type Type name to check.
-      /// @return True if the type is defined, false if not.
+      /// @return True if the type is defined or NullType, false if not.
       virtual bool has(typeID type) const = 0;
 
       /// Is the former a descendent of the latter?
+      /// Must always return true if 'ancestor' is NullType.
       /// @param type     The type to verify.
       /// @param ancestor The ancestor type to check for.
-      /// @return True if 'type' is a type of 'ancestor'.
+      /// @return True if 'type' is a type of 'ancestor' or 'ancestor' is NullType.
       virtual bool isOf(typeID type, typeID ancestor) const = 0;
 
       /// Get number of types defined not including NullType.
@@ -42,7 +44,7 @@ namespace Aesop {
    class NullTypes : public Types {
    public:
       bool has(typeID type) const { return type == NullType; }
-      bool isOf(typeID type, typeID ancestor) const { return false; }
+      bool isOf(typeID type, typeID ancestor) const { return ancestor == NullType; }
       unsigned int size() const { return 0; }
    protected:
    private:

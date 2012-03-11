@@ -2,6 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 SET(AesopHeaders
 	abstract/AesopTypes.h
+		AesopSimpleTypes.h
 	abstract/AesopObjects.h
 	abstract/AesopPredicates.h
 		AesopSimplePredicates.h
