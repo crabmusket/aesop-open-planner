@@ -15,5 +15,5 @@ namespace Aesop {
    /// behaviour in domains with no types. We'll see.
    /// @todo Ensure wisdom of defining a blank type.
 
-   const Types::typeID Types::NullType = 0;
+   const Types::typeID Types::NullType = -1;
 };
