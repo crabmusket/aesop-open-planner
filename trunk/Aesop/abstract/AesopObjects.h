@@ -13,6 +13,8 @@ namespace Aesop {
    public:
       /// Objects must be identifiable.
       typedef unsigned int objectID;
+      /// Null object identifier.
+      static const objectID NullObject;
 
       /// Do we have an object of the given identifier?
       /// @param obj Look for an object with this identifier.
