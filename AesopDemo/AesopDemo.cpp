@@ -5,11 +5,16 @@
 #include <stdarg.h>
 
 #include "AesopDemo.h"
-#include "AesopSimpleTypes.h"
-#include "AesopObjectMap.h"
+
 #include "AesopSimplePredicates.h"
 #include "AesopSimpleActionSet.h"
 #include "AesopSimpleWorldState.h"
+
+#include "AesopSimpleTypes.h"
+#include "AesopTypedObjects.h"
+#include "AesopGOAPPredicates.h"
+#include "AesopGOAPWorldState.h"
+
 #include "AesopFileWriterContext.h"
 #include "AesopReverseAstar.h"
 
@@ -137,6 +142,8 @@ void STRIPSTest()
 */
 }
 
+/// Very, very simple planning example using the Simple* class family. Plans on
+/// simple boolean predicates with no action parameters.
 void simpleTest()
 {
    // --------------------
@@ -240,10 +247,16 @@ void simpleTest()
       printf("No valid plan was found.\n");
 }
 
-void typedTest()
+/// Demonstrates planning in a domain similar to the GOAP system used in FEAR.
+/// Actions and predicates can have a single parameter each, and additionally
+/// objects can have types. Dynamic action costs and filters are used.
+void goapTest()
 {
+   // --------------------
+   // STEP 1. The Domain.
+
+   // 1.1. Define types.
    enum {
-      Box,
       Room,
       NumTypes
    };
@@ -251,19 +264,40 @@ void typedTest()
    SimpleTypes types;
    types.define(NumTypes);
 
-   struct Object {
-      std::string name;
-      Object() : name("") {}
-      Object(const char *n) : name(n) {}
+   // 1.2. Define predicates.
+   GOAPPredicates preds;
+
+   // 1.3. Define actions.
+
+   // --------------------
+   // STEP 2. The Problem.
+
+   // 2.1. Create objects.
+   enum {
+      roomA,
+      roomB,
    };
 
-   ObjectMap<Object> objects;
+   TypedObjects objects(types);
 
-   objects.create(Object("roomA"), Room);
+   objects.create(roomA, Room);
+   objects.create(roomB, Room);
+
+   // 2.2. Define initial and goal world states.
+   GOAPWorldState init(preds), goal(preds);
+
+   // --------------------
+   // STEP 3. The Solution.
+   Plan plan;
+   FileWriterContext context(*stdout);
+   //if(ReverseAstarSolve(init, goal, actions, objects, plan, context))
+      //printPlan(plan, actions);
+   //else
+      //printf("No valid plan was found.\n");
 }
 
 int main(int argc, char **argv)
 {
-   typedTest();
+   goapTest();
    return 0;
 }
