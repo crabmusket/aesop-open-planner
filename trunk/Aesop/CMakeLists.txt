@@ -5,6 +5,7 @@ SET(AesopHeaders
 		AesopSimpleTypes.h
 	abstract/AesopObjects.h
 		AesopObjectMap.h
+		AesopTypedObjects.h
 	abstract/AesopPredicates.h
 		AesopSimplePredicates.h
 		AesopNamedPredicates.h
