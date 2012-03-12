@@ -1,5 +1,5 @@
 /// @file AesopObjects.cpp
-/// Implementation of Objectss class as defined in AesopObjects.h
+/// Implementation of Objects class as defined in AesopObjects.h
 
 #include "AesopObjects.h"
 
@@ -12,5 +12,5 @@ namespace Aesop {
    /// the names of objects of a specified type. However, iterating through a
    /// container this way is still linear in the size of the container as a
    /// whole, performance-wise.
-
+   const Objects::objectID Objects::NullObject= -1;
 };

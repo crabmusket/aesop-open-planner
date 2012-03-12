@@ -6,6 +6,7 @@
 
 #include "AesopDemo.h"
 #include "AesopSimpleTypes.h"
+#include "AesopObjectMap.h"
 #include "AesopSimplePredicates.h"
 #include "AesopSimpleActionSet.h"
 #include "AesopSimpleWorldState.h"
@@ -249,6 +250,16 @@ void typedTest()
 
    SimpleTypes types;
    types.define(NumTypes);
+
+   struct Object {
+      std::string name;
+      Object() : name("") {}
+      Object(const char *n) : name(n) {}
+   };
+
+   ObjectMap<Object> objects;
+
+   objects.create(Object("roomA"), Room);
 }
 
 int main(int argc, char **argv)
