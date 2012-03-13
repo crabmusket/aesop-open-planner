@@ -23,17 +23,16 @@ namespace Aesop {
       virtual WorldState *clone() const;
       virtual std::string repr() const;
 
-      unsigned int compare(const WorldState &other) const;
+      unsigned int compare(const GOAPWorldState &other) const;
 
-      virtual bool operator==(const WorldState &other) const
+      virtual bool operator==(const GOAPWorldState &other) const
       {
-         const GOAPWorldState *ws = dynamic_cast<const GOAPWorldState*>(&other);
-         return ws != 0 && mHash != ws->mHash ? false : compare(*ws) == 0;
+         return mHash != other.mHash ? false : compare(other) == 0;
       }
-      virtual bool operator!=(const WorldState &other) const
+
+      virtual bool operator!=(const GOAPWorldState &other) const
       {
-         const GOAPWorldState *ws = dynamic_cast<const GOAPWorldState*>(&other);
-         return ws == 0 || mHash != ws->mHash ? true : compare(*ws) != 0;
+         return mHash != other.mHash ? true : compare(other) != 0;
       }
 
       /// @}
