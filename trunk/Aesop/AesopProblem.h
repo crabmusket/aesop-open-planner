@@ -5,30 +5,29 @@
 #define _AE_PROBLEM_H_
 
 #include <vector>
-#include "abstract/AesopWorldState.h"
 #include "abstract/AesopActionSet.h"
 
 namespace Aesop {
    /// Stores planner instance data used by the planning algorithms.
    /// @ingroup Aesop
+   template < class WS >
    class Problem {
    public:
+      typename typedef WS::paramlist paramlist;
+
       /// Was a plan successfully created?
       bool success;
 
       /// State this problem is trying to reach.
-      const WorldState *goal;
+      const WS *goal;
 
       /// Default constructor.
-      Problem();
-
-      /// Default destructor.
-      ~Problem();
+      Problem() : goal(NULL), success(false), lastID(0) {}
 
       /// Store world states in the open list.
       struct openstate {
          /// Intermediate WorldState.
-         WorldState *state;
+         WS *state;
 
          /// Identifier of this state.
          unsigned int ID;
@@ -47,7 +46,7 @@ namespace Aesop {
          ActionSet::const_iterator action;
 
          /// Parameters to our action.
-         WorldState::paramlist params;
+         paramlist params;
 
          /// Default constructor.
          openstate()
@@ -57,7 +56,7 @@ namespace Aesop {
             cost = G = H = 0.0f;
             parent = 0;
             action = ActionSet::actionID();
-            params = WorldState::paramlist();
+            params = paramlist();
          }
 
          /// Compare based on cost.

@@ -21,7 +21,8 @@ namespace Aesop {
    /// @param[out] ctx  Context for logging and profiling.
    /// @return True if initialisation was successful, false if not.
    /// @ingroup Aesop
-   bool ReverseAstarInit(const WorldState &init, const WorldState &goal, Problem &prob, Context &ctx)
+   template < class WS >
+   bool ReverseAstarInit(const WS &init, const WS &goal, Problem<WS> &prob, Context &ctx)
    {
       // Check that the predicates used by each state match.
       if(init.getPredicates() != goal.getPredicates())
@@ -37,8 +38,8 @@ namespace Aesop {
       prob.closed.clear();
       prob.success = false;
       // Push the first state onto the open list.
-      prob.open.push_back(Problem::openstate());
-      prob.open.back().state = goal.clone();
+      prob.open.push_back(Problem<WS>::openstate());
+      prob.open.back().state = new WS(goal);
       return true;
    }
 
@@ -49,7 +50,8 @@ namespace Aesop {
    /// @param[out] ctx    Context for logging and profiling.
    /// @return True if the algorithm should continue, false if not.
    /// @ingroup Aesop
-   bool ReverseAstarIteration(Problem &prob, const ActionSet &actions, const Objects &objects, Context &ctx)
+   template < class WS >
+   bool ReverseAstarIteration(Problem<WS> &prob, const ActionSet &actions, const Objects &objects, Context &ctx)
    {
       ctx.beginIteration();
 
@@ -60,8 +62,8 @@ namespace Aesop {
          return false;
       }
 
-      pop_heap(prob.open.begin(), prob.open.end(), std::greater<Problem::openstate>());
-      Problem::openstate s = prob.open.back();
+      pop_heap(prob.open.begin(), prob.open.end(), std::greater<Problem<WS>::openstate>());
+      Problem<WS>::openstate s = prob.open.back();
       prob.open.pop_back();
 
       ctx.toClosed(s.ID);
@@ -90,15 +92,15 @@ namespace Aesop {
             if(!actions.postMatch(it, *p, *s.state))
                continue;
             // Create a new world state by applying the action in reverse.
-            Problem::openstate n;
+            Problem<WS>::openstate n;
             n.ID = prob.lastID++;
-            n.state = s.state->clone();
+            n.state = new WS(*s.state);
             actions.applyReverse(it, *p, *n.state);
             n.action = it;
             n.params = *p;
-            ctx.newState(n);
+            //ctx.newState(n);
             // If the new state is already in the closed list, continue.
-            Problem::list::const_iterator cli;
+            Problem<WS>::list::const_iterator cli;
             for(cli = prob.closed.begin(); cli != prob.closed.end(); cli++)
             {
                if(*n.state == *cli->state)
@@ -118,7 +120,7 @@ namespace Aesop {
             n.cost = n.G + n.H;
             // Check whether state is already in the open list; if so, we may
             // update its cost.
-            Problem::list::iterator oli;
+            Problem<WS>::list::iterator oli;
             // Check to see if the world state is already in the open list.
             for(oli = prob.open.begin(); oli != prob.open.end(); oli++)
             {
@@ -129,7 +131,7 @@ namespace Aesop {
                   *oli = n;
                   // Reorder the heap.
                   make_heap(prob.open.begin(), prob.open.end(),
-                     std::greater<Problem::openstate>());
+                     std::greater<Problem<WS>::openstate>());
                   break;
                }
             }
@@ -138,7 +140,7 @@ namespace Aesop {
             {
                //ctx.
                prob.open.push_back(n);
-               push_heap(prob.open.begin(), prob.open.end(), std::greater<Problem::openstate>());
+               push_heap(prob.open.begin(), prob.open.end(), std::greater<Problem<WS>::openstate>());
             }
          }
       }
@@ -152,7 +154,8 @@ namespace Aesop {
    /// @param[out] plan Plan to operate on.
    /// @param[out] ctx  Context for logging and profiling.
    /// @ingroup Aesop
-   void ReverseAstarFinalise(const Problem &prob, Plan &plan, Context &ctx)
+   template < class WS >
+   void ReverseAstarFinalise(const Problem<WS> &prob, Plan &plan, Context &ctx)
    {
       if(prob.success)
       {
@@ -177,14 +180,15 @@ namespace Aesop {
    /// @param[out] ctx     Context for logging and profiling.
    /// @return True if a valid plan was found, false if not.
    /// @ingroup Aesop
-   bool ReverseAstarSolve(const WorldState &init, const WorldState &goal,
+   template < class WS >
+   bool ReverseAstarSolve(const WS &init, const WS &goal,
                           const ActionSet &actions,
                           const Objects &objects,
                           Plan &plan,
                           Context &ctx)
    {
       // Initialise problem with initial and goal states.
-      Problem prob;
+      Problem<WS> prob;
       if(!ReverseAstarInit(init, goal, prob, ctx))
          return false;
 

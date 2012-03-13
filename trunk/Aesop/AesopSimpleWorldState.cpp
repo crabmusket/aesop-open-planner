@@ -71,18 +71,13 @@ namespace Aesop {
       return str;
    }
 
-   unsigned int SimpleWorldState::compare(const WorldState &other) const
+   unsigned int SimpleWorldState::compare(const SimpleWorldState &other) const
    {
-      if(getPredicates() != other.getPredicates())
-         return -1;
-      const SimpleWorldState *ws = dynamic_cast<const SimpleWorldState*>(&other);
-      if(!ws)
-         return -1;
       unsigned int diff = 0;
       worldrep::const_iterator it;
       worldrep::const_iterator oit;
-      for(it = mState.begin(), oit = ws->mState.begin();
-          it != mState.end() && oit != ws->mState.end();
+      for(it = mState.begin(), oit = other.mState.begin();
+          it != mState.end() && oit != other.mState.end();
           it++, oit++)
       {
          if(it->set != oit->set)

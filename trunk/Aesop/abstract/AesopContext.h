@@ -16,7 +16,7 @@ namespace Aesop {
       virtual void success() = 0;
       virtual void failure() = 0;
       virtual void toClosed(unsigned int ID) = 0;
-      virtual void newState(const Problem::openstate &s) = 0;
+      //virtual void newState(const Problem::openstate &s) = 0;
       virtual void beginPlanning() = 0;
       virtual void beginIteration() = 0;
       virtual void endIteration() = 0;
@@ -31,7 +31,7 @@ namespace Aesop {
       virtual void success() {}
       virtual void failure() {}
       virtual void toClosed(unsigned int ID) {}
-      virtual void newState(const Problem::openstate &s) {}
+      //virtual void newState(const Problem::openstate &s) {}
       virtual void beginPlanning() {}
       virtual void beginIteration() {}
       virtual void endIteration() {}

@@ -55,15 +55,6 @@ namespace Aesop {
       /// @return A string representing this state.
       virtual std::string repr() const = 0;
 
-      /// Quantify the difference between this WorldState and another.
-      /// @param[in] other The WorldState to compare with.
-      /// @return A numerical representation of the differences between these
-      ///         states.
-      virtual unsigned int compare(const WorldState &other) const = 0;
-
-      virtual bool operator==(const WorldState &other) const = 0;
-      virtual bool operator!=(const WorldState &other) const = 0;
-
       /// Get the Predicates object used by this WorldState.
       /// @return A Predicates object.
       const Predicates &getPredicates() const { return mPredicates; }

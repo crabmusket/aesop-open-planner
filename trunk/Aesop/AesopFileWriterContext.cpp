@@ -27,9 +27,9 @@ namespace Aesop {
    {
    }
 
-   void FileWriterContext::newState(const Problem::openstate &s)
-   {
-   }
+   //void FileWriterContext::newState(const Problem::openstate &s)
+   //{
+   //}
 
    void FileWriterContext::beginPlanning()
    {

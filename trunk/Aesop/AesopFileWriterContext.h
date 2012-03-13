@@ -18,7 +18,7 @@ namespace Aesop {
       virtual void success();
       virtual void failure();
       virtual void toClosed(unsigned int ID);
-      virtual void newState(const Problem::openstate &s);
+      //virtual void newState(const Problem::openstate &s);
       virtual void beginPlanning();
       virtual void beginIteration();
       virtual void endIteration();

@@ -60,10 +60,8 @@ namespace Aesop {
       return str;
    }
 
-   unsigned int GOAPWorldState::compare(const WorldState &other) const
+   unsigned int GOAPWorldState::compare(const GOAPWorldState &other) const
    {
-      if(getPredicates() != other.getPredicates())
-         return -1;
       unsigned int diff = 0;
       return diff;
    }
