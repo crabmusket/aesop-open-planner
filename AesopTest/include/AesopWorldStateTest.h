@@ -1,12 +1,12 @@
 /// @file AesopWorldStateTest.h
-/// gtest cases for WorldState class.
+/// @brief gtest cases for WorldState class.
 
 #include "gtest/gtest.h"
-#include "AesopWorldState.h"
+#include "Aesop.h"
 
-using namespace Aesop;
+using namespace ae;
 
-/// Test fixture for the WorldState class.
+/// @brief Test fixture for the WorldState class.
 /// @ingroup AesopTest
 class WorldStateTest : public ::testing::Test {
 protected:

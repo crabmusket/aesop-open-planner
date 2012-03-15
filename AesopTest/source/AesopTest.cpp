@@ -1,10 +1,13 @@
 /// @file AesopTest.cpp
-/// Main file of AesopTest module.
+/// @brief Main file of AesopTest module.
 
 #include "gtest/gtest.h"
 #include "AesopTest.h"
 
 // Test cases for each class.
+#include "AesopActionTest.h"
+#include "AesopWorldStateTest.h"
+#include "AesopPlannerTest.h"
 
 int main(int argc, char **argv)
 {
