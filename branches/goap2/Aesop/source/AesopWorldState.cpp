@@ -22,72 +22,45 @@ namespace Aesop {
    {
    }
 
-   bool WorldState::predicateSet(PName pred) const
+   bool WorldState::involves(PName pred) const
    {
-      worldrep::const_iterator it = mState.find(pred);
-      return it != mState.end();
+      return false;
    }
 
-   PVal WorldState::getPredicate(PName pred) const
+   void WorldState::set(const Fact &fact, PVal val)
    {
-      worldrep::const_iterator it = mState.find(pred);
+      _set(fact, val);
+      updateHash();
+   }
+
+   void WorldState::_set(const Fact &fact, PVal val)
+   {
+      mState[fact] = val;
+   }
+
+   void WorldState::unset(const fact &fact)
+   {
+      _unset(fact);
+      updateHash();
+   }
+
+   void WorldState::_unset(const fact &fact)
+   {
+      mState.erase(fact);
+   }
+
+   PVal WorldState::get(const Fact &fact, PVal def) const
+   {
+      worldrep::const_iterator it = mState.find(fact);
       if(it == mState.end())
-         return 0;
+         return def;
       return getPVal(it);
-   }
-
-   void WorldState::setPredicate(PName pred, PVal val)
-   {
-      _setPredicate(pred, val);
-      updateHash();
-   }
-
-   void WorldState::_setPredicate(PName pred, PVal val)
-   {
-      mState[pred] = val;
-   }
-
-   void WorldState::unsetPredicate(PName pred)
-   {
-      _unsetPredicate(pred);
-      updateHash();
-   }
-
-   void WorldState::_unsetPredicate(PName pred)
-   {
-      worldrep::iterator it = mState.find(pred);
-      if(it != mState.end())
-         mState.erase(it);
-   }
-
-   /// This method is responsible for setting the parameters in the paramlist
-   /// that are required to be a certain value in order to match this state.
-   void WorldState::actionGetParams(const Action *ac, paramlist &params) const
-   {
-      params.resize(ac->getNumParams());
-
-      // Each parameter that sets a predicate must have the correct value.
-      const actionparams &spl = ac->getSetParams();
-      actionparams::const_iterator sit;
-      for(sit = spl.begin(); sit != spl.end(); sit++)
-         params[sit->second] = getPredicate(sit->first);
-
-      // Each predicate required and not set must have the correct value.
-      const actionparams &rpl = ac->getRequiredParams();
-      actionparams::const_iterator rit;
-      for(rit = rpl.begin(); rit != rpl.end(); rit++)
-      {
-         const worldrep &set = ac->getSet();
-         if(set.find(rit->first) == set.end() &&
-            spl.find(rit->first) == spl.end())
-            params[rit->second] = getPredicate(rit->first);
-      }
    }
 
    /// For a 'pre-match' to be valid, we compare the Action's required
    /// predicates to the values in the current world state. All values must
    /// match for the Action to be valid.
-   bool WorldState::actionPreMatch(const Action *ac, const paramlist *params) const
+   bool WorldState::preMatch(const Action *ac, const paramlist *params) const
    {
       // Check static predicates.
       const worldrep &awr = ac->getRequired();
@@ -128,7 +101,7 @@ namespace Aesop {
    /// values of each parameter required for the Action to result in the given
    /// world state.
    /// @todo Review complexity of this method.
-   bool WorldState::actionPostMatch(const Action *ac, const paramlist *params) const
+   bool WorldState::postMatch(const Action *ac, const paramlist *params) const
    {
       worldrep::const_iterator it;
       worldrep::const_iterator ait;
@@ -214,7 +187,7 @@ namespace Aesop {
 
    /// Apply an Action to the current world state. The Action's effects are
    /// applied to the current set of predicates.
-   void WorldState::applyActionForward(const Action *ac, const paramlist *params)
+   void WorldState::applyForward(const Action *ac, const paramlist *params)
    {
       worldrep::const_iterator sit;
       pnamelist::const_iterator pit;
@@ -247,7 +220,7 @@ namespace Aesop {
    /// This involves making sure that the new state's predicates match the
    /// Action's prerequisites, and clearing any predicates that the Action
    /// sets.
-   void WorldState::applyActionReverse(const Action *ac, const paramlist *params)
+   void WorldState::applyReverse(const Action *ac, const paramlist *params)
    {
       worldrep::const_iterator sit;
       pnamelist::const_iterator pit;
@@ -306,6 +279,7 @@ namespace Aesop {
    unsigned int WorldState::comp(const WorldState &ws1, const WorldState &ws2)
    {
       int score = 0;
+      return ws1.mState == ws2.mState ? 0 : 1;
 
       // Iterators run from lowest to highest key values.
       worldrep::const_iterator p1 = ws1.mState.begin();
