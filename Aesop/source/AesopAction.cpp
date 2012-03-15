@@ -31,6 +31,7 @@ namespace Aesop {
       Operation &op = mOperations[fact];
       op.ctype = type;
       op.cvalue = val;
+      op.cparam = -1;
    }
 
    void Action::condition(const Fact &fact, unsigned int param, ConditionType type)
@@ -38,6 +39,7 @@ namespace Aesop {
       Operation &op = mOperations[fact];
       op.ctype = type;
       op.cparam = param;
+      op.cvalue = 0;
    }
 
    void Action::effect(const Fact &fact, EffectType type, PVal val)
@@ -45,19 +47,18 @@ namespace Aesop {
       Operation &op = mOperations[fact];
       op.etype = type;
       op.evalue = val;
+      op.eparam = -1;
    }
 
    void Action::effect(const Fact &fact, unsigned int param, EffectType type)
    {
       Operation &op = mOperations[fact];
       op.etype = type;
-      op.eparam = param;
+      op.evalue = 0;
    }
 
    void Action::parameters(unsigned int num)
    {
-      if(num > PARAMS)
-         num = PARAMS;
       mNumParams = num;
    }
 };

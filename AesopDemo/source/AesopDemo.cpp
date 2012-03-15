@@ -33,16 +33,17 @@ int main(int argc, char **argv)
       at,
       money,
       hungry,
+      adjacent,
    };
 
    // Boolean predicate values.
-   PVal ptrue = 1;
-   PVal pfalse = 0;
+   PVal ptrue = 2;
+   PVal pfalse = 1;
 
    // Three location names.
-   PParam loc1 = 'A';
-   PParam loc2 = 'B';
-   PParam loc3 = 'C';
+   PVal loc1 = 'A';
+   PVal loc2 = 'B';
+   PVal loc3 = 'C';
 
    // Create a WorldState to represent our initial state.
    WorldState start;
@@ -53,6 +54,11 @@ int main(int argc, char **argv)
    // Create another WorldState which will be our goal.
    WorldState goal;
    goal.set(Fact(hungry), pfalse);
+
+   goal.set(Fact(adjacent) % loc1 % loc2, ptrue);
+   goal.set(Fact(adjacent) % loc2 % loc3, ptrue);
+   goal.set(Fact(adjacent) % loc3 % loc2, ptrue);
+   goal.set(Fact(adjacent) % loc2 % loc1, ptrue);
 
    // Action to buy food from loc2.
    //   Required: we are at loc2 and have money

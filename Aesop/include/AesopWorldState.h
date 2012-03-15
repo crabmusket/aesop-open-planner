@@ -15,7 +15,7 @@ namespace Aesop {
       bool involves(PName pred) const;
 
       /// Set the value of a Fact.
-      void set(const Fact &fact, PVal val);
+      void set(const Fact &fact, PVal val = 0);
 
       /// Unset all knowledge of a Fact.
       void unset(const Fact &fact);

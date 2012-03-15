@@ -223,6 +223,46 @@ namespace Aesop {
    /// sets.
    void WorldState::applyReverse(const Action &ac, const paramlist *params)
    {
+      operations::const_iterator op;
+      for(op = ac.begin(); op != ac.end(); op++)
+      {
+         // If there's no condition, check the effects.
+         if(op->second.ctype == NoCondition)
+         {
+            PVal oval = op->second.eparam > -1 && params ?
+               (*params)[op->second.eparam] : op->second.evalue;
+            switch(op->second.etype)
+            {
+            case Set:
+               //set(op->first, oval);
+               break;
+            case Unset:
+               //unset(op->first);
+               break;
+            case Increment:
+               _set(op->first, oval - 1);
+               break;
+            case Decrement:
+               _set(op->first, oval + 1);
+               break;
+            }
+         }
+         else
+         {
+            PVal oval = op->second.cparam > -1 && params ?
+               (*params)[op->second.cparam] : op->second.cvalue;
+            switch(op->second.ctype)
+            {
+            case IsSet:
+            case Equals:
+               _set(op->first, 0);
+               break;
+            case IsUnset:
+               _unset(op->first);
+               break;
+            }
+         }
+      }
 
       updateHash();
    }
