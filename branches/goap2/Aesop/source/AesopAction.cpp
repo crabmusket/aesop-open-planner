@@ -1,9 +1,9 @@
 /// @file AesopAction.cpp
-/// @brief Implementation of Action class as defined in Aesop.h
+/// @brief Implementation of Action class as defined in AesopAction.h
 
-#include "Aesop.h"
+#include "AesopAction.h"
 
-namespace ae {
+namespace Aesop {
    /// @class Action
    ///
    /// Based on the STRIPS concept of an action, an Action represents an atomic
