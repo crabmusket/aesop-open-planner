@@ -8,6 +8,7 @@
 #include "AesopContext.h"
 
 #include <list>
+#include <string>
 
 namespace Aesop {
    /// An atomic change that can be made to the world state.

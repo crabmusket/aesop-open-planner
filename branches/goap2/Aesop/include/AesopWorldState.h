@@ -21,7 +21,7 @@ namespace Aesop {
       void unset(const Fact &fact);
 
       /// Get the value a Fact is set to.
-      bool WorldState::get(const Fact &fact, PVal &val, PVal def = 0) const;
+      bool get(const Fact &fact, PVal &val, PVal def = 0) const;
 
       /// Do the given Action's pre-conditions match this world state?
       /// @param[in] ac     Action instance to test against this world state.
