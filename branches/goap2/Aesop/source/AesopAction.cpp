@@ -1,5 +1,5 @@
 /// @file AesopAction.cpp
-/// @brief Implementation of Action class as defined in AesopAction.h
+/// Implementation of Action class as defined in AesopAction.h
 
 #include "AesopAction.h"
 

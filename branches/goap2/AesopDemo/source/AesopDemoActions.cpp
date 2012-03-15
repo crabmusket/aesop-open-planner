@@ -1,5 +1,5 @@
 /// @file AesopDemoActions.cpp
-/// @brief Implements MoveAction and FlyAction from AesopDemo.h
+/// Implements MoveAction and FlyAction from AesopDemo.h
 
 #include "AesopDemo.h"
 

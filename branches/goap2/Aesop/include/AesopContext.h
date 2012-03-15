@@ -1,16 +1,16 @@
 /// @file Aesop.h
-/// @brief Main file for Aesop open planning library.
+/// Main file for Aesop open planning library.
 
 #ifndef _AE_CONTEXT_H_
 #define _AE_CONTEXT_H_
 
 namespace Aesop {
-   /// @brief An interface used to log the planning process.
+   /// An interface used to log the planning process.
    /// Designed to be implemented by the end-user in a manner particular to
    /// their application and requirements.
    class Context {
    public:
-      /// @brief Record an event taking place. Uses printf-like syntax for now.
+      /// Record an event taking place. Uses printf-like syntax for now.
       /// @param[in] fmt event format string.
       /// @todo Make this function more useful! Also, provide more fine-grained
       ///       logging. Possibly split over multiple methods.
