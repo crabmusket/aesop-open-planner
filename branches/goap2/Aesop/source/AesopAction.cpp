@@ -42,6 +42,13 @@ namespace Aesop {
       op.cvalue = 0;
    }
 
+   void Action::condition(const Fact &fact, const Conditions &c, ConditionType type)
+   {
+      Operation &op = mOperations[fact];
+      op.cargs = c.params;
+      op.ctype = type;
+   }
+
    void Action::effect(const Fact &fact, EffectType type, PVal val)
    {
       Operation &op = mOperations[fact];
