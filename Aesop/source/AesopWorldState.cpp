@@ -291,10 +291,11 @@ namespace ae {
       worldrep::const_iterator it;
       for(it = mState.begin(); it != mState.end(); it++)
       {
-         unsigned int l = getPName(it).length();
-         while(l)
-            mHash = 31 * mHash + getPName(it)[--l];
-         mHash ^= getPVal(it) << getPName(it).length() % (sizeof(unsigned int) - sizeof(PVal));
+         //unsigned int l = getPName(it).length();
+         //while(l)
+         //   mHash = 31 * mHash + getPName(it)[--l];
+         //mHash ^= getPVal(it) << getPName(it).length() % (sizeof(unsigned int) - sizeof(PVal));
+         mHash = 31 * mHash + (getPName(it) << getPVal(it));
       }
    }
 
@@ -327,7 +328,7 @@ namespace ae {
          }
 
          // Compare names of predicates (keys).
-         int cmp = getPName(p1).compare(getPName(p2));
+         int cmp = getPName(p1) != getPName(p2);
          if(cmp == 0)
          {
             // Names are equal. Check for different values.
