@@ -21,80 +21,8 @@ MoveAction::MoveAction(std::string name, float cost)
    mNumParams = 2;
 }
 
-/// Check to see what finishing parameter has been specified by the planner.
-/// Fill in permutations of starting locations as appropriate. We can only move
-/// between adjacent locations.
-void MoveAction::getParams(Context *ctx, const paramlist &plist, paramset &pset) const
-{
-   AesopDemoContext *dctx = (AesopDemoContext*)ctx;
-   pset.clear();
-   switch(plist[1])
-   {
-   case 'A':
-      // If we must finish at A, we only have one option: leave from B.
-      pset.push_back(paramlist(mNumParams));
-      pset.back()[0] = 'B';
-      pset.back()[1] = 'A';
-      break;
-   case 'B':
-      // If we finish at B, we may have arrived from A or C.
-      pset.push_back(paramlist(mNumParams));
-      pset.back()[0] = 'A';
-      pset.back()[1] = 'B';
-      pset.push_back(paramlist(mNumParams));
-      pset.back()[0] = 'C';
-      pset.back()[1] = 'B';
-      break;
-   case 'C':
-      // Finishing at C, we must have started at B.
-      pset.push_back(paramlist(mNumParams));
-      pset.back()[0] = 'B';
-      pset.back()[1] = 'C';
-      break;
-   }
-}
-
-/// @class FlyAction
-/// @ingroup AesopDemo
-///
-/// A simple implementation of Action.
-
 FlyAction::FlyAction(std::string name, float cost)
    : Action(name, cost)
 {
    mNumParams = 2;
-}
-
-/// This action allows us to move to all locations no matter where we are.
-void FlyAction::getParams(Context *ctx, const paramlist &plist, paramset &pset) const
-{
-   AesopDemoContext *dctx = (AesopDemoContext*)ctx;
-   pset.clear();
-   switch(plist[1])
-   {
-   case 'A':
-      pset.push_back(paramlist(mNumParams));
-      pset.back()[0] = 'B';
-      pset.back()[1] = 'A';
-      pset.push_back(paramlist(mNumParams));
-      pset.back()[0] = 'C';
-      pset.back()[1] = 'A';
-      break;
-   case 'B':
-      pset.push_back(paramlist(mNumParams));
-      pset.back()[0] = 'A';
-      pset.back()[1] = 'B';
-      pset.push_back(paramlist(mNumParams));
-      pset.back()[0] = 'C';
-      pset.back()[1] = 'B';
-      break;
-   case 'C':
-      pset.push_back(paramlist(mNumParams));
-      pset.back()[0] = 'B';
-      pset.back()[1] = 'C';
-      pset.push_back(paramlist(mNumParams));
-      pset.back()[0] = 'A';
-      pset.back()[1] = 'C';
-      break;
-   }
 }

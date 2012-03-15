@@ -48,14 +48,12 @@ private:
 class MoveAction : public Action {
 public:
    MoveAction(std::string name, float cost = 1.0f);
-   void getParams(Context *ctx, const paramlist &plist, paramset &pset) const;
 };
 
 /// Implement the Action interface for a two-parameter flying movement action.
 class FlyAction : public Action {
 public:
 	FlyAction(std::string name, float cost = 1.0f);
-	void getParams(Context *ctx, const paramlist &plist, paramset &pset) const;
 };
 
 #endif
