@@ -11,36 +11,23 @@ namespace Aesop {
    /// Knowledge about a state of the world, current or possible.
    class WorldState {
    public:
-      /// Is the predicate set to a value?
-      /// @param[in] pred Name of the predicate to check.
-      /// @return True iff the predicate is set to some valid value.
-      bool predicateSet(PName pred) const;
+      /// Do any of the Facts in this WorldState involve this predicate?
+      bool involves(PName pred) const;
 
-      /// Get the value of a predicate.
-      /// @param[in] pred Name of predicate to check.
-      /// @return The value of the predicate
-      PVal getPredicate(PName pred) const;
+      /// Set the value of a Fact.
+      void set(const Fact &fact, PVal val);
 
-      /// Set the value of a predicate.
-      /// @param[in] pred Name of predicate to set.
-      /// @param[in] val Value to set the predicate to.
-      void setPredicate(PName pred, PVal val);
+      /// Unset all knowledge of a Fact.
+      void unset(const fact &fact);
 
-      /// Remove our knowledge of a certain predicate.
-      /// @param[in] pred Name of the predicate to clear.
-      void unsetPredicate(PName pred);
-
-      /// Set the appropriate values of set parameters.
-      /// @param[in]  ac     Action that is being tested.
-      /// @param[out] params List of parameter values that this world state
-      ///                    requires.
-      void actionGetParams(const Action *ac, paramlist &params) const;
+      /// Get the value a Fact is set to.
+      PVal get(const Fact &fact, PVal def = 0) const;
 
       /// Do the given Action's pre-conditions match this world state?
       /// @param[in] ac     Action instance to test against this world state.
       /// @param[in] params Parameters to the Action instance if it takes any.
       /// @return True iff the Action is valid under the current world state.
-      bool actionPreMatch(const Action *ac, const paramlist *params = NULL) const;
+      bool preMatch(const Action *ac, const paramlist *params = NULL) const;
 
       /// Does the given Action, executed from an arbitrary world state,
       ///        result in this world state?
@@ -48,18 +35,18 @@ namespace Aesop {
       /// @param[out] params Parameters the Action must use for it to result in
       ///                    this world state.
       /// @return True iff the Action results in the current world state.
-      bool actionPostMatch(const Action *ac, const paramlist *params = NULL) const;
+      bool postMatch(const Action *ac, const paramlist *params = NULL) const;
 
       /// Apply the given Action to this WorldState in the forwards
       ///        direction.
       /// @param[in] ac     Action to apply to the current state of the world.
       /// @param[in] params Parameters to the Action instance if it takes any.
-      void applyActionForward(const Action *ac, const paramlist *params = NULL);
+      void applyForward(const Action *ac, const paramlist *params = NULL);
 
       /// Remove the effects of the given Action from the world.
       /// @param[in] ac     Action to remove from the current state.
       /// @param[in] params Parameters to the Action instance if it takes any.
-      void applyActionReverse(const Action *ac, const paramlist *params = NULL);
+      void applyReverse(const Action *ac, const paramlist *params = NULL);
 
       /// Compare two world states.
       /// @param[in] ws1 First WorldState to compare.
@@ -85,12 +72,13 @@ namespace Aesop {
 
    protected:
    private:
-      /// Get the name of the world state entry.
+      /// Get the predicate name from a world state entry.
       static inline PName getPName(worldrep::const_iterator it)
-      { return it->first; }
-      /// Get the Predicate of the world state entry.
+      { return it->first.name; }
+      /// Get the value from a world state entry.
       static inline PVal getPVal(worldrep::const_iterator it)
       { return it->second; }
+
       /// Internal representation of world state.
       worldrep mState;
 
@@ -102,11 +90,11 @@ namespace Aesop {
       /// Internal method to set the value of a predicate.
       /// @param[in] pred Name of predicate to set.
       /// @param[in] val Value to set the predicate to.
-      void _setPredicate(PName pred, PVal val);
+      void _set(const Fact &fact, PVal val);
 
       /// Internal method to mark that a predicate is unset.
       /// @param[in] pred Name of the predicate to clear.
-      void _unsetPredicate(PName pred);
+      void _unset(const Fact &fact);
    };
 };
 

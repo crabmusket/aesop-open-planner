@@ -13,14 +13,29 @@
 namespace Aesop {
    /// @addtogroup Aesop
    /// @{
-   /// Represents the name of a predicate.
+
+   /// A unique identifier for a predicate.
    typedef unsigned int PName;
-   /// Represents the value of a predicate.
+   /// The value predicate parameters are allowed to take on.
+   typedef unsigned int PParam;
+   /// A combination of a predicate and its parameters.
+   struct Fact {
+      PName name;
+      PParam params[2];
+      int numParams;
+      Fact(PName n = 0, unsigned int nparams = 0, PParam p0 = 0, PParam p1 = 0)
+         : name(n), numParams(nparams)
+      {
+         params[0] = p0;
+         params[1] = p1;
+      }
+   };
+   /// Value that a Fact can be mapped to.
    typedef unsigned char PVal;
-   /// Method of storing predicates and their values.
-   typedef std::map<PName, PVal> worldrep;
-   /// Simply stores a list of predicate names.
-   typedef std::vector<PName> pnamelist;
+
+   /// We represent the world as a series of Fact -> PVal associations.
+   typedef std::map<Fact, PVal> worldrep;
+
    /// Mapping of predicates to Action parameter indices.
    typedef std::map<PName, unsigned int> actionparams;
    /// A list of parameter values specific to an ActionEntry.
