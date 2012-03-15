@@ -21,6 +21,9 @@ namespace Aesop {
       /// Add an effect to this Action.
       void effect(const Fact &fact, EffectType type, PVal val = 0);
 
+      /// Add parameters to the Action.
+      void parameters(unsigned int num);
+
       /// Get this Action's friendly name.
       /// @return This Action's name.
       const std::string& getName() const { return mName; }
