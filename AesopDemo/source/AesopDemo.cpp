@@ -83,7 +83,7 @@ int main(int argc, char **argv)
    Action aMove("Move");
    aMove.parameters(2);
    aMove.condition(Fact(at), 0, Equals); // at = parameter 0
-   aMove.condition(Fact(adjacent), Conditions() % 0 % 1, Set); // adjacent(param 0, param 1)
+   aMove.condition(Fact(adjacent), Conditions() % 0 % 1, IsSet); // adjacent(param 0, param 1)
    aMove.effect(Fact(at), 0, Unset); // at != parameter 0
    aMove.effect(Fact(at), 1, Set);   // at = parameter 1
 
