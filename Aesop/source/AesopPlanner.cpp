@@ -122,7 +122,7 @@ namespace Aesop {
          // Extract the Action performed at this step.
          mPlan.push_back(ActionEntry());
          mPlan.back().ac = mClosedList[i].ac;
-         mPlan.back().params = mClosedList[i].params;
+         memcpy(mPlan.back().params, mClosedList[i].params, sizeof(PParam) * 2);
          // Iterate.
          i = mClosedList[i].prev;
       }
@@ -135,7 +135,7 @@ namespace Aesop {
    bool Planner::updateSlicedPlan(Context *ctx)
    {
       // Main loop of A* search.
-      if(!mOpenList.empty())
+      /*if(!mOpenList.empty())
       {
          // Remove best IntermediateState from open list.
          pop_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
@@ -184,19 +184,21 @@ namespace Aesop {
       else
          return false;
 
-      return true;
+      return true;*/
+      mPlanning = false;
+      return false;
    }
 
-   void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action* ac, float pref, paramlist *plist)
+   void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, paramlist *plist)
    {
-      if(!s.state.actionPostMatch(ac, plist))
+      if(!s.state.postMatch(ac, plist))
          return;
 
       IntermediateState n(mId); mId++;
       // Copy the current state, then apply the Action to it in reverse to get
       // the previous state.
       n.state = s.state;
-      n.state.applyActionReverse(ac, plist);
+      n.state.applyReverse(ac, plist);
 
       closedlist::const_iterator cli;
       // Check to see if the world state is in the closed list.
@@ -217,13 +219,13 @@ namespace Aesop {
       n.H = (float)WorldState::comp(n.state, *mStart);
       // G cost is the total weight of all Actions we've taken to get to this
       // state. By default, the cost of an Action is 1.
-      n.G = s.G + ac->getCost() * pref;
+      n.G = s.G + ac.getCost() * pref;
       // Save this to avoid recalculating every time.
       n.F = n.G + n.H;
       // Remember Action we used to to this state.
-      n.ac = ac;
+      n.ac = &ac;
       if(plist)
-         n.params = *plist;
+         memcpy(n.params, plist, sizeof(PParam) * 2);
       // Predecessor is the last state to be added to the closed list.
       n.prev = mClosedList.size() - 1;
 
@@ -253,7 +255,7 @@ namespace Aesop {
          push_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
 
          if(ctx) ctx->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%f.",
-            n.ID, ac->getName().c_str(), n.G + n.H);
+            n.ID, ac.getName().c_str(), n.G + n.H);
       }
    }
 };
