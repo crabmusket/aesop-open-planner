@@ -128,25 +128,34 @@ namespace Aesop {
    /// match for the Action to be valid.
    bool WorldState::preMatch(const Action &ac, const paramlist *params) const
    {
-      operations::const_iterator op;
-      for(op = ac.begin(); op != ac.end(); op++)
+      operations::const_iterator o;
+      Operation op;
+      Fact f;
+      for(o = ac.begin(); o != ac.end(); o++)
       {
          // If there's no condition, just carry merrily on.
-         if(op->second.ctype == NoCondition)
+         if(o->second.ctype == NoCondition)
             continue;
-         PVal oval = op->second.cparam > -1 && params ?
-            (*params)[op->second.cparam] : op->second.cvalue;
+         op = o->second;
+         f = o->first;
+         if(params)
+         {
+            if(op.cparam > -1)
+               op.cvalue = (*params)[op.cparam];
+            if(op.eparam > -1)
+               op.evalue = (*params)[op.eparam];
+         }
          PVal val;
-         if(get(op->first, val))
+         if(get(f, val))
          {
             // We have a mapping for this Fact. Check for consistency.
-            if(!consistent(val, op->second.ctype, oval))
+            if(!consistent(val, op.ctype, op.cvalue))
                return false;
          }
          else
          {
             // No mapping for this Fact. Only escape is if we don't want it to.
-            if(op->second.ctype != IsUnset)
+            if(op.ctype != IsUnset)
                return false;
          }
       }
@@ -164,35 +173,57 @@ namespace Aesop {
    /// @todo Review complexity of this method.
    bool WorldState::postMatch(const Action &ac, const paramlist *params) const
    {
-      operations::const_iterator op;
-      for(op = ac.begin(); op != ac.end(); op++)
+      operations::const_iterator o;
+      Operation op;
+      Fact f;
+      for(o = ac.begin(); o != ac.end(); o++)
       {
+         // Construct a new operation based on the parameters passed.
+         op = o->second;
+         f = o->first;
+         if(params)
+         {
+            if(op.cparam > -1)
+               op.cvalue = (*params)[op.cparam];
+            if(op.eparam > -1)
+               op.evalue = (*params)[op.eparam];
+            for(unsigned int i = 0; i < op.eargs.size(); i++)
+            {
+               if(op.eargs[i] > -1)
+                  f.params[i] = (*params)[op.eargs[i]];
+            }
+         }
          // If there's no effect, look at the conditions.
-         if(op->second.etype == NoEffect)
+         if(op.etype == NoEffect)
          {
             // Check that there's actually a condition.
-            if(op->second.ctype != NoCondition)
+            if(op.ctype != NoCondition)
             {
-               PVal oval = op->second.cparam > -1 && params ?
-                  (*params)[op->second.cparam] : op->second.cvalue;
+               // Adjust our Fact with condition parameters.
+               if(params)
+               {
+                  for(unsigned int i = 0; i < op.cargs.size(); i++)
+                  {
+                     if(op.cargs[i] > -1)
+                        f.params[i] = (*params)[op.cargs[i]];
+                  }
+               }
                PVal val;
-               if(get(op->first, val))
+               if(get(f, val))
                {
                   // We have a mapping for this Fact. Check for consistency.
-                  if(!consistent(val, op->second.ctype, oval))
+                  if(!consistent(val, op.ctype, op.cvalue))
                      return false;
                }
             }
          }
          else
          {
-            PVal oval = op->second.eparam > -1 && params ?
-               (*params)[op->second.eparam] : op->second.evalue;
             PVal val;
-            if(get(op->first, val))
+            if(get(f, val))
             {
                // Check for consistency.
-               if(!consistent(val, op->second.etype, oval))
+               if(!consistent(val, op.etype, op.evalue))
                   return false;
             }
             else

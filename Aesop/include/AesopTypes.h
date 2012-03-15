@@ -74,14 +74,27 @@ namespace Aesop {
       Decrement, ///< The Action decrements the value the Fact is set to.
    };
 
-   /// A condition is defined by a type and a value.
+   /// Select arguments.
+   typedef std::vector<int> paramargs;
+
+   /// 
+   struct Conditions
+   {
+      paramargs params;
+      Conditions &operator%(int p)
+      { params.push_back(p); return *this; }
+   };
+
+   /// 
    struct Operation {
       ConditionType ctype;
       PVal cvalue;
       int cparam;
+      paramargs cargs;
       EffectType etype;
       PVal evalue;
       int eparam;
+      paramargs eargs;
       Operation()
       {
          ctype = NoCondition;
@@ -91,7 +104,7 @@ namespace Aesop {
       }
    };
 
-   /// Map Facts to the Conditions upon them.
+   /// Map Facts to the Operations upon them.
    typedef std::map<Fact, Operation> operations;
 
    /// @}
