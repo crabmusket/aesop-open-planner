@@ -41,7 +41,7 @@ namespace ae {
    /// @{
 
    /// @brief Represents the name of a predicate.
-   typedef std::string PName;
+   typedef unsigned int PName;
    /// @brief Represents the value of a predicate.
    typedef unsigned char PVal;
    /// @brief Method of storing predicates and their values.

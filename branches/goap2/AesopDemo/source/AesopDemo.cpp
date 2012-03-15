@@ -27,9 +27,11 @@ void printPlan(ae::Plan plan)
 int main(int argc, char **argv)
 {
    // Create several Predicate names.
-   ae::PName at = "at";
-   ae::PName hungry = "hungry";
-   ae::PName money = "money";
+   enum {
+      at,
+      money,
+      hungry,
+   };
 
    // Boolean predicate values.
    ae::PVal ptrue = 1;
