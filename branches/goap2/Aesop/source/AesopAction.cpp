@@ -26,37 +26,17 @@ namespace Aesop {
    {
    }
 
-   void Action::addRequired(PName name, PVal val)
+   void Action::condition(const Fact &fact, ConditionType type, PVal val)
    {
-      mRequired[name] = val;
+      Operation &op = mOperations[fact];
+      op.ctype = type;
+      op.cvalue = val;
    }
 
-   void Action::addSet(PName name, PVal val)
+   void Action::effect(const Fact &fact, EffectType type, PVal val)
    {
-      mPostSet[name] = val;
-   }
- 
-   void Action::addClear(PName pred)
-   {
-      // Check if predicate name already exists in list.
-      pnamelist::const_iterator it;
-      for(it = mPostClear.begin(); it != mPostClear.end(); it++)
-         if(*it == pred)
-            break;
-      // Not found; add.
-      if(it == mPostClear.end())
-         mPostClear.push_back(pred);
-   }
-
-   void Action::addRequiredParam(PName name, unsigned int param)
-   {
-      if(param < mNumParams)
-         mRequiredParam[name] = param;
-   }
-
-   void Action::addSetParam(PName name, unsigned int param)
-   {
-      if(param < mNumParams)
-         mPostSetParam[name] = param;
+      Operation &op = mOperations[fact];
+      op.etype = type;
+      op.evalue = val;
    }
 };
