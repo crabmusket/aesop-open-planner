@@ -18,16 +18,16 @@ namespace Aesop {
       void set(const Fact &fact, PVal val);
 
       /// Unset all knowledge of a Fact.
-      void unset(const fact &fact);
+      void unset(const Fact &fact);
 
       /// Get the value a Fact is set to.
-      PVal get(const Fact &fact, PVal def = 0) const;
+      bool WorldState::get(const Fact &fact, PVal &val, PVal def = 0) const;
 
       /// Do the given Action's pre-conditions match this world state?
       /// @param[in] ac     Action instance to test against this world state.
       /// @param[in] params Parameters to the Action instance if it takes any.
       /// @return True iff the Action is valid under the current world state.
-      bool preMatch(const Action *ac, const paramlist *params = NULL) const;
+      bool preMatch(const Action &ac, const paramlist *params = NULL) const;
 
       /// Does the given Action, executed from an arbitrary world state,
       ///        result in this world state?
@@ -35,18 +35,18 @@ namespace Aesop {
       /// @param[out] params Parameters the Action must use for it to result in
       ///                    this world state.
       /// @return True iff the Action results in the current world state.
-      bool postMatch(const Action *ac, const paramlist *params = NULL) const;
+      bool postMatch(const Action &ac, const paramlist *params = NULL) const;
 
       /// Apply the given Action to this WorldState in the forwards
       ///        direction.
       /// @param[in] ac     Action to apply to the current state of the world.
       /// @param[in] params Parameters to the Action instance if it takes any.
-      void applyForward(const Action *ac, const paramlist *params = NULL);
+      void applyForward(const Action &ac, const paramlist *params = NULL);
 
       /// Remove the effects of the given Action from the world.
       /// @param[in] ac     Action to remove from the current state.
       /// @param[in] params Parameters to the Action instance if it takes any.
-      void applyReverse(const Action *ac, const paramlist *params = NULL);
+      void applyReverse(const Action &ac, const paramlist *params = NULL);
 
       /// Compare two world states.
       /// @param[in] ws1 First WorldState to compare.

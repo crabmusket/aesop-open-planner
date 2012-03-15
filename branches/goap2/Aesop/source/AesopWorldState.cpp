@@ -38,59 +38,118 @@ namespace Aesop {
       mState[fact] = val;
    }
 
-   void WorldState::unset(const fact &fact)
+   void WorldState::unset(const Fact &fact)
    {
       _unset(fact);
       updateHash();
    }
 
-   void WorldState::_unset(const fact &fact)
+   void WorldState::_unset(const Fact &fact)
    {
       mState.erase(fact);
    }
 
-   PVal WorldState::get(const Fact &fact, PVal def) const
+   bool WorldState::get(const Fact &fact, PVal &val, PVal def) const
    {
       worldrep::const_iterator it = mState.find(fact);
       if(it == mState.end())
-         return def;
-      return getPVal(it);
+      {
+         val = def;
+         return false;
+      }
+      val = getPVal(it);
+      return true;
+   }
+
+   /// Is the given PVal consistent with an Operation of the given condition
+   /// and specified value?
+   static bool consistent(PVal val, ConditionType cond, PVal cval)
+   {
+      switch(cond)
+      {
+      case IsUnset:
+         // We have a mapping and we're not supposed to, so we fail.
+         return false;
+      case Equals:
+         // If the value is not what it's supposed to be, fail.
+         if(val != cval)
+            return false;
+         break;
+      case NotEqual:
+         // If the value is what it's not supposed to be, fail.
+         if(val != cval)
+            return false;
+         break;
+      case Less:
+         if(val >= cval)
+            return false;
+         break;
+      case Greater:
+         if(val <= cval)
+            return false;
+         break;
+      case LessEqual:
+         if(val > cval)
+            return false;
+         break;
+      case GreaterEqual:
+         if(val < cval)
+            return false;
+         break;
+      }
+      return true;
+   }
+
+   /// Is the given PVal consistent with following an Operation with the effect
+   /// type and value given?
+   static bool consistent(PVal val, EffectType eff, PVal eval)
+   {
+      switch(eff)
+      {
+      case Unset:
+         // Fact is clearly set, so no.
+         return false;
+      case Increment:
+         // Value must have been incremented, so it should be eval+1
+         if(val != eval + 1)
+            return false;
+         break;
+      case Decrement:
+         // Value was decremented.
+         if(val != eval - 1)
+            return false;
+         break;
+      }
+      return true;
    }
 
    /// For a 'pre-match' to be valid, we compare the Action's required
    /// predicates to the values in the current world state. All values must
    /// match for the Action to be valid.
-   bool WorldState::preMatch(const Action *ac, const paramlist *params) const
+   bool WorldState::preMatch(const Action &ac, const paramlist *params) const
    {
-      // Check static predicates.
-      const worldrep &awr = ac->getRequired();
-      worldrep::const_iterator it;
-      for(it = awr.begin(); it != awr.end(); it++)
+      operations::const_iterator op;
+      for(op = ac.begin(); op != ac.end(); op++)
       {
-         // If we don't have a mapping for this predicate then we fail.
-         if(!predicateSet(getPName(it)))
-            return false;
-         // If the predicate isn't set to the right value, we fail.
-         if(getPredicate(getPName(it)) != getPVal(it))
-            return false;
-      }
-
-      // Check parameter predicates.
-      if(params && params->size() == ac->getNumParams())
-      {
-         const actionparams &apl = ac->getRequiredParams();
-         actionparams::const_iterator pit;
-
-         for(pit = apl.begin(); pit != apl.end(); pit++)
+         // If there's no condition, just carry merrily on.
+         if(op->second.ctype == NoCondition)
+            continue;
+         PVal val;
+         if(get(op->first, val))
          {
-            if(!predicateSet(pit->first))
+            // We have a mapping for this Fact. Check for consistency.
+            if(!consistent(val, op->second.ctype, op->second.cvalue))
                return false;
-            // If the predicate is set to the wrong value, fail.
-            if(getPredicate(pit->first) != params->at(pit->second))
+         }
+         else
+         {
+            // No mapping for this Fact. Only escape is if we don't want it to.
+            if(op->second.ctype != IsUnset)
                return false;
          }
       }
 
+      // No inconsistencies, so we pass.
       return true;
    }
 
@@ -101,115 +160,58 @@ namespace Aesop {
    /// values of each parameter required for the Action to result in the given
    /// world state.
    /// @todo Review complexity of this method.
-   bool WorldState::postMatch(const Action *ac, const paramlist *params) const
+   bool WorldState::postMatch(const Action &ac, const paramlist *params) const
    {
-      worldrep::const_iterator it;
-      worldrep::const_iterator ait;
-      worldrep::const_iterator rit;
-      actionparams::const_iterator plit;
-
-      const worldrep &set = ac->getSet();
-      const worldrep &req = ac->getRequired();
-      const actionparams &preq = ac->getRequiredParams();
-      const actionparams &pset = ac->getSetParams();
-
-      unsigned int matched = 0;
-
-      // Check each of our predicates.
-      for(it = mState.begin(); it != mState.end(); it++)
+      operations::const_iterator op;
+      for(op = ac.begin(); op != ac.end(); op++)
       {
-         // Does this Action set this predicate to some value?
-         ait = set.find(getPName(it));
-         if(ait != set.end())
+         // If there's no effect, look at the conditions.
+         if(op->second.etype == NoEffect)
          {
-            // Action touches this predicate; check value is correct.
-            if(getPVal(ait) == getPredicate(getPName(ait)))
+            // If there's no condition, just carry merrily on.
+            if(op->second.ctype != NoCondition)
             {
-               matched++;
-               continue;
-            }
-            else
-               return false;
-         }
-         else
-         {
-            // Action does not set this predicate to a constant. Check params.
-            plit = pset.find(getPName(it));
-            if(plit != pset.end())
-            {
-               // Check if value matches.
-               if(params && params->size() == ac->getNumParams() &&
-                  params->at(plit->second) == getPredicate(plit->first))
+               PVal val;
+               if(get(op->first, val))
                {
-                  matched++;
-                  continue;
-               }
-               else
-                  return false;
-            }
-            else
-            {
-               // Predicate is not set anywhere. Is it required?
-               rit = req.find(getPName(it));
-               if(rit != req.end())
-               {
-                  // Check to see if is is required to be the right value.
-                  if(rit->second == getPredicate(rit->first))
-                  {
-                     matched++;
-                     continue;
-                  }
-                  else
+                  // We have a mapping for this Fact. Check for consistency.
+                  if(!consistent(val, op->second.ctype, op->second.cvalue))
                      return false;
                }
                else
                {
-                  // Check to see if required to a parameter.
-                  plit = preq.find(getPName(it));
-                  if(plit != preq.end())
-                  {
-                     if(params && params->size() == ac->getNumParams() &&
-                        params->at(plit->second) == getPredicate(plit->first))
-                     {
-                        matched++;
-                        continue;
-                     }
-                     else
-                        return false;
-                  }
+                  // No mapping for this Fact. Only escape is if we want it not
+                  // to.
+                  if(op->second.ctype != IsUnset)
+                     return false;
                }
+            }
+         }
+         else
+         {
+            PVal val;
+            if(get(op->first, val))
+            {
+               // Check for consistency.
+               if(!consistent(val, op->second.etype, op->second.evalue))
+                  return false;
+            }
+            else
+            {
+               // No mapping. If that's not what's desired, bail.
+               if(op->second.etype != Unset)
+                  return false;
             }
          }
       }
 
-      return matched != 0;
+      return true;
    }
 
    /// Apply an Action to the current world state. The Action's effects are
    /// applied to the current set of predicates.
-   void WorldState::applyForward(const Action *ac, const paramlist *params)
+   void WorldState::applyForward(const Action &ac, const paramlist *params)
    {
-      worldrep::const_iterator sit;
-      pnamelist::const_iterator pit;
-
-      // Predicates set by this Action.
-      const worldrep &st = ac->getSet();
-      for(sit = st.begin(); sit != st.end(); sit++)
-         _setPredicate(getPName(sit), getPVal(sit));
-
-      // Predicates unset.
-      const pnamelist &pr = ac->getCleared();
-      for(pit = pr.begin(); pit != pr.end(); pit++)
-         _unsetPredicate(*pit);
-
-      // Predicate set to a parameter.
-      if(params && params->size() == ac->getNumParams())
-      {
-         const actionparams &pl = ac->getSetParams();
-         actionparams::const_iterator plit;
-         for(plit = pl.begin(); plit != pl.end(); plit++)
-            _setPredicate(plit->first, params->at(plit->second));
-      }
 
       updateHash();
    }
@@ -220,37 +222,8 @@ namespace Aesop {
    /// This involves making sure that the new state's predicates match the
    /// Action's prerequisites, and clearing any predicates that the Action
    /// sets.
-   void WorldState::applyReverse(const Action *ac, const paramlist *params)
+   void WorldState::applyReverse(const Action &ac, const paramlist *params)
    {
-      worldrep::const_iterator sit;
-      pnamelist::const_iterator pit;
-      actionparams::const_iterator plit;
-
-      // Predicates that are touched by the Action are unset.
-      const worldrep &set = ac->getSet();
-      for(sit = set.begin(); sit != set.end(); sit++)
-         _unsetPredicate(getPName(sit));
-      const pnamelist &pr = ac->getCleared();
-      for(pit = pr.begin(); pit != pr.end(); pit++)
-         _unsetPredicate(*pit);
-      if(params && params->size() == ac->getNumParams())
-      {
-         const actionparams &pl = ac->getSetParams();
-         for(plit = pl.begin(); plit != pl.end(); plit++)
-            _unsetPredicate(plit->first);
-      }
-
-      // Predicates that must be some value. This may re-set some of the
-      // predicates that were unset above.
-      const worldrep &req = ac->getRequired();
-      for(sit = req.begin(); sit != req.end(); sit++)
-         _setPredicate(getPName(sit), getPVal(sit));
-      if(params && params->size() == ac->getNumParams())
-      {
-         const actionparams &pl = ac->getRequiredParams();
-         for(plit = pl.begin(); plit != pl.end(); plit++)
-            _setPredicate(plit->first, params->at(plit->second));
-      }
 
       updateHash();
    }
