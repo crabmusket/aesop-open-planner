@@ -8,6 +8,7 @@
 
 #include <map>
 #include <vector>
+#include <cstdarg>
 
 namespace Aesop {
    /// @addtogroup Aesop
@@ -18,41 +19,31 @@ namespace Aesop {
    /// The value predicate parameters are allowed to take on.
    typedef unsigned int PParam;
    /// A pair of parameter values.
-   struct paramlist {
-      PParam p0, p1;
-      PParam operator[](int i) const
-      {
-         if(i == 0) return p0;
-         if(i == 1) return p1;
-         return 0;
-      }
-      PParam &operator[](int i)
-      {
-         if(i == 0) return p0;
-         return p1;
-      }
-   };
-#define PARAMS 2
+   typedef std::vector<PParam> paramlist;
    /// A list of parameter combinations.
    typedef std::vector<paramlist> paramset;
    typedef std::vector<PParam> objects;
 
    /// A combination of a predicate and its parameters.
    struct Fact {
+      /// Predicate identifier that this fact refers to.
       PName name;
+      /// Parameters of this fact.
       paramlist params;
-      int numParams;
-      Fact(PName n = 0, unsigned int nparams = 0, PParam p0 = 0, PParam p1 = 0)
-         : name(n), numParams(nparams)
-      {
-         params[0] = p0;
-         params[1] = p1;
-      }
+
+      /// Default constructor.
+      Fact(Aesop::PName n = 0) : name(n) {}
+
+      /// Compare Facts based on their predicate ID.
       bool operator<(const Fact &other) const
       { return name < other.name; }
+      /// Equality is on predicate and parameters.
       bool operator==(const Fact &other) const
-      { return name == other.name && numParams == other.numParams &&
-      params[0] == other.params[0] && params[1] == other.params[1]; }
+      { return name == other.name && params == other.params; }
+
+      /// Use Fact(pred) % pparam1 % pparam2 % ...; to create a Fact with parameters.
+      Fact &operator%(PParam p)
+      { params.push_back(p); return *this; }
    };
 
    /// Value that a Fact can be mapped to in a WorldState.

@@ -123,7 +123,7 @@ namespace Aesop {
          // Extract the Action performed at this step.
          mPlan.push_back(ActionEntry());
          mPlan.back().ac = mClosedList[i].ac;
-         memcpy(&mPlan.back().params[0], &mClosedList[i].params[0], sizeof(PParam) * PARAMS);
+         mPlan.back().params = mClosedList[i].params;
          // Iterate.
          i = mClosedList[i].prev;
       }
@@ -235,7 +235,7 @@ namespace Aesop {
       // Remember Action we used to to this state.
       n.ac = &ac;
       if(plist)
-         memcpy(&n.params[0], &plist[0], sizeof(PParam) * PARAMS);
+         n.params = *plist;
       // Predecessor is the last state to be added to the closed list.
       n.prev = mClosedList.size() - 1;
 
