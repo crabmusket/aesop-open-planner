@@ -39,4 +39,9 @@ namespace Aesop {
       op.etype = type;
       op.evalue = val;
    }
+
+   void Action::parameters(unsigned int num)
+   {
+      mNumParams = num;
+   }
 };
