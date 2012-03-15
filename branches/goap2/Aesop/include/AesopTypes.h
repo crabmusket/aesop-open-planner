@@ -18,7 +18,24 @@ namespace Aesop {
    /// The value predicate parameters are allowed to take on.
    typedef unsigned int PParam;
    /// A pair of parameter values.
-   typedef PParam paramlist[2];
+   struct paramlist {
+      PParam p0, p1;
+      PParam operator[](int i) const
+      {
+         if(i == 0) return p0;
+         if(i == 1) return p1;
+         return 0;
+      }
+      PParam &operator[](int i)
+      {
+         if(i == 0) return p0;
+         return p1;
+      }
+   };
+#define PARAMS 2
+   /// A list of parameter combinations.
+   typedef std::vector<paramlist> paramset;
+   typedef std::vector<PParam> objects;
 
    /// A combination of a predicate and its parameters.
    struct Fact {
@@ -70,13 +87,16 @@ namespace Aesop {
    struct Operation {
       ConditionType ctype;
       PVal cvalue;
+      int cparam;
       EffectType etype;
       PVal evalue;
+      int eparam;
       Operation()
       {
          ctype = NoCondition;
          etype = NoEffect;
          cvalue = evalue = 0;
+         cparam = eparam = -1;
       }
    };
 

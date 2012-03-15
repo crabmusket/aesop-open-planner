@@ -40,9 +40,9 @@ int main(int argc, char **argv)
    PVal pfalse = 0;
 
    // Three location names.
-   PVal loc1 = 'A';
-   PVal loc2 = 'B';
-   PVal loc3 = 'C';
+   PParam loc1 = 'A';
+   PParam loc2 = 'B';
+   PParam loc3 = 'C';
 
    // Create a WorldState to represent our initial state.
    WorldState start;
@@ -74,9 +74,11 @@ int main(int argc, char **argv)
    // Movement action.
    //   Required: we are at location given by param 0
    //   Outcome: we are at location given by param 1
-   //MoveAction aMove("Move");
-   //aMove.condition(Fact(at), ;
-   //aMove.addSetParam(at, 1);
+   Action aMove("Move");
+   aMove.parameters(2);
+   aMove.condition(Fact(at), 0, Equals); // at = parameter 0
+   aMove.effect(Fact(at), 0, Unset); // at != parameter 0
+   aMove.effect(Fact(at), 1, Set);   // at = parameter 1
 
    // Flying movement action.
    //   Required: we are at location given by param 0
@@ -87,7 +89,7 @@ int main(int argc, char **argv)
 
    // Bundle these actions into an ActionSet.
    ActionSet actions;
-   //actions.add(&aMove);
+   actions.add(&aMove);
    actions.add(&aTake);
    actions.add(&aOrder);
 
@@ -96,6 +98,9 @@ int main(int argc, char **argv)
 
    // Make a plan to get from 'start' to 'goal'.
    Planner planner(&start, &goal, &actions);
+   planner.addObject(loc1);
+   planner.addObject(loc2);
+   planner.addObject(loc3);
    printf("Planning with normal behaviour.\n");
    if(planner.plan(&context))
    {
