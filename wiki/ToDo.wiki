@@ -31,3 +31,5 @@
     * Support flexible user-defined predicates
        * Support logical expressions in effects and preconditions
     * Retain basic, high-performance ones as well
+ * Constraints
+    * Conditions that are checked against each possible world state during search
