@@ -1,11 +1,11 @@
 /// @file AesopWorldState.cpp
-/// @brief Implementation of WorldState class as defined in Aesop.h
+/// @brief Implementation of WorldState class as defined in AesopWorldState.h
+
+#include "AesopWorldState.h"
 
 #include <algorithm>
 
-#include "Aesop.h"
-
-namespace ae {
+namespace Aesop {
    /// @class WorldState
    ///
    /// This class represents a set of knowledge (facts, or predicates) about

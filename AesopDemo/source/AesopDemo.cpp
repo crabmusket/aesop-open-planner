@@ -7,16 +7,18 @@
 #include "AesopDemo.h"
 #include "Aesop.h"
 
-void printPlan(ae::Plan plan)
+using namespace Aesop;
+
+void printPlan(Plan plan)
 {
-   ae::Plan::const_iterator it;
+   Plan::const_iterator it;
    printf("The Plan:\n");
    for(it = plan.begin(); it != plan.end(); it++)
    {
       printf("   %s", it->ac->getName().c_str());
       if(it->params.size())
       {
-         ae::paramlist::const_iterator pl;
+         paramlist::const_iterator pl;
          for(pl = it->params.begin(); pl != it->params.end(); pl++)
             printf(" %c", *pl);
       }
@@ -34,27 +36,27 @@ int main(int argc, char **argv)
    };
 
    // Boolean predicate values.
-   ae::PVal ptrue = 1;
-   ae::PVal pfalse = 0;
+   PVal ptrue = 1;
+   PVal pfalse = 0;
 
    // Three location names.
-   ae::PVal loc1 = 'A';
-   ae::PVal loc2 = 'B';
-   ae::PVal loc3 = 'C';
+   PVal loc1 = 'A';
+   PVal loc2 = 'B';
+   PVal loc3 = 'C';
 
    // Create a WorldState to represent our initial state.
-   ae::WorldState start;
+   WorldState start;
    start.setPredicate(at, loc1);
    start.setPredicate(money, pfalse);
 
    // Create another WorldState which will be our goal.
-   ae::WorldState goal;
+   WorldState goal;
    goal.setPredicate(hungry, pfalse);
 
    // Action to buy food from loc2.
    //   Required: we are at loc2 and have money
    //   Outcome:  we have no money and are not hungry
-   ae::Action aOrder("Buy food");
+   Action aOrder("Buy food");
    aOrder.addRequired(at, loc2);
    aOrder.addRequired(money, ptrue);
    aOrder.addSet(money, pfalse);
@@ -63,7 +65,7 @@ int main(int argc, char **argv)
    // Action to take money from loc3.
    //   Required: we are at loc3 and have no money
    //   Outcome:  we have money
-   ae::Action aTake("Take money");
+   Action aTake("Take money");
    aTake.addRequired(at, loc3);
    aTake.addRequired(money, pfalse);
    aTake.addSet(money, ptrue);
@@ -83,7 +85,7 @@ int main(int argc, char **argv)
    aFly.addSetParam(at, 1);
 
    // Bundle these actions into an ActionSet.
-   ae::ActionSet actions;
+   ActionSet actions;
    actions.add(&aMove);
    actions.add(&aTake);
    actions.add(&aOrder);
@@ -92,11 +94,11 @@ int main(int argc, char **argv)
    AesopDemoContext context;
 
    // Make a plan to get from 'start' to 'goal'.
-   ae::Planner planner(&start, &goal, &actions);
+   Planner planner(&start, &goal, &actions);
    printf("Planning with normal behaviour.\n");
    if(planner.plan(&context))
    {
-      const ae::Plan plan = planner.getPlan();
+      const Plan plan = planner.getPlan();
       printPlan(plan);
    }
    else
@@ -110,7 +112,7 @@ int main(int argc, char **argv)
    printf("Planning with flying behaviour!\n");
    if(planner.plan(&context))
    {
-      const ae::Plan plan = planner.getPlan();
+      const Plan plan = planner.getPlan();
       printPlan(plan);
    }
    else
@@ -124,7 +126,7 @@ int main(int argc, char **argv)
    printf("Planning when we prefer to fly.\n");
    if(planner.plan(&context))
    {
-      const ae::Plan plan = planner.getPlan();
+      const Plan plan = planner.getPlan();
       printPlan(plan);
    }
    else

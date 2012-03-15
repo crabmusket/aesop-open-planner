@@ -9,6 +9,11 @@ SET(AesopSources
 SET(AesopHeaders
 	include/Aesop.h
 	include/AesopConfig.h
+	include/AesopTypes.h
+	include/AesopContext.h
+	include/AesopAction.h
+	include/AesopWorldState.h
+	include/AesopPlanner.h
 )
 
 INCLUDE_DIRECTORIES(include)

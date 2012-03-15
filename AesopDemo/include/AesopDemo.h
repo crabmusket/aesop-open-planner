@@ -28,10 +28,12 @@
 
 #include "Aesop.h"
 
+using namespace Aesop;
+
 /// @brief Implement the AesopContext interface and just print events to the
 ///        console. We also provide a 'flying' flag that will allow the planner
 ///        to travel between any two locations.
-class AesopDemoContext : public ae::Context {
+class AesopDemoContext : public Context {
 public:
    void logEvent(const char *fmt, ...);
 
@@ -43,18 +45,18 @@ private:
 };
 
 /// @brief Implement the Action interface for a two-parameter movement action.
-class MoveAction : public ae::Action {
+class MoveAction : public Action {
 public:
    MoveAction(std::string name, float cost = 1.0f);
-   void getParams(ae::Context *ctx, const ae::paramlist &plist, ae::paramset &pset) const;
+   void getParams(Context *ctx, const paramlist &plist, paramset &pset) const;
 };
 
 /// @brief Implement the Action interface for a two-parameter flying movement
 ///        action.
-class FlyAction : public ae::Action {
+class FlyAction : public Action {
 public:
 	FlyAction(std::string name, float cost = 1.0f);
-	void getParams(ae::Context *ctx, const ae::paramlist &plist, ae::paramset &pset) const;
+	void getParams(Context *ctx, const paramlist &plist, paramset &pset) const;
 };
 
 #endif

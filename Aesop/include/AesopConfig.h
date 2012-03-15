@@ -1,8 +1,8 @@
 /// @file AesopConfig.h
 /// @brief End-user configuration parameters for Aesop.
 
-#ifndef _AE_AESOPCONFIG_H_
-#define _AE_AESOPCONFIG_H_
+#ifndef _AE_CONFIG_H_
+#define _AE_CONFIG_H_
 
 /// @file AesopConfig.h
 /// @brief User configuration for AESOP
