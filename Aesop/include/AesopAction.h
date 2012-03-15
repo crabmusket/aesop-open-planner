@@ -11,62 +11,17 @@ namespace Aesop {
    /// An atomic change that can be made to the world state.
    class Action {
    public:
-      /// Get predicate->value mapping that we require to be valid.
-      const worldrep& getRequired() const { return mRequired; }
-      /// Get the predicate->value mapping we apply when executed.
-      const worldrep& getSet()      const { return mPostSet; }
-      /// Get the names of statements we unset upon execution.
-      const pnamelist& getCleared()  const { return mPostClear; }
-      /// Get the predicate->parameter mapping that we require.
-      const actionparams& getRequiredParams() const { return mRequiredParam; }
-      /// Get the predicate->parameter mapping that we set.
-      const actionparams& getSetParams() const {return mPostSetParam; }
+      /// 
 
-      /// Add a single statement to our list of required statements.
-      /// @param[in] name Name of the predicate the statement refers to.
-      /// @param[in] val  Value the predicate is required to take.
-      void addRequired(PName name, PVal val);
+      /// Add a condition to this Action.
+      void condition(const Fact &fact, ConditionType type, PVal val = 0);
 
-      /// Add a mapping between a predicate and a parameter.
-      /// @param[in] name  Predicate name to map to a parameter.
-      /// @param[in] param Index of a parameter to map to.
-      void addRequiredParam(PName name, unsigned int param);
-
-      /// Add a single statement to our list of predicates to set after
-      ///        execution.
-      /// @param[in] name Name of predicate this statement refers to.
-      /// @param[in] val  Value this Action changes the predicate to.
-      void addSet(PName name, PVal val);
-
-      /// Add a mapping between a predicate and a parameter.
-      /// @param[in] name  Predicate name to map to a parameter.
-      /// @param[in] param Index of a parameter to map to.
-      void addSetParam(PName name, unsigned int param);
-
-      /// Add a single predicate to the list that we unset after
-      ///        execution.
-      /// @param[in] pred Name of Predicate to add.
-      void addClear(PName pred);
-
-      /// Fills in parameters this Action can take based on a given starting
-      /// set of parameters.
-      /// @param[in]  ctx   A Context object to provide implementation-specific
-      ///                   data and abilities.
-      /// @param[in]  plist A single list of parameters that is required by a
-      ///                   WorldState.
-      /// @param[out] pset  A list of paramlist entries describing possible
-      ///                   permutations of this Action's parameters, given
-      ///                   the values in the starting set.
-      virtual void getParams(Context *ctx, const paramlist &plist, paramset &pset) const { pset.clear(); }
+      /// Add an effect to this Action.
+      void effect(const Fact &fact, EffectType type, PVal val = 0);
 
       /// Get this Action's friendly name.
       /// @return This Action's name.
       const std::string& getName() const { return mName; }
-
-      /// Get number of parameters.
-      /// @return The number of parameters that define an instance of this
-      ///         Action.
-      unsigned int getNumParams() const { return mNumParams; };
 
       /// Get the cost of using this Action.
       /// @return This Action's cost.
@@ -91,27 +46,8 @@ namespace Aesop {
       /// Cost of using this Action in a plan.
       float mCost;
 
-      /// Maps predicate names to the values we require for this Action
-      ///        to be valid.
-      worldrep mRequired;
-
-      /// Maps predicate names to the values they are set to after this Action
-      /// executes successfully.
-      worldrep mPostSet;
-      /// List of predciates that are cleared (unset) after execution.
-      pnamelist mPostClear;
-      /// Maps predicate names to parameter indices which we require the
-      /// predicate to be set to.
-      /// For example, if an entry in this map is ("at", 0) then for the Action
-      /// to be valid, the "at" predicate must be set to the value of the 0th
-      /// parameter to this Action.
-      actionparams mRequiredParam;
-      /// Maps predicate names to parameter indices which should provide values
-      /// for them to be set to.
-      /// For example, if an entry in this map is ("at", 1) then the "at"
-      /// predicate will be set to whatever value is in this Action's 1st param
-      /// when the Action executes.
-      actionparams mPostSetParam;
+      /// Encode our conditions and effects as Operations on Facts.
+      operations mOperations;
    };
 
    /// Represents an instance of an Action with a list of defined parameter
