@@ -7,6 +7,8 @@
 #include "AesopTypes.h"
 #include "AesopContext.h"
 
+#include <list>
+
 namespace Aesop {
    /// An atomic change that can be made to the world state.
    class Action {
@@ -26,6 +28,9 @@ namespace Aesop {
       /// Get the cost of using this Action.
       /// @return This Action's cost.
       float getCost() const { return mCost; }
+
+      operations::const_iterator begin() const { return mOperations.begin(); }
+      operations::const_iterator end()   const { return mOperations.end(); }
 
       /// Default constructor.
       /// @param[in] name   Friendly name for this Action.
@@ -64,6 +69,9 @@ namespace Aesop {
       {
          ac = NULL;
       }
+
+      bool operator==(const ActionEntry &other) const
+      { return ac == other.ac && params[0] == other.params[0] && params[1] == other.params[1]; }
    };
 
    /// A Plan is a sequence of Actions that take us from one WorldState to
@@ -79,7 +87,6 @@ namespace Aesop {
 
       /// @name STL
       /// @{
-      typedef actionmap::const_iterator const_iterator;
       actionmap::const_iterator begin() const { return mActions.begin(); }
       actionmap::const_iterator end() const { return mActions.end(); }
       /// @}

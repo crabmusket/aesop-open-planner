@@ -8,7 +8,6 @@
 
 #include <map>
 #include <vector>
-#include <list>
 
 namespace Aesop {
    /// @addtogroup Aesop
@@ -18,10 +17,13 @@ namespace Aesop {
    typedef unsigned int PName;
    /// The value predicate parameters are allowed to take on.
    typedef unsigned int PParam;
+   /// A pair of parameter values.
+   typedef PParam paramlist[2];
+
    /// A combination of a predicate and its parameters.
    struct Fact {
       PName name;
-      PParam params[2];
+      paramlist params;
       int numParams;
       Fact(PName n = 0, unsigned int nparams = 0, PParam p0 = 0, PParam p1 = 0)
          : name(n), numParams(nparams)
@@ -31,8 +33,12 @@ namespace Aesop {
       }
       bool operator<(const Fact &other) const
       { return name < other.name; }
+      bool operator==(const Fact &other) const
+      { return name == other.name && numParams == other.numParams &&
+      params[0] == other.params[0] && params[1] == other.params[1]; }
    };
-   /// Value that a Fact can be mapped to.
+
+   /// Value that a Fact can be mapped to in a WorldState.
    typedef unsigned char PVal;
 
    /// We represent the world as a series of Fact -> PVal associations.
@@ -41,9 +47,9 @@ namespace Aesop {
    /// Types of requirements an Action can place on a Fact.
    enum ConditionType {
       NoCondition,
-      Exists,       ///< Value does not matter as long as the Fact is set to something.
-      NotExists,    ///< Fact may not be set at all.
-      Equal,        ///< Fact must be equal to the given value.
+      IsSet,        ///< Value does not matter as long as the Fact is set to something.
+      IsUnset,      ///< Fact may not be set at all.
+      Equals,       ///< Fact must be equal to the given value.
       NotEqual,     ///< Fact must not be equal to the given value.
       Less,         ///< Fact must be less than the given value.
       Greater,      ///< Fact must be greater than the given value.
@@ -73,17 +79,10 @@ namespace Aesop {
          cvalue = evalue = 0;
       }
    };
-   
+
    /// Map Facts to the Conditions upon them.
    typedef std::map<Fact, Operation> operations;
 
-   /// Mapping of predicates to Action parameter indices.
-   typedef std::map<PName, unsigned int> actionparams;
-   /// A list of parameter values specific to an ActionEntry.
-   typedef std::vector<PVal> paramlist;
-   /// A set of paramlist objects used to evaluate a single Action with
-   ///        many different parameter lists.
-   typedef std::list<paramlist> paramset;
    /// @}
 };
 
