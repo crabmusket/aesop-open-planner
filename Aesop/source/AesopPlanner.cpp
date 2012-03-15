@@ -6,6 +6,7 @@
 #include <functional>
 #include <algorithm>
 #include <vector>
+#include <cmath>
 
 namespace Aesop {
    /// @class Planner
@@ -122,7 +123,7 @@ namespace Aesop {
          // Extract the Action performed at this step.
          mPlan.push_back(ActionEntry());
          mPlan.back().ac = mClosedList[i].ac;
-         memcpy(mPlan.back().params, mClosedList[i].params, sizeof(PParam) * 2);
+         memcpy(&mPlan.back().params[0], &mClosedList[i].params[0], sizeof(PParam) * PARAMS);
          // Iterate.
          i = mClosedList[i].prev;
       }
@@ -135,7 +136,7 @@ namespace Aesop {
    bool Planner::updateSlicedPlan(Context *ctx)
    {
       // Main loop of A* search.
-      /*if(!mOpenList.empty())
+      if(!mOpenList.empty())
       {
          // Remove best IntermediateState from open list.
          pop_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
@@ -161,31 +162,40 @@ namespace Aesop {
             const Action *ac = it->first;
             if(!ac)
                continue;
-            paramset pset;
+            paramset params;
             // Get number of params and create a set of paramlists.
             unsigned int nparams = ac->getNumParams();
-            if(nparams)
+            if(nparams && mObjects.size())
             {
-               // Get the param values that the world state requires.
-               paramlist p;
-               s.state.actionGetParams(ac, p);
-               // Allow the Action to fill in the parameters after some have
-               // been specified.
-               ac->getParams(ctx, p, pset);
+               // Permute defined objects to feed as parameters.
+               unsigned int permutations = (unsigned int)pow((float)mObjects.size(), (float)nparams);
+               params.resize(permutations);
+               std::vector<unsigned int> objs(nparams, 0);
+               for(unsigned int i = 0; i < permutations; i++)
+               {
+                  unsigned int j;
+                  for(j = 0; j < nparams; j++)
+                     params[i][j] = objs[j];
+                  unsigned int obj = ++objs[--j];
+                  while(obj == mObjects.size() && j > 0)
+                  {
+                     objs[j] = 0;
+                     j--;
+                     objs[j]++;
+                  }
+               }
                // Loop on the parameter set.
                paramset::iterator pit;
-               for(pit = pset.begin(); pit != pset.end(); pit++)
-                  attemptIntermediate(ctx, s, ac, it->second, &*pit);
+               for(pit = params.begin(); pit != params.end(); pit++)
+                  attemptIntermediate(ctx, s, *ac, it->second, &*pit);
             }
             else
-               attemptIntermediate(ctx, s, ac, it->second, NULL);
+               attemptIntermediate(ctx, s, *ac, it->second, NULL);
          }
       }
       else
          return false;
 
-      return true;*/
-      mPlanning = false;
       return false;
    }
 
@@ -225,7 +235,7 @@ namespace Aesop {
       // Remember Action we used to to this state.
       n.ac = &ac;
       if(plist)
-         memcpy(n.params, plist, sizeof(PParam) * 2);
+         memcpy(&n.params[0], &plist[0], sizeof(PParam) * PARAMS);
       // Predecessor is the last state to be added to the closed list.
       n.prev = mClosedList.size() - 1;
 

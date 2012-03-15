@@ -58,6 +58,9 @@ namespace Aesop {
       /// @param[in] set The ActionSet to pull from.
       void setActions(const ActionSet *set);
 
+      /// Add an object.
+      void addObject(PParam obj) { mObjects.push_back(obj); }
+
       /// Value constructor.
       /// @param[in] start Starting world state.
       /// @param[in] goal  Target world state.
@@ -123,6 +126,8 @@ namespace Aesop {
       /// Goal state.
       /// Not allowed to modify this.
       const WorldState *mGoal;
+      /// Objects we're working with.
+      objects mObjects;
       /// A* algorithm open list.
       openlist mOpenList;
       /// A* algorithm closed list.

@@ -134,11 +134,13 @@ namespace Aesop {
          // If there's no condition, just carry merrily on.
          if(op->second.ctype == NoCondition)
             continue;
+         PVal oval = op->second.cparam > -1 && params ?
+            (*params)[op->second.cparam] : op->second.cvalue;
          PVal val;
          if(get(op->first, val))
          {
             // We have a mapping for this Fact. Check for consistency.
-            if(!consistent(val, op->second.ctype, op->second.cvalue))
+            if(!consistent(val, op->second.ctype, oval))
                return false;
          }
          else
@@ -168,39 +170,36 @@ namespace Aesop {
          // If there's no effect, look at the conditions.
          if(op->second.etype == NoEffect)
          {
-            // If there's no condition, just carry merrily on.
+            // Check that there's actually a condition.
             if(op->second.ctype != NoCondition)
             {
+               PVal oval = op->second.cparam > -1 && params ?
+                  (*params)[op->second.cparam] : op->second.cvalue;
                PVal val;
                if(get(op->first, val))
                {
                   // We have a mapping for this Fact. Check for consistency.
-                  if(!consistent(val, op->second.ctype, op->second.cvalue))
-                     return false;
-               }
-               else
-               {
-                  // No mapping for this Fact. Only escape is if we want it not
-                  // to.
-                  if(op->second.ctype != IsUnset)
+                  if(!consistent(val, op->second.ctype, oval))
                      return false;
                }
             }
          }
          else
          {
+            PVal oval = op->second.eparam > -1 && params ?
+               (*params)[op->second.eparam] : op->second.evalue;
             PVal val;
             if(get(op->first, val))
             {
                // Check for consistency.
-               if(!consistent(val, op->second.etype, op->second.evalue))
+               if(!consistent(val, op->second.etype, oval))
                   return false;
             }
             else
             {
                // No mapping. If that's not what's desired, bail.
-               if(op->second.etype != Unset)
-                  return false;
+               //if(op->second.etype != Unset)
+                  //return false;
             }
          }
       }

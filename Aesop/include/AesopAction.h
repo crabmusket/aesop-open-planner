@@ -18,11 +18,20 @@ namespace Aesop {
       /// Add a condition to this Action.
       void condition(const Fact &fact, ConditionType type, PVal val = 0);
 
+      /// Add a parameter condition to this Action.
+      void condition(const Fact &fact, unsigned int param, ConditionType type);
+
       /// Add an effect to this Action.
       void effect(const Fact &fact, EffectType type, PVal val = 0);
 
+      /// Add a parameter effect to this Action.
+      void effect(const Fact &fact, unsigned int param, EffectType type);
+
       /// Add parameters to the Action.
       void parameters(unsigned int num);
+
+      /// How many parameters do we have?
+      unsigned int getNumParams() const { return mNumParams; }
 
       /// Get this Action's friendly name.
       /// @return This Action's name.
@@ -90,6 +99,7 @@ namespace Aesop {
 
       /// @name STL
       /// @{
+      typedef actionmap::const_iterator const_iterator;
       actionmap::const_iterator begin() const { return mActions.begin(); }
       actionmap::const_iterator end() const { return mActions.end(); }
       /// @}
