@@ -21,7 +21,7 @@
 //
 
 /// @file AesopDemo.h
-/// @brief Include data for the Aesop demo application.
+/// Include data for the Aesop demo application.
 
 #ifndef _AESOPDEMO_H_
 #define _AESOPDEMO_H_
@@ -30,29 +30,28 @@
 
 using namespace Aesop;
 
-/// @brief Implement the AesopContext interface and just print events to the
-///        console. We also provide a 'flying' flag that will allow the planner
-///        to travel between any two locations.
+/// Implement the AesopContext interface and just print events to the console.
+/// We also provide a 'flying' flag that will allow the planner to travel
+/// between any two locations.
 class AesopDemoContext : public Context {
 public:
    void logEvent(const char *fmt, ...);
 
-   /// @brief Default constructor.
+   /// Default constructor.
    AesopDemoContext();
    ~AesopDemoContext();
 protected:
 private:
 };
 
-/// @brief Implement the Action interface for a two-parameter movement action.
+/// Implement the Action interface for a two-parameter movement action.
 class MoveAction : public Action {
 public:
    MoveAction(std::string name, float cost = 1.0f);
    void getParams(Context *ctx, const paramlist &plist, paramset &pset) const;
 };
 
-/// @brief Implement the Action interface for a two-parameter flying movement
-///        action.
+/// Implement the Action interface for a two-parameter flying movement action.
 class FlyAction : public Action {
 public:
 	FlyAction(std::string name, float cost = 1.0f);

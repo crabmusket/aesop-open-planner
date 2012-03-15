@@ -1,5 +1,5 @@
 /// @file Aesop.h
-/// @brief Main file for Aesop open planning library.
+/// Main file for Aesop open planning library.
 
 #ifndef _AE_ACTION_H_
 #define _AE_ACTION_H_
@@ -8,48 +8,48 @@
 #include "AesopContext.h"
 
 namespace Aesop {
-   /// @brief An atomic change that can be made to the world state.
+   /// An atomic change that can be made to the world state.
    class Action {
    public:
-      /// @brief Get predicate->value mapping that we require to be valid.
+      /// Get predicate->value mapping that we require to be valid.
       const worldrep& getRequired() const { return mRequired; }
-      /// @brief Get the predicate->value mapping we apply when executed.
+      /// Get the predicate->value mapping we apply when executed.
       const worldrep& getSet()      const { return mPostSet; }
-      /// @brief Get the names of statements we unset upon execution.
+      /// Get the names of statements we unset upon execution.
       const pnamelist& getCleared()  const { return mPostClear; }
-      /// @brief Get the predicate->parameter mapping that we require.
+      /// Get the predicate->parameter mapping that we require.
       const actionparams& getRequiredParams() const { return mRequiredParam; }
-      /// @brief Get the predicate->parameter mapping that we set.
+      /// Get the predicate->parameter mapping that we set.
       const actionparams& getSetParams() const {return mPostSetParam; }
 
-      /// @brief Add a single statement to our list of required statements.
+      /// Add a single statement to our list of required statements.
       /// @param[in] name Name of the predicate the statement refers to.
       /// @param[in] val  Value the predicate is required to take.
       void addRequired(PName name, PVal val);
 
-      /// @brief Add a mapping between a predicate and a parameter.
+      /// Add a mapping between a predicate and a parameter.
       /// @param[in] name  Predicate name to map to a parameter.
       /// @param[in] param Index of a parameter to map to.
       void addRequiredParam(PName name, unsigned int param);
 
-      /// @brief Add a single statement to our list of predicates to set after
+      /// Add a single statement to our list of predicates to set after
       ///        execution.
       /// @param[in] name Name of predicate this statement refers to.
       /// @param[in] val  Value this Action changes the predicate to.
       void addSet(PName name, PVal val);
 
-      /// @brief Add a mapping between a predicate and a parameter.
+      /// Add a mapping between a predicate and a parameter.
       /// @param[in] name  Predicate name to map to a parameter.
       /// @param[in] param Index of a parameter to map to.
       void addSetParam(PName name, unsigned int param);
 
-      /// @brief Add a single predicate to the list that we unset after
+      /// Add a single predicate to the list that we unset after
       ///        execution.
       /// @param[in] pred Name of Predicate to add.
       void addClear(PName pred);
 
-      /// @brief Fills in parameters this Action can take based on a given
-      ///        starting set of parameters.
+      /// Fills in parameters this Action can take based on a given starting
+      /// set of parameters.
       /// @param[in]  ctx   A Context object to provide implementation-specific
       ///                   data and abilities.
       /// @param[in]  plist A single list of parameters that is required by a
@@ -59,70 +59,70 @@ namespace Aesop {
       ///                   the values in the starting set.
       virtual void getParams(Context *ctx, const paramlist &plist, paramset &pset) const { pset.clear(); }
 
-      /// @brief Get this Action's friendly name.
+      /// Get this Action's friendly name.
       /// @return This Action's name.
       const std::string& getName() const { return mName; }
 
-      /// @brief Get number of parameters.
+      /// Get number of parameters.
       /// @return The number of parameters that define an instance of this
       ///         Action.
       unsigned int getNumParams() const { return mNumParams; };
 
-      /// @brief Get the cost of using this Action.
+      /// Get the cost of using this Action.
       /// @return This Action's cost.
       float getCost() const { return mCost; }
 
-      /// @brief Default constructor.
+      /// Default constructor.
       /// @param[in] name   Friendly name for this Action.
       /// @param[in] params The number of variable parameters this Action has.
       /// @param[in] cost   Cost of performing this Action.
       Action(std::string name, float cost = 1.0f);
 
-      /// @brief Default destructor.
+      /// Default destructor.
       ~Action();
 
    protected:
-      /// @brief Number of parameters we operate on.
+      /// Number of parameters we operate on.
       unsigned int mNumParams;
 
    private:
-      /// @brief Friendly name of this Action.
+      /// Friendly name of this Action.
       std::string mName;
-      /// @brief Cost of using this Action in a plan.
+      /// Cost of using this Action in a plan.
       float mCost;
 
-      /// @brief Maps predicate names to the values we require for this Action
+      /// Maps predicate names to the values we require for this Action
       ///        to be valid.
       worldrep mRequired;
 
-      /// @brief Maps predicate names to the values they are set to after this
-      ///        Action executes successfully.
+      /// Maps predicate names to the values they are set to after this Action
+      /// executes successfully.
       worldrep mPostSet;
-      /// @brief List of predciates that are cleared (unset) after execution.
+      /// List of predciates that are cleared (unset) after execution.
       pnamelist mPostClear;
-      /// @brief Maps predicate names to parameter indices which we require the
-      ///        predicate to be set to.
+      /// Maps predicate names to parameter indices which we require the
+      /// predicate to be set to.
       /// For example, if an entry in this map is ("at", 0) then for the Action
       /// to be valid, the "at" predicate must be set to the value of the 0th
       /// parameter to this Action.
       actionparams mRequiredParam;
-      /// @brief Maps predicate names to parameter indices which should provide
-      ///        values for them to be set to.
+      /// Maps predicate names to parameter indices which should provide values
+      /// for them to be set to.
       /// For example, if an entry in this map is ("at", 1) then the "at"
       /// predicate will be set to whatever value is in this Action's 1st param
       /// when the Action executes.
       actionparams mPostSetParam;
    };
 
-   /// @brief Represents an instance of an Action with a list of defined
-   ///        parameter values.
+   /// Represents an instance of an Action with a list of defined parameter
+   /// values.
    struct ActionEntry {
-      /// @brief The Action this entry is an 'instance' of.
+      /// The Action this entry is an 'instance' of.
       const Action* ac;
-      /// @brief Array of parameter values 
+      /// Array of parameter values 
       paramlist params;
 
-      /// @brief Default constructor.
+      /// Default constructor.
       /// @param[in] a Action this ActionEntry is an instance of.
       ActionEntry()
       {
@@ -130,15 +130,15 @@ namespace Aesop {
       }
    };
 
-   /// @brief A Plan is a sequence of Actions that take us from one WorldState
-   ///        to another.
+   /// A Plan is a sequence of Actions that take us from one WorldState to
+   /// another.
    typedef std::list<ActionEntry> Plan;
 
-   /// @brief An ActionSet is a bunch of Actions that we are allowed to use as
-   ///        well as multipliers on their cost representing user preferences.
+   /// An ActionSet is a bunch of Actions that we are allowed to use as well as
+   /// multipliers on their cost representing user preferences.
    class ActionSet {
    public:
-      /// @brief Redefinition of std::map type as ActionSet.
+      /// Redefinition of std::map type as ActionSet.
       typedef std::map<const Action*, float> actionmap;
 
       /// @name STL
@@ -148,13 +148,13 @@ namespace Aesop {
       actionmap::const_iterator end() const { return mActions.end(); }
       /// @}
 
-      /// @brief Add an Action to this set with a given preference multiplier.
+      /// Add an Action to this set with a given preference multiplier.
       void add(const Action* ac, float pref = 1.0f) { if(pref < 0.0f) pref = 0.0f; mActions[ac] = pref; }
-      /// @brief Remove an Action from this set.
+      /// Remove an Action from this set.
       void remove(const Action *ac) { mActions.erase(ac); }
    protected:
    private:
-      /// @brief Store a map of Action pointers to preferences.
+      /// Store a map of Action pointers to preferences.
       actionmap mActions;
    };
 };
