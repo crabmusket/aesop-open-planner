@@ -9,6 +9,7 @@ SET(AesopTestHeaders
 	include/AesopActionTest.h
 	include/AesopWorldStateTest.h
 	include/AesopPlannerTest.h
+	include/AesopFactTest.h
 )
 
 INCLUDE_DIRECTORIES(
