@@ -17,22 +17,28 @@ namespace Aesop {
    /// A unique identifier for a predicate.
    typedef unsigned int PName;
    /// The value predicate parameters are allowed to take on.
-   typedef unsigned int PParam;
-   /// A pair of parameter values.
-   typedef std::vector<PParam> paramlist;
-   /// A list of parameter combinations.
-   typedef std::vector<paramlist> paramset;
-   typedef std::vector<PParam> objects;
+   typedef unsigned int Object;
+   /// A list of parameter values.
+   typedef std::vector<int> paramlist;
+   /// A list of objects.
+   typedef std::vector<Object> objects;
+   /// A list of object combinations.
+   typedef std::vector<objects> paramset;
 
    /// A combination of a predicate and its parameters.
    struct Fact {
       /// Predicate identifier that this fact refers to.
       PName name;
-      /// Parameters of this fact.
-      paramlist params;
+      /// Parameters of this fact, a list of objects.
+      objects params;
 
       /// Default constructor.
       Fact(Aesop::PName n = 0) : name(n) {}
+      /// Default constructor.
+      Fact(Aesop::PName n, unsigned int par) : name(n)
+      {
+         params.resize(par, 0);
+      }
 
       /// Compare Facts based on their predicate ID.
       bool operator<(const Fact &other) const
@@ -42,8 +48,11 @@ namespace Aesop {
       { return name == other.name && params == other.params; }
 
       /// Use Fact(pred) % pparam1 % pparam2 % ...; to create a Fact with parameters.
-      Fact &operator%(PParam p)
-      { params.push_back(p); return *this; }
+      Fact &operator%(const Object &obj)
+      {
+         params.push_back(obj);
+         return *this;
+      }
    };
 
    /// Value that a Fact can be mapped to in a WorldState.
@@ -74,15 +83,15 @@ namespace Aesop {
       Decrement, ///< The Action decrements the value the Fact is set to.
    };
 
-   /// Select arguments.
-   typedef std::vector<int> paramargs;
-
    /// 
    struct Conditions
    {
-      paramargs params;
+      paramlist params;
       Conditions &operator%(int p)
-      { params.push_back(p); return *this; }
+      {
+         params.push_back(p);
+         return *this;
+      }
    };
 
    /// 
@@ -90,11 +99,11 @@ namespace Aesop {
       ConditionType ctype;
       PVal cvalue;
       int cparam;
-      paramargs cargs;
+      paramlist cargs;
       EffectType etype;
       PVal evalue;
       int eparam;
-      paramargs eargs;
+      paramlist eargs;
       Operation()
       {
          ctype = NoCondition;

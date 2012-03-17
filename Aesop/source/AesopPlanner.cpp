@@ -143,7 +143,7 @@ namespace Aesop {
          IntermediateState s = mOpenList.back();
          mOpenList.pop_back();
 
-         if(ctx) ctx->logEvent("Moving state %d from open to closed.", s.ID);
+         if(ctx) ctx->logEvent("Moving state %s from open to closed.", s.state.str().c_str());
 
          // Add to closed list.
          mClosedList.push_back(s);
@@ -170,9 +170,10 @@ namespace Aesop {
                // Permute defined objects to feed as parameters.
                unsigned int permutations = (unsigned int)pow((float)mObjects.size(), (float)nparams);
                params.resize(permutations);
-               std::vector<unsigned int> objs(nparams, 0);
+               objects objs(nparams, 0);
                for(unsigned int i = 0; i < permutations; i++)
                {
+                  params[i].resize(nparams);
                   unsigned int j;
                   for(j = 0; j < nparams; j++)
                      params[i][j] = objs[j];
@@ -199,7 +200,7 @@ namespace Aesop {
       return false;
    }
 
-   void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, paramlist *plist)
+   void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, objects *plist)
    {
       if(!s.state.postMatch(ac, plist))
          return;
@@ -251,8 +252,8 @@ namespace Aesop {
             make_heap(mOpenList.begin(), mOpenList.end(),
                std::greater<IntermediateState>());
 
-            if(ctx) ctx->logEvent("Updating state %d to F=%f",
-               oli->ID, oli->G + oli->H);
+            if(ctx) ctx->logEvent("Updating state %s to F=%f",
+               oli->state.str(), oli->G + oli->H);
             break;
          }
       }
@@ -264,8 +265,8 @@ namespace Aesop {
          // Heapify open list.
          push_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
 
-         if(ctx) ctx->logEvent("Pushing state %d via action \"%s\" onto open list with score F=%f.",
-            n.ID, ac.getName().c_str(), n.G + n.H);
+         if(ctx) ctx->logEvent("Pushing state %s via action %s onto open list with score F=%f.",
+            n.state.str().c_str(), ac.str(n.params).c_str(), n.G + n.H);
       }
    }
 };

@@ -45,6 +45,8 @@ namespace Aesop {
       /// @return This Action's cost.
       float getCost() const { return mCost; }
 
+      std::string str(const objects &params) const;
+
       operations::const_iterator begin() const { return mOperations.begin(); }
       operations::const_iterator end()   const { return mOperations.end(); }
 
@@ -77,7 +79,7 @@ namespace Aesop {
       /// The Action this entry is an 'instance' of.
       const Action* ac;
       /// Array of parameter values 
-      paramlist params;
+      objects params;
 
       /// Default constructor.
       /// @param[in] a Action this ActionEntry is an instance of.
@@ -87,7 +89,7 @@ namespace Aesop {
       }
 
       bool operator==(const ActionEntry &other) const
-      { return ac == other.ac && params[0] == other.params[0] && params[1] == other.params[1]; }
+      { return ac == other.ac && params == other.params; }
    };
 
    /// A Plan is a sequence of Actions that take us from one WorldState to

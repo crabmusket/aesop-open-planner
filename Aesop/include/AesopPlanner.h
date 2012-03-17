@@ -59,7 +59,7 @@ namespace Aesop {
       void setActions(const ActionSet *set);
 
       /// Add an object.
-      void addObject(PParam obj) { mObjects.push_back(obj); }
+      void addObject(Object obj) { mObjects.push_back(obj); }
 
       /// Value constructor.
       /// @param[in] start Starting world state.
@@ -93,7 +93,7 @@ namespace Aesop {
          /// Action leading to this one.
          const Action *ac;
          /// Parameters to pass to our Action.
-         paramlist params;
+         objects params;
 
          /// Default constructor.
          IntermediateState(unsigned int id)
@@ -143,7 +143,7 @@ namespace Aesop {
       const ActionSet *mActions;
 
       /// Internal function used by pathfinding.
-      void attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, paramlist *plist);
+      void attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, objects *plist);
    };
 };
 

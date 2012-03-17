@@ -126,7 +126,7 @@ namespace Aesop {
    /// For a 'pre-match' to be valid, we compare the Action's required
    /// predicates to the values in the current world state. All values must
    /// match for the Action to be valid.
-   bool WorldState::preMatch(const Action &ac, const paramlist *params) const
+   bool WorldState::preMatch(const Action &ac, const objects *params) const
    {
       operations::const_iterator o;
       Operation op;
@@ -171,7 +171,7 @@ namespace Aesop {
    /// values of each parameter required for the Action to result in the given
    /// world state.
    /// @todo Review complexity of this method.
-   bool WorldState::postMatch(const Action &ac, const paramlist *params) const
+   bool WorldState::postMatch(const Action &ac, const objects *params) const
    {
       operations::const_iterator o;
       Operation op;
@@ -240,7 +240,7 @@ namespace Aesop {
 
    /// Apply an Action to the current world state. The Action's effects are
    /// applied to the current set of predicates.
-   void WorldState::applyForward(const Action &ac, const paramlist *params)
+   void WorldState::applyForward(const Action &ac, const objects *params)
    {
 
       updateHash();
@@ -252,7 +252,7 @@ namespace Aesop {
    /// This involves making sure that the new state's predicates match the
    /// Action's prerequisites, and clearing any predicates that the Action
    /// sets.
-   void WorldState::applyReverse(const Action &ac, const paramlist *params)
+   void WorldState::applyReverse(const Action &ac, const objects *params)
    {
       operations::const_iterator op;
       for(op = ac.begin(); op != ac.end(); op++)
@@ -311,7 +311,7 @@ namespace Aesop {
          //while(l)
          //   mHash = 31 * mHash + getPName(it)[--l];
          //mHash ^= getPVal(it) << getPName(it).length() % (sizeof(unsigned int) - sizeof(PVal));
-         mHash = 31 * mHash + (getPName(it) << getPVal(it));
+         mHash = 31 * mHash + (getPVal(it) << getPName(it));
       }
    }
 

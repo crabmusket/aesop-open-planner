@@ -7,6 +7,8 @@
 #include "AesopTypes.h"
 #include "AesopAction.h"
 
+#include <string>
+
 namespace Aesop {
    /// Knowledge about a state of the world, current or possible.
    class WorldState {
@@ -27,7 +29,7 @@ namespace Aesop {
       /// @param[in] ac     Action instance to test against this world state.
       /// @param[in] params Parameters to the Action instance if it takes any.
       /// @return True iff the Action is valid under the current world state.
-      bool preMatch(const Action &ac, const paramlist *params = NULL) const;
+      bool preMatch(const Action &ac, const objects *params = NULL) const;
 
       /// Does the given Action, executed from an arbitrary world state,
       ///        result in this world state?
@@ -35,18 +37,20 @@ namespace Aesop {
       /// @param[out] params Parameters the Action must use for it to result in
       ///                    this world state.
       /// @return True iff the Action results in the current world state.
-      bool postMatch(const Action &ac, const paramlist *params = NULL) const;
+      bool postMatch(const Action &ac, const objects *params = NULL) const;
 
       /// Apply the given Action to this WorldState in the forwards
       ///        direction.
       /// @param[in] ac     Action to apply to the current state of the world.
       /// @param[in] params Parameters to the Action instance if it takes any.
-      void applyForward(const Action &ac, const paramlist *params = NULL);
+      void applyForward(const Action &ac, const objects *params = NULL);
 
       /// Remove the effects of the given Action from the world.
       /// @param[in] ac     Action to remove from the current state.
       /// @param[in] params Parameters to the Action instance if it takes any.
-      void applyReverse(const Action &ac, const paramlist *params = NULL);
+      void applyReverse(const Action &ac, const objects *params = NULL);
+
+      std::string str() const { return "{}"; }
 
       /// Compare two world states.
       /// @param[in] ws1 First WorldState to compare.

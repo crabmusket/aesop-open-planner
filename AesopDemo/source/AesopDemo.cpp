@@ -53,12 +53,12 @@ int main(int argc, char **argv)
 
    // Create another WorldState which will be our goal.
    WorldState goal;
-   goal.set(Fact(hungry), pfalse);
-
-   goal.set(Fact(adjacent) % loc1 % loc2, ptrue);
-   goal.set(Fact(adjacent) % loc2 % loc3, ptrue);
-   goal.set(Fact(adjacent) % loc3 % loc2, ptrue);
-   goal.set(Fact(adjacent) % loc2 % loc1, ptrue);
+   goal.set(Fact(hungry), pfalse); // hungry -> false
+   // Set up some basic facts. Should be some way to have these as constants.
+   goal.set(Fact(adjacent) % loc1 % loc2, ptrue); // adj(A, B) -> true
+   goal.set(Fact(adjacent) % loc2 % loc3, ptrue); // adj(B, C) -> true
+   goal.set(Fact(adjacent) % loc3 % loc2, ptrue); // adj(C, B) -> true
+   goal.set(Fact(adjacent) % loc2 % loc1, ptrue); // adj(B, A) -> true
 
    // Action to buy food from loc2.
    //   Required: we are at loc2 and have money
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
    Action aMove("Move");
    aMove.parameters(2);
    aMove.condition(Fact(at), 0, Equals); // at = parameter 0
-   aMove.condition(Fact(adjacent), Conditions() % 0 % 1, IsSet); // adjacent(param 0, param 1)
+   aMove.condition(Fact(adjacent, 2), Conditions() % 0 % 1, IsSet); // adjacent(param 0, param 1)
    aMove.effect(Fact(at), 0, Unset); // at != parameter 0
    aMove.effect(Fact(at), 1, Set);   // at = parameter 1
 
