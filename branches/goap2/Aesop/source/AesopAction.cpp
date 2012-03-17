@@ -2,6 +2,7 @@
 /// Implementation of Action class as defined in AesopAction.h
 
 #include "AesopAction.h"
+#include <sstream>
 
 namespace Aesop {
    /// @class Action
@@ -67,5 +68,20 @@ namespace Aesop {
    void Action::parameters(unsigned int num)
    {
       mNumParams = num;
+   }
+
+   std::string Action::str(const objects &params) const
+   {
+      std::string rep = "(";
+      rep += getName();
+      objects::const_iterator it;
+      for(it = params.begin(); it != params.end(); it++)
+      {
+         std::stringstream s;
+         s << *it;
+         rep += " " + s.str();
+      }
+      rep += ")";
+      return rep;
    }
 };
