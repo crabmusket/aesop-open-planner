@@ -176,6 +176,7 @@ namespace Aesop {
       operations::const_iterator o;
       Operation op;
       Fact f;
+      int consistencies = 0;
       for(o = ac.begin(); o != ac.end(); o++)
       {
          // Construct a new operation based on the parameters passed.
@@ -214,6 +215,8 @@ namespace Aesop {
                   // We have a mapping for this Fact. Check for consistency.
                   if(!consistent(val, op.ctype, op.cvalue))
                      return false;
+                  else
+                     consistencies++;
                }
             }
          }
@@ -225,17 +228,19 @@ namespace Aesop {
                // Check for consistency.
                if(!consistent(val, op.etype, op.evalue))
                   return false;
+               else
+                  consistencies++;
             }
             else
             {
                // No mapping. If that's not what's desired, bail.
-               //if(op->second.etype != Unset)
+               //if(op.etype != Unset)
                   //return false;
             }
          }
       }
 
-      return true;
+      return consistencies > 0;
    }
 
    /// Apply an Action to the current world state. The Action's effects are

@@ -20,6 +20,10 @@ namespace Aesop {
       /// @param[in] goal Pointer to a WorldState.
       void setGoal(const WorldState *goal);
 
+      /// Set a WorldState representing constants for our problem.
+      /// @param[in] con Pointer to a WorldState.
+      void setConstants(const WorldState *con);
+
       /// Create a plan.
       /// @param[in] ctx Context object to record the Planner's activity.
       /// @return True if the plan was successfully calculated, false if no
@@ -64,8 +68,9 @@ namespace Aesop {
       /// Value constructor.
       /// @param[in] start Starting world state.
       /// @param[in] goal  Target world state.
+      /// @param[in] goal  Constants.
       /// @param[in] set   ActionSet that defines the Actions we may perform.
-      Planner(const WorldState *start, const WorldState *goal, const ActionSet *set);
+      Planner(const WorldState *start, const WorldState *goal, const WorldState *con, const ActionSet *set);
 
       /// Default constructor.
       Planner();
@@ -126,6 +131,9 @@ namespace Aesop {
       /// Goal state.
       /// Not allowed to modify this.
       const WorldState *mGoal;
+      /// Constants.
+      /// Not allowed to modify this.
+      const WorldState *mConstants;
       /// Objects we're working with.
       objects mObjects;
       /// A* algorithm open list.

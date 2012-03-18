@@ -22,14 +22,17 @@ namespace Aesop {
       /// Add a parameter condition to this Action.
       void condition(const Fact &fact, unsigned int param, ConditionType type);
 
-      /// Add conditions from a user-defined operation.
-      void condition(const Fact &fact, const Conditions &c, ConditionType type);
+      /// Add conditions with parameters.
+      void condition(const Fact &fact, const Parameters &c, ConditionType type, PVal val = 0);
 
       /// Add an effect to this Action.
       void effect(const Fact &fact, EffectType type, PVal val = 0);
 
       /// Add a parameter effect to this Action.
       void effect(const Fact &fact, unsigned int param, EffectType type);
+
+      /// Add effects with parameters.
+      void effect(const Fact &fact, const Parameters &p, EffectType type, PVal val = 0);
 
       /// Add parameters to the Action.
       void parameters(unsigned int num);

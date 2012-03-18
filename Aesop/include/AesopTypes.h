@@ -42,7 +42,9 @@ namespace Aesop {
 
       /// Compare Facts based on their predicate ID.
       bool operator<(const Fact &other) const
-      { return name < other.name; }
+      {
+         return name < other.name || params < other.params;
+      }
       /// Equality is on predicate and parameters.
       bool operator==(const Fact &other) const
       { return name == other.name && params == other.params; }
@@ -84,10 +86,10 @@ namespace Aesop {
    };
 
    /// 
-   struct Conditions
+   struct Parameters
    {
       paramlist params;
-      Conditions &operator%(int p)
+      Parameters &operator%(int p)
       {
          params.push_back(p);
          return *this;
