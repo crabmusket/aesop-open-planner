@@ -208,8 +208,6 @@ namespace Aesop {
 
    void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, objects *plist)
    {
-      if(!mConstants->preMatch(ac, plist))
-         return;
       if(!s.state.postMatch(ac, plist))
          return;
 
