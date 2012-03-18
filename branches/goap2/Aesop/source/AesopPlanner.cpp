@@ -18,18 +18,19 @@ namespace Aesop {
    /// example, Actions that we tried but failed in practis, and we now
    /// want to exclude from our planning process temporarily).
 
-   Planner::Planner(const WorldState *start, const WorldState *goal, const ActionSet *set)
+   Planner::Planner(const WorldState *start, const WorldState *goal, const WorldState *con, const ActionSet *set)
    {
       setStart(start);
       setGoal(goal);
       setActions(set);
+      setConstants(con);
       mPlanning = false;
       mId = 0;
    }
 
    Planner::Planner()
    {
-      Planner(NULL, NULL, NULL);
+      Planner(NULL, NULL, NULL, NULL);
    }
 
    Planner::~Planner()
@@ -44,6 +45,11 @@ namespace Aesop {
    void Planner::setGoal(const WorldState *goal)
    {
       mGoal = goal;
+   }
+
+   void Planner::setConstants(const WorldState *con)
+   {
+      mConstants = con;
    }
 
    void Planner::setActions(const ActionSet *set)
@@ -202,6 +208,8 @@ namespace Aesop {
 
    void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, objects *plist)
    {
+      if(!mConstants->preMatch(ac, plist))
+         return;
       if(!s.state.postMatch(ac, plist))
          return;
 

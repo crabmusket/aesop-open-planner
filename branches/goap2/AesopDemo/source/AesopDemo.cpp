@@ -41,51 +41,30 @@ int main(int argc, char **argv)
    PVal pfalse = 1;
 
    // Three location names.
-   PVal loc1 = 'A';
-   PVal loc2 = 'B';
-   PVal loc3 = 'C';
-
-   // Create a WorldState to represent our initial state.
-   WorldState start;
-   start.set(Fact(at), loc1);
-   start.set(Fact(hungry), ptrue);
-   start.set(Fact(money), pfalse);
-
-   // Create another WorldState which will be our goal.
-   WorldState goal;
-   goal.set(Fact(hungry), pfalse); // hungry -> false
-   // Set up some basic facts. Should be some way to have these as constants.
-   goal.set(Fact(adjacent) % loc1 % loc2, ptrue); // adj(A, B) -> true
-   goal.set(Fact(adjacent) % loc2 % loc3, ptrue); // adj(B, C) -> true
-   goal.set(Fact(adjacent) % loc3 % loc2, ptrue); // adj(C, B) -> true
-   goal.set(Fact(adjacent) % loc2 % loc1, ptrue); // adj(B, A) -> true
+   Object loc1 = 'A';
+   Object loc2 = 'B';
+   Object loc3 = 'C';
 
    // Action to buy food from loc2.
-   //   Required: we are at loc2 and have money
-   //   Outcome:  we have no money and are not hungry
    Action aOrder("Buy food");
-   aOrder.condition(Fact(at), Equals, loc1);
-   aOrder.condition(Fact(money), Equals, ptrue);
-   aOrder.effect(Fact(money), Set, pfalse);
-   aOrder.effect(Fact(hungry), Set, pfalse);
+   aOrder.condition(Fact(at) % loc1, Equals, ptrue); // Required: at(loc1) -> true
+   aOrder.condition(Fact(money), Equals, ptrue);     // Required: money() -> true
+   aOrder.effect(Fact(money), Set, pfalse);          // Effect: money() -> false
+   aOrder.effect(Fact(hungry), Set, pfalse);         // Effect: hungry() -> false
 
    // Action to take money from loc3.
-   //   Required: we are at loc3 and have no money
-   //   Outcome:  we have money
    Action aTake("Take money");
-   aTake.condition(Fact(at), Equals, loc3);
-   aTake.condition(Fact(money), IsUnset);
-   aTake.effect(Fact(money), Set);
+   aTake.condition(Fact(at) % loc3, Equals, ptrue); // Required: at(loc3) -> true
+   aTake.condition(Fact(money), IsUnset);           // Required: money() is not set
+   aTake.effect(Fact(money), Set, ptrue);           // Effect: money() -> true
 
    // Movement action.
-   //   Required: we are at location given by param 0
-   //   Outcome: we are at location given by param 1
    Action aMove("Move");
-   aMove.parameters(2);
-   aMove.condition(Fact(at), 0, Equals); // at = parameter 0
-   aMove.condition(Fact(adjacent, 2), Conditions() % 0 % 1, IsSet); // adjacent(param 0, param 1)
-   aMove.effect(Fact(at), 0, Unset); // at != parameter 0
-   aMove.effect(Fact(at), 1, Set);   // at = parameter 1
+   aMove.parameters(2); // Two parameters to this action, move-from and move-to.
+   aMove.condition(Fact(at), Parameters() % 0, Equals, ptrue);              // Required: at(param 0) -> true
+   aMove.condition(Fact(adjacent, 2), Parameters() % 0 % 1, Equals, ptrue); // Required: adjacent(param 0, param 1) -> true
+   aMove.effect(Fact(at), Unset);  // Effect: unset at(param 0)
+   aMove.effect(Fact(at), 1, Set); // Effect: at(param 1) -> true
 
    // Flying movement action.
    //   Required: we are at location given by param 0
@@ -103,8 +82,25 @@ int main(int argc, char **argv)
    // Construct a logger to keep track of the planning process.
    AesopDemoContext context;
 
+   // Create a WorldState to represent our initial state.
+   WorldState start;
+   start.set(Fact(at), loc1);      // at() -> loc1
+   start.set(Fact(hungry), ptrue); // hungry() -> false
+   start.set(Fact(money), pfalse); // money() -> false
+
+   // Create another WorldState which will be our goal.
+   WorldState goal;
+   goal.set(Fact(hungry), pfalse); // hungry() -> false
+
+   // Set up some basic domain constants.
+   WorldState con;
+   con.set(Fact(adjacent) % loc1 % loc2, ptrue); // adjacent(A, B) -> true
+   con.set(Fact(adjacent) % loc2 % loc3, ptrue); // adjacent(B, C) -> true
+   con.set(Fact(adjacent) % loc3 % loc2, ptrue); // adjacent(C, B) -> true
+   con.set(Fact(adjacent) % loc2 % loc1, ptrue); // adjacent(B, A) -> true
+
    // Make a plan to get from 'start' to 'goal'.
-   Planner planner(&start, &goal, &actions);
+   Planner planner(&start, &goal, &con, &actions);
    planner.addObject(loc1);
    planner.addObject(loc2);
    planner.addObject(loc3);
