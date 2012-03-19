@@ -29,7 +29,7 @@ namespace Aesop {
       /// @param[in] ac     Action instance to test against this world state.
       /// @param[in] params Parameters to the Action instance if it takes any.
       /// @return True iff the Action is valid under the current world state.
-      bool preMatch(const Action &ac, const objects *params = NULL) const;
+      bool preMatch(const Action &ac, const objects &params) const;
 
       /// Does the given Action, executed from an arbitrary world state,
       ///        result in this world state?
@@ -37,18 +37,18 @@ namespace Aesop {
       /// @param[out] params Parameters the Action must use for it to result in
       ///                    this world state.
       /// @return True iff the Action results in the current world state.
-      bool postMatch(const Action &ac, const objects *params = NULL) const;
+      bool postMatch(const Action &ac, const objects &params) const;
 
       /// Apply the given Action to this WorldState in the forwards
       ///        direction.
       /// @param[in] ac     Action to apply to the current state of the world.
       /// @param[in] params Parameters to the Action instance if it takes any.
-      void applyForward(const Action &ac, const objects *params = NULL);
+      void applyForward(const Action &ac, const objects &params);
 
       /// Remove the effects of the given Action from the world.
       /// @param[in] ac     Action to remove from the current state.
       /// @param[in] params Parameters to the Action instance if it takes any.
-      void applyReverse(const Action &ac, const objects *params = NULL);
+      void applyReverse(const Action &ac, const objects &params);
 
       std::string str() const { return "{}"; }
 

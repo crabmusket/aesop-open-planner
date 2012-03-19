@@ -18,6 +18,7 @@ namespace Aesop {
    typedef unsigned int PName;
    /// The value predicate parameters are allowed to take on.
    typedef unsigned int Object;
+   const Object NullObject(0);
    /// A list of parameter values.
    typedef std::vector<int> paramlist;
    /// A list of objects.
@@ -25,34 +26,58 @@ namespace Aesop {
    /// A list of object combinations.
    typedef std::vector<objects> paramset;
 
+   struct Parameter {
+      int index;
+      Parameter(int i) : index(i) {}
+   };
+
    /// A combination of a predicate and its parameters.
    struct Fact {
       /// Predicate identifier that this fact refers to.
       PName name;
-      /// Parameters of this fact, a list of objects.
-      objects params;
+      /// Arguments of this fact, a list of objects.
+      objects args;
+      /// Parameter indices for this Fact, to be filled in later.
+      paramlist indices;
 
       /// Default constructor.
       Fact(Aesop::PName n = 0) : name(n) {}
-      /// Default constructor.
-      Fact(Aesop::PName n, unsigned int par) : name(n)
-      {
-         params.resize(par, 0);
-      }
 
       /// Compare Facts based on their predicate ID.
       bool operator<(const Fact &other) const
       {
-         return name < other.name || params < other.params;
+         if(name < other.name)
+            return true;
+         else if(other.name < name)
+            return false;
+         if(args < other.args)
+            return true;
+         else if(other.args < args)
+            return false;
+         return indices < other.indices;
       }
       /// Equality is on predicate and parameters.
       bool operator==(const Fact &other) const
-      { return name == other.name && params == other.params; }
+      { return name == other.name && args == other.args && indices == other.indices; }
 
-      /// Use Fact(pred) % pparam1 % pparam2 % ...; to create a Fact with parameters.
+      /// Use Fact(pred) % obj1 % obj2 % ...; to create a Fact with fixed
+      /// parameters.
       Fact &operator%(const Object &obj)
       {
-         params.push_back(obj);
+         // Add an element to our parameters.
+         args.push_back(obj);
+         // Add an entry to or arguments that does not allow this parameter to be filled.
+         indices.push_back(-1);
+         return *this;
+      }
+      /// Use Fact(pred) % Parameter(0) % Parameter(1) % ...; to create a Fact
+      /// with variable parameters.
+      Fact &operator%(const Parameter &p)
+      {
+         // Add parameter index to our list.
+         indices.push_back(p.index);
+         // Dummy object in this slot.
+         args.push_back(NullObject);
          return *this;
       }
    };
@@ -85,33 +110,25 @@ namespace Aesop {
       Decrement, ///< The Action decrements the value the Fact is set to.
    };
 
-   /// 
-   struct Parameters
-   {
-      paramlist params;
-      Parameters &operator%(int p)
-      {
-         params.push_back(p);
-         return *this;
-      }
-   };
-
-   /// 
+   /// Stores conditions and effects for a single Fact. Each condition and
+   /// effect may be one of several types, and may either operate with a
+   /// constant value (cval/eval) or a value given by a parameter to the Action
+   /// (which parameter is specified by cidx/eidx).
    struct Operation {
-      ConditionType ctype;
-      PVal cvalue;
-      int cparam;
-      paramlist cargs;
-      EffectType etype;
-      PVal evalue;
-      int eparam;
-      paramlist eargs;
+      ConditionType ctype; ///< Type of condition.
+      PVal cval;           ///< Value to validate condition with.
+      int cidx;            ///< Index of parameter to compare with.
+
+      EffectType etype; ///< Type of effect.
+      PVal eval;        ///< Value for effect to use.
+      int eidx;         ///< Index of parameter for effect to use.
+      
       Operation()
       {
          ctype = NoCondition;
          etype = NoEffect;
-         cvalue = evalue = 0;
-         cparam = eparam = -1;
+         cval = eval = 0;
+         cidx = eidx = -1;
       }
    };
 
