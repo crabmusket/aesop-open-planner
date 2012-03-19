@@ -38,7 +38,7 @@ namespace Aesop {
 
       /// Update a sliced plan.
       /// @param[in] ctx Context object to record the Planner's activity.
-      /// @return False if a valid plan was not found; true otherwise.
+      /// @return False if planning should stop, true if it should continue.
       bool updateSlicedPlan(Context *ctx = NULL);
 
       /// Output the result of a computed plan to 
@@ -50,9 +50,9 @@ namespace Aesop {
       inline void finalizeSlicedPlan(Context *ctx = NULL)
       { finaliseSlicedPlan(ctx); }
 
-      /// Is this Planner in the middle of processing a sliced plan?
-      /// @return 
-      bool isPlanning() const;
+      /// Did we plan successfully?
+      /// @return True iff a valid plan was found.
+      bool success() const { return mSuccess; }
 
       /// Get the currently constructed plan.
       /// @return A Plan.
@@ -140,8 +140,8 @@ namespace Aesop {
       openlist mOpenList;
       /// A* algorithm closed list.
       closedlist mClosedList;
-      /// Are we still working on a sliced plan?
-      bool mPlanning;
+      /// Did we find a valid plan?
+      bool mSuccess;
       /// IntermediateState ID number for debug purposes.
       /// @todo Find a better way to identify states!
       unsigned int mId;
