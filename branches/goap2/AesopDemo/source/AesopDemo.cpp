@@ -63,8 +63,8 @@ int main(int argc, char **argv)
    aMove.parameters(2); // Two parameters to this action, move-from and move-to.
    aMove.condition(Fact(at) % Parameter(0), Equals, ptrue); // Required: at(param 0) -> true
    aMove.condition(Fact(adjacent) % Parameter(0) % Parameter(1), Equals, ptrue); // Required: adjacent(param 0, param 1) -> true
-   aMove.effect(Fact(at), Unset);  // Effect: unset at(param 0)
-   aMove.effect(Fact(at), 1, Set); // Effect: at(param 1) -> true
+   aMove.effect(Fact(at) % Parameter(0), Unset);  // Effect: unset at(param 0)
+   aMove.effect(Fact(at) % Parameter(1), Set, ptrue); // Effect: at(param 1) -> true
 
    // Flying movement action.
    //   Required: we are at location given by param 0
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
       printf("No plan found to satisfy goal!\n");
    }
    putchar('\n');
-
+   /*
    // Make a plan for a flying character.
    //actions.add(&aFly);
    printf("Planning with flying behaviour!\n");
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
       printf("No plan found to satisfy goal!\n");
    }
    putchar('\n');
-
+   */
    return 0;
 }
 
