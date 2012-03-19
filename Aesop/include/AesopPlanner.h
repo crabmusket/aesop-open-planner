@@ -151,7 +151,7 @@ namespace Aesop {
       const ActionSet *mActions;
 
       /// Internal function used by pathfinding.
-      void attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, objects *plist);
+      void attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, objects &plist);
    };
 };
 

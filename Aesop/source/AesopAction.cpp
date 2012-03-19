@@ -31,47 +31,32 @@ namespace Aesop {
    {
       Operation &op = mOperations[fact];
       op.ctype = type;
-      op.cvalue = val;
-      op.cparam = -1;
+      op.cval = val;
+      op.cidx = -1;
    }
 
    void Action::condition(const Fact &fact, unsigned int param, ConditionType type)
    {
       Operation &op = mOperations[fact];
       op.ctype = type;
-      op.cparam = param;
-      op.cvalue = 0;
-   }
-
-   void Action::condition(const Fact &fact, const Parameters &c, ConditionType type, PVal val)
-   {
-      Operation &op = mOperations[fact];
-      op.cargs = c.params;
-      op.ctype = type;
-      op.cvalue = val;
+      op.cval = 0;
+      op.cidx = param;
    }
 
    void Action::effect(const Fact &fact, EffectType type, PVal val)
    {
       Operation &op = mOperations[fact];
       op.etype = type;
-      op.evalue = val;
-      op.eparam = -1;
+      op.eval = val;
+      op.eidx = -1;
    }
 
    void Action::effect(const Fact &fact, unsigned int param, EffectType type)
    {
       Operation &op = mOperations[fact];
       op.etype = type;
-      op.evalue = 0;
-   }
-
-   void Action::effect(const Fact &fact, const Parameters &p, EffectType type, PVal val)
-   {
-      Operation &op = mOperations[fact];
-      op.eargs = p.params;
-      op.etype = type;
-      op.evalue = val;
+      op.eval = 0;
+      op.eidx = param;
    }
 
    void Action::parameters(unsigned int num)

@@ -61,8 +61,8 @@ int main(int argc, char **argv)
    // Movement action.
    Action aMove("Move");
    aMove.parameters(2); // Two parameters to this action, move-from and move-to.
-   aMove.condition(Fact(at), Parameters() % 0, Equals, ptrue);              // Required: at(param 0) -> true
-   aMove.condition(Fact(adjacent, 2), Parameters() % 0 % 1, Equals, ptrue); // Required: adjacent(param 0, param 1) -> true
+   aMove.condition(Fact(at) % Parameter(0), Equals, ptrue); // Required: at(param 0) -> true
+   aMove.condition(Fact(adjacent) % Parameter(0) % Parameter(1), Equals, ptrue); // Required: adjacent(param 0, param 1) -> true
    aMove.effect(Fact(at), Unset);  // Effect: unset at(param 0)
    aMove.effect(Fact(at), 1, Set); // Effect: at(param 1) -> true
 
@@ -94,10 +94,10 @@ int main(int argc, char **argv)
 
    // Set up some basic domain constants.
    WorldState con;
-   con.set(Fact(adjacent) % loc1 % loc2, ptrue); // adjacent(A, B) -> true
-   con.set(Fact(adjacent) % loc2 % loc3, ptrue); // adjacent(B, C) -> true
-   con.set(Fact(adjacent) % loc3 % loc2, ptrue); // adjacent(C, B) -> true
-   con.set(Fact(adjacent) % loc2 % loc1, ptrue); // adjacent(B, A) -> true
+   goal.set(Fact(adjacent) % loc1 % loc2, ptrue); // adjacent(A, B) -> true
+   goal.set(Fact(adjacent) % loc2 % loc3, ptrue); // adjacent(B, C) -> true
+   goal.set(Fact(adjacent) % loc3 % loc2, ptrue); // adjacent(C, B) -> true
+   goal.set(Fact(adjacent) % loc2 % loc1, ptrue); // adjacent(B, A) -> true
 
    // Make a plan to get from 'start' to 'goal'.
    Planner planner(&start, &goal, &con, &actions);

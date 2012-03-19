@@ -194,10 +194,10 @@ namespace Aesop {
                // Loop on the parameter set.
                paramset::iterator pit;
                for(pit = params.begin(); pit != params.end(); pit++)
-                  attemptIntermediate(ctx, s, *ac, it->second, &*pit);
+                  attemptIntermediate(ctx, s, *ac, it->second, *pit);
             }
             else
-               attemptIntermediate(ctx, s, *ac, it->second, NULL);
+               attemptIntermediate(ctx, s, *ac, it->second, objects());
          }
       }
       else
@@ -206,7 +206,7 @@ namespace Aesop {
       return false;
    }
 
-   void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, objects *plist)
+   void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, objects &plist)
    {
       if(!s.state.postMatch(ac, plist))
          return;
@@ -241,8 +241,7 @@ namespace Aesop {
       n.F = n.G + n.H;
       // Remember Action we used to to this state.
       n.ac = &ac;
-      if(plist)
-         n.params = *plist;
+      n.params = plist;
       // Predecessor is the last state to be added to the closed list.
       n.prev = mClosedList.size() - 1;
 

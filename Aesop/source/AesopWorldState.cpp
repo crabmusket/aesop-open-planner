@@ -123,10 +123,31 @@ namespace Aesop {
       return true;
    }
 
+   static void fillOp(Operation &op, const objects &params)
+   {
+      // Check condition index.
+      if(op.cidx > -1)
+         op.cval = params[op.cidx];
+      // Check effect index.
+      if(op.eidx > -1)
+         op.eval = params[op.eidx];
+   }
+
+   static void fillFact(Fact &f, const objects &params)
+   {
+      // Check whether the Fact needs to be completed.
+      unsigned int i = 0;
+      for(paramlist::const_iterator p = f.indices.begin(); p != f.indices.end(); p++, i++)
+      {
+         if(*p != -1)
+            f.args[i] = params[*p];
+      }
+   }
+
    /// For a 'pre-match' to be valid, we compare the Action's required
    /// predicates to the values in the current world state. All values must
    /// match for the Action to be valid.
-   bool WorldState::preMatch(const Action &ac, const objects *params) const
+   bool WorldState::preMatch(const Action &ac, const objects &params) const
    {
       operations::const_iterator o;
       Operation op;
@@ -136,20 +157,20 @@ namespace Aesop {
          // If there's no condition, just carry merrily on.
          if(o->second.ctype == NoCondition)
             continue;
+         // Copy Operation and Fact for modification.
          op = o->second;
          f = o->first;
-         if(params)
+         // Check whether we need to set target value based on parameter.
+         if(params.size())
          {
-            if(op.cparam > -1)
-               op.cvalue = (*params)[op.cparam];
-            if(op.eparam > -1)
-               op.evalue = (*params)[op.eparam];
+            fillOp(op, params);
+            fillFact(f, params);
          }
          PVal val;
          if(get(f, val))
          {
             // We have a mapping for this Fact. Check for consistency.
-            if(!consistent(val, op.ctype, op.cvalue))
+            if(!consistent(val, op.ctype, op.cval))
                return false;
          }
          else
@@ -171,7 +192,7 @@ namespace Aesop {
    /// values of each parameter required for the Action to result in the given
    /// world state.
    /// @todo Review complexity of this method.
-   bool WorldState::postMatch(const Action &ac, const objects *params) const
+   bool WorldState::postMatch(const Action &ac, const objects &params) const
    {
       operations::const_iterator o;
       Operation op;
@@ -182,17 +203,10 @@ namespace Aesop {
          // Construct a new operation based on the parameters passed.
          op = o->second;
          f = o->first;
-         if(params)
+         if(params.size())
          {
-            if(op.cparam > -1)
-               op.cvalue = (*params)[op.cparam];
-            if(op.eparam > -1)
-               op.evalue = (*params)[op.eparam];
-            for(unsigned int i = 0; i < op.eargs.size(); i++)
-            {
-               if(op.eargs[i] > -1)
-                  f.params[i] = (*params)[op.eargs[i]];
-            }
+            fillOp(op, params);
+            fillFact(f, params);
          }
          // If there's no effect, look at the conditions.
          if(op.etype == NoEffect)
@@ -200,20 +214,11 @@ namespace Aesop {
             // Check that there's actually a condition.
             if(op.ctype != NoCondition)
             {
-               // Adjust our Fact with condition parameters.
-               if(params)
-               {
-                  for(unsigned int i = 0; i < op.cargs.size(); i++)
-                  {
-                     if(op.cargs[i] > -1)
-                        f.params[i] = (*params)[op.cargs[i]];
-                  }
-               }
                PVal val;
                if(get(f, val))
                {
                   // We have a mapping for this Fact. Check for consistency.
-                  if(!consistent(val, op.ctype, op.cvalue))
+                  if(!consistent(val, op.ctype, op.cval))
                      return false;
                   else
                      consistencies++;
@@ -226,7 +231,7 @@ namespace Aesop {
             if(get(f, val))
             {
                // Check for consistency.
-               if(!consistent(val, op.etype, op.evalue))
+               if(!consistent(val, op.etype, op.eval))
                   return false;
                else
                   consistencies++;
@@ -245,7 +250,7 @@ namespace Aesop {
 
    /// Apply an Action to the current world state. The Action's effects are
    /// applied to the current set of predicates.
-   void WorldState::applyForward(const Action &ac, const objects *params)
+   void WorldState::applyForward(const Action &ac, const objects &params)
    {
 
       updateHash();
@@ -257,44 +262,47 @@ namespace Aesop {
    /// This involves making sure that the new state's predicates match the
    /// Action's prerequisites, and clearing any predicates that the Action
    /// sets.
-   void WorldState::applyReverse(const Action &ac, const objects *params)
+   void WorldState::applyReverse(const Action &ac, const objects &params)
    {
-      operations::const_iterator op;
-      for(op = ac.begin(); op != ac.end(); op++)
+      operations::const_iterator o;
+      Operation op;
+      Fact f;
+      for(o = ac.begin(); o != ac.end(); o++)
       {
-         // If there's no condition, check the effects.
-         if(op->second.ctype == NoCondition)
+         op = o->second;
+         f = o->first;
+         if(params.size())
          {
-            PVal oval = op->second.eparam > -1 && params ?
-               (*params)[op->second.eparam] : op->second.evalue;
-            switch(op->second.etype)
+            fillOp(op, params);
+            fillFact(f, params);
+         }
+         // If there's no condition, check the effects.
+         if(op.ctype == NoCondition)
+         {
+            switch(op.etype)
             {
             case Set:
-               //set(op->first, oval);
                break;
             case Unset:
-               //unset(op->first);
                break;
             case Increment:
-               _set(op->first, oval - 1);
+               _set(f, op.eval - 1);
                break;
             case Decrement:
-               _set(op->first, oval + 1);
+               _set(f, op.eval + 1);
                break;
             }
          }
          else
          {
-            PVal oval = op->second.cparam > -1 && params ?
-               (*params)[op->second.cparam] : op->second.cvalue;
-            switch(op->second.ctype)
+            switch(op.ctype)
             {
             case IsSet:
             case Equals:
-               _set(op->first, 0);
+               _set(f, 0);
                break;
             case IsUnset:
-               _unset(op->first);
+               _unset(f);
                break;
             }
          }
