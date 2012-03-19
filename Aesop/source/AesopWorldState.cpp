@@ -4,6 +4,7 @@
 #include "AesopWorldState.h"
 
 #include <algorithm>
+#include <sstream>
 
 namespace Aesop {
    /// @class WorldState
@@ -298,8 +299,10 @@ namespace Aesop {
             switch(op.ctype)
             {
             case IsSet:
-            case Equals:
                _set(f, 0);
+               break;
+            case Equals:
+               _set(f, op.cval);
                break;
             case IsUnset:
                _unset(f);
@@ -309,6 +312,20 @@ namespace Aesop {
       }
 
       updateHash();
+   }
+
+   std::string WorldState::str() const
+   {
+      worldrep::const_iterator it;
+      std::string rep = "\n{\n";
+      for(it = mState.begin(); it != mState.end(); it++)
+      {
+         std::stringstream s;
+         s << "    " << it->first << " -> " << (int)it->second;
+         rep += s.str() + "\n";
+      }
+      rep += "}\n";
+      return rep;
    }
 
    /// This hash method sums the string hashes of all the predicate names in

@@ -50,7 +50,7 @@ namespace Aesop {
       /// @param[in] params Parameters to the Action instance if it takes any.
       void applyReverse(const Action &ac, const objects &params);
 
-      std::string str() const { return "{}"; }
+      std::string str() const;
 
       /// Compare two world states.
       /// @param[in] ws1 First WorldState to compare.
