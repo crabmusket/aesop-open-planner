@@ -32,3 +32,19 @@ TEST_F(WorldStateTest, Predicates)
    EXPECT_TRUE(s1.get(Fact(p1) % 1 % 1, v));
    EXPECT_EQ(v, v2);
 }
+
+TEST_F(WorldStateTest, PreMatch)
+{
+}
+
+TEST_F(WorldStateTest, PostMatch)
+{
+}
+
+TEST_F(WorldStateTest, ApplyForward)
+{
+}
+
+TEST_F(WorldStateTest, ApplyReverse)
+{
+}
