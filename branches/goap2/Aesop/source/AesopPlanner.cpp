@@ -24,7 +24,7 @@ namespace Aesop {
       setGoal(goal);
       setActions(set);
       setConstants(con);
-      mPlanning = false;
+      mSuccess = false;
       mId = 0;
    }
 
@@ -57,11 +57,6 @@ namespace Aesop {
       mActions = set;
    }
 
-   bool Planner::isPlanning() const
-   {
-      return mPlanning;
-   }
-
    const Plan& Planner::getPlan() const
    {
       return mPlan;
@@ -75,21 +70,11 @@ namespace Aesop {
       if(!initSlicedPlan(ctx))
          return false;
 
-      while(isPlanning())
-      {
-         // Increment plan and capture failure.
-         if(!updateSlicedPlan(ctx))
-            return false;
-         // If planning has halted, we must have been successful.
-         if(!isPlanning())
-         {
-            finaliseSlicedPlan(ctx);
-            return true;
-         }
-      }
+      while(updateSlicedPlan(ctx)) ;
 
-      // No plan found.
-      return false;
+      finaliseSlicedPlan(ctx);
+
+      return success();
    }
 
    bool Planner::initSlicedPlan(Context *ctx)
@@ -104,7 +89,7 @@ namespace Aesop {
       if(ctx) ctx->logEvent("Starting new plan.");
 
       // Reset intermediate data.
-      mPlanning = true;
+      mSuccess = false;
       mOpenList.clear();
       mClosedList.clear();
       mId = 0;
@@ -123,20 +108,23 @@ namespace Aesop {
       if(ctx) ctx->logEvent("Finalising plan!");
       // Work backwards up the closed list to get the final plan.
       mPlan.clear();
-      unsigned int i = mClosedList.size() - 1;
-      while(i)
+      if(success())
       {
-         // Extract the Action performed at this step.
-         mPlan.push_back(ActionEntry());
-         mPlan.back().ac = mClosedList[i].ac;
-         mPlan.back().params = mClosedList[i].params;
-         // Iterate.
-         i = mClosedList[i].prev;
+         unsigned int i = mClosedList.size() - 1;
+         while(i)
+         {
+            // Extract the Action performed at this step.
+            mPlan.push_back(ActionEntry());
+            mPlan.back().ac = mClosedList[i].ac;
+            mPlan.back().params = mClosedList[i].params;
+            // Iterate.
+            i = mClosedList[i].prev;
+         }
       }
       // Purge intermediate results.
       mOpenList.clear();
       mClosedList.clear();
-      mPlanning = false;
+      mSuccess = false;
    }
 
    bool Planner::updateSlicedPlan(Context *ctx)
@@ -157,8 +145,8 @@ namespace Aesop {
          // Check for completeness.
          if(s.state == *mStart)
          {
-            mPlanning = false;
-            return true;
+            mSuccess = true;
+            return false;
          }
 
          // Find all actions we can use that may result in the current state.
@@ -203,7 +191,7 @@ namespace Aesop {
       else
          return false;
 
-      return false;
+      return true;
    }
 
    void Planner::attemptIntermediate(Context *ctx, IntermediateState &s, const Action &ac, float pref, objects &plist)
@@ -270,7 +258,7 @@ namespace Aesop {
          // Heapify open list.
          push_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
 
-         if(ctx) ctx->logEvent("Pushing state %s via action %s onto open list with score F=%f.",
+         if(ctx) ctx->logEvent("Pushing state %s via action %s onto open list with score F=%.3f.",
             n.state.str().c_str(), ac.str(n.params).c_str(), n.G + n.H);
       }
    }
