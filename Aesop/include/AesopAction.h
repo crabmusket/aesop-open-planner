@@ -51,7 +51,7 @@ namespace Aesop {
       /// @param[in] name   Friendly name for this Action.
       /// @param[in] params The number of variable parameters this Action has.
       /// @param[in] cost   Cost of performing this Action.
-      Action(std::string name, float cost = 1.0f);
+      Action(std::string name = "", float cost = 1.0f);
 
       /// Default destructor.
       ~Action();
