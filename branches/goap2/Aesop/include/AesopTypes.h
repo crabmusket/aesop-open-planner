@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 #include <cstdarg>
+#include <iostream>
 
 namespace Aesop {
    /// @addtogroup Aesop
@@ -79,6 +80,23 @@ namespace Aesop {
          // Dummy object in this slot.
          args.push_back(NullObject);
          return *this;
+      }
+
+      friend std::ostream &operator<<(std::ostream &stream, const Fact &f)
+      {
+         stream << f.name;
+         if(f.args.size())
+         {
+            stream << "(";
+            for(unsigned int i = 0; i < f.args.size(); i++)
+            {
+               stream << f.args[i];
+               if(i < f.args.size() - 1)
+                  stream << ", ";
+            }
+            stream << ")";
+         }
+         return stream;
       }
    };
 
