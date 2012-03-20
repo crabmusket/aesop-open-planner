@@ -94,8 +94,6 @@ namespace Aesop {
       mClosedList.clear();
       mId = 0;
 
-      if(ctx) ctx->logEvent("Pushing starting state onto open list.");
-
       // Push initial state onto the open list.
       mOpenList.push_back(IntermediateState(mId)); mId++;
       mOpenList.back().state = *mGoal;
@@ -137,7 +135,7 @@ namespace Aesop {
          IntermediateState s = mOpenList.back();
          mOpenList.pop_back();
 
-         if(ctx) ctx->logEvent("Moving state %s from open to closed.", s.state.str().c_str());
+         if(ctx) ctx->logEvent("Moving state %d from open to closed.", s.ID);
 
          // Add to closed list.
          mClosedList.push_back(s);
@@ -185,7 +183,10 @@ namespace Aesop {
                   attemptIntermediate(ctx, s, *ac, it->second, *pit);
             }
             else
-               attemptIntermediate(ctx, s, *ac, it->second, objects());
+            {
+               objects temp;
+               attemptIntermediate(ctx, s, *ac, it->second, temp);
+            }
          }
       }
       else
@@ -245,8 +246,8 @@ namespace Aesop {
             make_heap(mOpenList.begin(), mOpenList.end(),
                std::greater<IntermediateState>());
 
-            if(ctx) ctx->logEvent("Updating state %s to F=%f",
-               oli->state.str(), oli->G + oli->H);
+            if(ctx) ctx->logEvent("Updating state %d to F=%f",
+               oli->ID, oli->G + oli->H);
             break;
          }
       }
@@ -258,8 +259,8 @@ namespace Aesop {
          // Heapify open list.
          push_heap(mOpenList.begin(), mOpenList.end(), std::greater<IntermediateState>());
 
-         if(ctx) ctx->logEvent("Pushing state %s via action %s onto open list with score F=%.3f.",
-            n.state.str().c_str(), ac.str(n.params).c_str(), n.G + n.H);
+         if(ctx) ctx->logEvent("Pushing new state %d %s via action %s onto open list with score F=%.3f.",
+            n.ID, n.state.str().c_str(), ac.str(n.params).c_str(), n.G + n.H);
       }
    }
 };

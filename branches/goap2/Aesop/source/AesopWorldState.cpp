@@ -317,14 +317,14 @@ namespace Aesop {
    std::string WorldState::str() const
    {
       worldrep::const_iterator it;
-      std::string rep = "\n{\n";
+      std::string rep = "{\n";
       for(it = mState.begin(); it != mState.end(); it++)
       {
          std::stringstream s;
          s << "    " << it->first << " -> " << (int)it->second;
          rep += s.str() + "\n";
       }
-      rep += "}\n";
+      rep += "}";
       return rep;
    }
 
