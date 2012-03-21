@@ -95,8 +95,9 @@ namespace Aesop {
       mId = 0;
 
       // Push initial state onto the open list.
-      mOpenList.push_back(IntermediateState(mId)); mId++;
+      mOpenList.push_back(IntermediateState());
       mOpenList.back().state = *mGoal;
+      mOpenList.back().ID = mId++;
 
       return true;
    }
@@ -161,14 +162,19 @@ namespace Aesop {
             {
                // Permute defined objects to feed as parameters.
                unsigned int permutations = (unsigned int)pow((float)mObjects.size(), (float)nparams);
+               // Number of argument permutations we can make with our objects.
                params.resize(permutations);
-               objects objs(nparams, 0);
+               // Keeps track of the current 
+               std::vector<unsigned int> objs(nparams, 0);
                for(unsigned int i = 0; i < permutations; i++)
                {
+                  // Number of arguments in this permutation.
                   params[i].resize(nparams);
+                  // Copy objects into permutation.
                   unsigned int j;
                   for(j = 0; j < nparams; j++)
-                     params[i][j] = objs[j];
+                     params[i][j] = mObjects[objs[j]];
+                  // Increment and overflow.
                   unsigned int obj = ++objs[--j];
                   while(obj == mObjects.size() && j > 0)
                   {
@@ -177,7 +183,7 @@ namespace Aesop {
                      objs[j]++;
                   }
                }
-               // Loop on the parameter set.
+               // Loop on the parameter set and try all permutations.
                paramset::iterator pit;
                for(pit = params.begin(); pit != params.end(); pit++)
                   attemptIntermediate(ctx, s, *ac, it->second, *pit);
@@ -200,7 +206,7 @@ namespace Aesop {
       if(!s.state.postMatch(ac, plist))
          return;
 
-      IntermediateState n(mId); mId++;
+      IntermediateState n;
       // Copy the current state, then apply the Action to it in reverse to get
       // the previous state.
       n.state = s.state;
@@ -238,22 +244,27 @@ namespace Aesop {
       // Check to see if the world state is already in the open list.
       for(oli = mOpenList.begin(); oli != mOpenList.end(); oli++)
       {
-         if(n.state == oli->state && n < *oli)
+         if(n.state == oli->state)
          {
-            // We've found a more efficient way of getting here.
-            *oli = n;
-            // Reorder the heap.
-            make_heap(mOpenList.begin(), mOpenList.end(),
-               std::greater<IntermediateState>());
+            if(n < *oli)
+            {
+               // We've found a more efficient way of getting here.
+               *oli = n;
+               // Reorder the heap.
+               make_heap(mOpenList.begin(), mOpenList.end(),
+                  std::greater<IntermediateState>());
 
-            if(ctx) ctx->logEvent("Updating state %d to F=%f",
-               oli->ID, oli->G + oli->H);
+               if(ctx) ctx->logEvent("Updating state %d to F=%f",
+                  oli->ID, oli->G + oli->H);
+            }
             break;
          }
       }
       // No match found in open list.
       if(oli == mOpenList.end())
       {
+         // Give the state an ID.
+         n.ID = mId++;
          // Add the new intermediate state to the open list.
          mOpenList.push_back(n);
          // Heapify open list.

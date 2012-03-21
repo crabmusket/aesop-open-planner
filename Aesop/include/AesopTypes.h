@@ -51,15 +51,12 @@ namespace Aesop {
             return true;
          else if(other.name < name)
             return false;
-         if(args < other.args)
-            return true;
-         else if(other.args < args)
-            return false;
-         return indices < other.indices;
+         return args < other.args;
       }
+
       /// Equality is on predicate and parameters.
       bool operator==(const Fact &other) const
-      { return name == other.name && args == other.args && indices == other.indices; }
+      { return name == other.name && args == other.args; }
 
       /// Use Fact(pred) % obj1 % obj2 % ...; to create a Fact with fixed
       /// parameters.
@@ -94,6 +91,12 @@ namespace Aesop {
                if(i < f.args.size() - 1)
                   stream << ", ";
             }
+            /*for(unsigned int i = 0; i < f.indices.size(); i++)
+            {
+               stream << f.indices[i];
+               if(i < f.indices.size() - 1)
+                  stream << ", ";
+            }*/
             stream << ")";
          }
          return stream;
@@ -117,6 +120,10 @@ namespace Aesop {
       Greater,      ///< Fact must be greater than the given value.
       LessEqual,    ///< Fact can be less than or equal to the given value.
       GreaterEqual, ///< Fact must be greater than or equal to the given value.
+   };
+
+   enum SpecialConditionType {
+      ArgsNotEqual, ///< Arguments passed to the Action must not be equal.
    };
 
    /// Types of effects Actions can have.

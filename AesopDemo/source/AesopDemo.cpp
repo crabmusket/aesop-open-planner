@@ -37,34 +37,35 @@ int main(int argc, char **argv)
    };
 
    // Boolean predicate values.
-   PVal ptrue = 2;
-   PVal pfalse = 1;
+   PVal ptrue = 't';
+   PVal pfalse = 'f';
 
    // Three location names.
-   Object loc1 = 'A';
-   Object loc2 = 'B';
-   Object loc3 = 'C';
+   PVal loc1 = 'A';
+   PVal loc2 = 'B';
+   PVal loc3 = 'C';
 
    // Action to buy food from loc2.
    Action aOrder("Buy food");
-   aOrder.condition(Fact(at) % loc1, Equals, ptrue); // Required: at(loc1) -> true
-   aOrder.condition(Fact(money), Equals, ptrue);     // Required: money() -> true
-   aOrder.effect(Fact(money), Set, pfalse);          // Effect: money() -> false
-   aOrder.effect(Fact(hungry), Set, pfalse);         // Effect: hungry() -> false
+   aOrder.condition(Fact(at), Equals, loc2);     // Required: at() -> loc2
+   aOrder.condition(Fact(money), Equals, ptrue); // Required: money() -> true
+   aOrder.effect(Fact(money), Set, pfalse);      // Effect: money() -> false
+   aOrder.effect(Fact(hungry), Set, pfalse);     // Effect: hungry() -> false
 
    // Action to take money from loc3.
    Action aTake("Take money");
-   aTake.condition(Fact(at) % loc3, Equals, ptrue); // Required: at(loc3) -> true
-   aTake.condition(Fact(money), IsUnset);           // Required: money() is not set
-   aTake.effect(Fact(money), Set, ptrue);           // Effect: money() -> true
+   aTake.condition(Fact(at), Equals, loc3); // Required: at() -> loc3
+   aTake.condition(Fact(money), IsUnset);   // Required: money() is not set
+   aTake.effect(Fact(money), Set, ptrue);   // Effect: money() -> true
 
    // Movement action.
    Action aMove("Move");
    aMove.parameters(2); // Two parameters to this action, move-from and move-to.
-   aMove.condition(Fact(at) % Parameter(0), Equals, ptrue); // Required: at(param 0) -> true
-   aMove.condition(Fact(adjacent) % Parameter(0) % Parameter(1), Equals, ptrue); // Required: adjacent(param 0, param 1) -> true
-   aMove.effect(Fact(at) % Parameter(0), Unset);  // Effect: unset at(param 0)
-   aMove.effect(Fact(at) % Parameter(1), Set, ptrue); // Effect: at(param 1) -> true
+   aMove.condition(ArgsNotEqual); // Cannot move from x to x.
+   aMove.condition(Fact(at), 0, Equals); // Required: at() -> param 0
+   //aMove.condition(Fact(adjacent) % Parameter(0) % Parameter(1), Equals, ptrue); // Required: adjacent(param 0, param 1) -> true
+   aMove.effect(Fact(at), Unset);      // Effect: unset at(param 0)
+   aMove.effect(Fact(at), 1, Set); // Effect: at() -> param 1
 
    // Flying movement action.
    //   Required: we are at location given by param 0
@@ -157,17 +158,23 @@ int main(int argc, char **argv)
 /// to stdout.
 void AesopDemoContext::logEvent(const char *fmt, ...)
 {
-   va_list args;
-   va_start(args, fmt);
-   vprintf(fmt, args);
-   putchar('\n');
-   va_end(args);
+   if(mFile)
+   {
+      va_list args;
+      va_start(args, fmt);
+      vfprintf(mFile, fmt, args);
+      fprintf(mFile, "\n");
+      va_end(args);
+   }
 }
 
 AesopDemoContext::AesopDemoContext()
 {
+   mFile = fopen("log.txt", "w");
 }
 
 AesopDemoContext::~AesopDemoContext()
 {
+   fclose(mFile);
+   mFile = NULL;
 }

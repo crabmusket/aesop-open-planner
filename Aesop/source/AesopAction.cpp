@@ -43,6 +43,33 @@ namespace Aesop {
       op.cidx = param;
    }
 
+   void Action::condition(SpecialConditionType type)
+   {
+      mSpecialConditions.insert(type);
+   }
+
+   bool Action::checkSpecialConditions(const objects &params) const
+   {
+      std::set<SpecialConditionType>::const_iterator it;
+      for(it = mSpecialConditions.begin(); it != mSpecialConditions.end(); it++)
+      {
+         switch(*it)
+         {
+         case ArgsNotEqual:
+            if(params.size() > 1)
+            {
+               for(unsigned int i = 0; i < params.size() - 1; i++)
+               {
+                  if(params[i] == params[i+1])
+                     return false;
+               }
+            }
+            break;
+         }
+      }
+      return true;
+   }
+
    void Action::effect(const Fact &fact, EffectType type, PVal val)
    {
       Operation &op = mOperations[fact];
@@ -72,7 +99,7 @@ namespace Aesop {
       for(it = params.begin(); it != params.end(); it++)
       {
          std::stringstream s;
-         s << *it;
+         s << (char)*it;
          rep += " " + s.str();
       }
       rep += ")";

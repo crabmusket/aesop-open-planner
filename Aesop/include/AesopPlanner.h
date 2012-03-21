@@ -101,12 +101,12 @@ namespace Aesop {
          objects params;
 
          /// Default constructor.
-         IntermediateState(unsigned int id)
+         IntermediateState()
          {
             G = H = F = 0.0f;
             prev = 0;
             ac = NULL;
-            ID = id;
+            ID = 0;
          }
 
          /// Compare based on F score.

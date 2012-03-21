@@ -150,6 +150,8 @@ namespace Aesop {
    /// match for the Action to be valid.
    bool WorldState::preMatch(const Action &ac, const objects &params) const
    {
+      if(!ac.checkSpecialConditions(params))
+         return false;
       operations::const_iterator o;
       Operation op;
       Fact f;
@@ -192,9 +194,11 @@ namespace Aesop {
    /// In this method, params is an output argument. The method fills in the
    /// values of each parameter required for the Action to result in the given
    /// world state.
-   /// @todo Review complexity of this method.
+   /// @todo This method seems to be giving false positives.
    bool WorldState::postMatch(const Action &ac, const objects &params) const
    {
+      if(!ac.checkSpecialConditions(params))
+         return false;
       operations::const_iterator o;
       Operation op;
       Fact f;
@@ -223,6 +227,12 @@ namespace Aesop {
                      return false;
                   else
                      consistencies++;
+               }
+               else
+               {
+                  // No mapping for this Fact. If that's not desired, bail.
+                  //if(op.ctype != IsUnset)
+                     //return false;
                }
             }
          }
@@ -283,8 +293,10 @@ namespace Aesop {
             switch(op.etype)
             {
             case Set:
+               _unset(f);
                break;
             case Unset:
+               _unset(f);
                break;
             case Increment:
                _set(f, op.eval - 1);
@@ -321,7 +333,7 @@ namespace Aesop {
       for(it = mState.begin(); it != mState.end(); it++)
       {
          std::stringstream s;
-         s << "    " << it->first << " -> " << (int)it->second;
+         s << "    " << it->first << " -> " << it->second;
          rep += s.str() + "\n";
       }
       rep += "}";
