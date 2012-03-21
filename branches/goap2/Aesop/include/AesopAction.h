@@ -9,6 +9,7 @@
 
 #include <list>
 #include <string>
+#include <set>
 
 namespace Aesop {
    /// An atomic change that can be made to the world state.
@@ -22,6 +23,8 @@ namespace Aesop {
       /// Add a parameter condition to this Action.
       void condition(const Fact &fact, unsigned int param, ConditionType type);
 
+      void condition(SpecialConditionType type);
+
       /// Add an effect to this Action.
       void effect(const Fact &fact, EffectType type, PVal val = 0);
 
@@ -33,6 +36,8 @@ namespace Aesop {
 
       /// How many parameters do we have?
       unsigned int getNumParams() const { return mNumParams; }
+
+      bool checkSpecialConditions(const objects &params) const;
 
       /// Get this Action's friendly name.
       /// @return This Action's name.
@@ -68,6 +73,8 @@ namespace Aesop {
 
       /// Encode our conditions and effects as Operations on Facts.
       operations mOperations;
+
+      std::set<SpecialConditionType> mSpecialConditions;
    };
 
    /// Represents an instance of an Action with a list of defined parameter

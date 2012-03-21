@@ -27,6 +27,7 @@
 #define _AESOPDEMO_H_
 
 #include "Aesop.h"
+#include <stdio.h>
 
 using namespace Aesop;
 
@@ -42,6 +43,7 @@ public:
    ~AesopDemoContext();
 protected:
 private:
+   FILE *mFile;
 };
 
 /// Implement the Action interface for a two-parameter movement action.
