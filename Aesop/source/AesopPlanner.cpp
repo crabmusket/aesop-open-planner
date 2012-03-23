@@ -123,7 +123,6 @@ namespace Aesop {
       // Purge intermediate results.
       mOpenList.clear();
       mClosedList.clear();
-      mSuccess = false;
    }
 
    bool Planner::updateSlicedPlan(Context *ctx)
