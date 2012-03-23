@@ -296,7 +296,7 @@ namespace Aesop {
             switch(op.etype)
             {
             case Set:
-               _unset(f);
+               _set(f, op.eval);
                break;
             case Unset:
                _unset(f);
