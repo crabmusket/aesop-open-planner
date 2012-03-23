@@ -9,25 +9,29 @@
 
 using namespace Aesop;
 
-void printPlan(Plan plan)
+void printPlan(Context &ctx, const Plan &plan)
 {
    Plan::const_iterator it;
-   printf("The Plan:\n");
+   ctx.logEvent("The Plan:\n");
    for(it = plan.begin(); it != plan.end(); it++)
    {
-      printf("   %s", it->ac->getName().c_str());
+      ctx.logEvent("   %s", it->ac->getName().c_str());
       if(it->params.size())
       {
          objects::const_iterator pl;
          for(pl = it->params.begin(); pl != it->params.end(); pl++)
-            printf(" %c", *pl);
+            ctx.logEvent(" %c", *pl);
       }
-      putchar('\n');
+      ctx.logEvent("\n");
    }
 }
 
-int main(int argc, char **argv)
+void hungerProblem()
 {
+   // This problem involves three rooms, A, B and C. In room C, there is some
+   // money, and in room B there is a vending machine. We start in room A, and
+   // we are hungry!
+
    // Create several Predicate names.
    enum {
       at,
@@ -82,9 +86,6 @@ int main(int argc, char **argv)
    actions.add(&aTake);
    actions.add(&aOrder);
 
-   // Construct a logger to keep track of the planning process.
-   AesopDemoContext context;
-
    // Set up some basic domain constants.
    WorldState con;
    con.set(Fact(adjacent) % loc1 % loc2, ptrue); // adjacent(A, B) -> true
@@ -107,46 +108,26 @@ int main(int argc, char **argv)
    planner.addObject(loc1);
    planner.addObject(loc2);
    planner.addObject(loc3);
-   printf("Planning with normal behaviour.\n");
-   if(planner.plan(&context))
-   {
-      const Plan plan = planner.getPlan();
-      printPlan(plan);
-   }
-   else
-   {
-      printf("No plan found to satisfy goal!\n");
-   }
-   putchar('\n');
-   /*
-   // Make a plan for a flying character.
-   //actions.add(&aFly);
-   printf("Planning with flying behaviour!\n");
-   if(planner.plan(&context))
-   {
-      const Plan plan = planner.getPlan();
-      printPlan(plan);
-   }
-   else
-   {
-      printf("No plan found to satisfy goal!\n");
-   }
-   putchar('\n');
 
-   // Now reduce the cost of flying (i.e., make it more preferable).
-   //actions.add(&aFly, 0.5f);
-   printf("Planning when we prefer to fly.\n");
+   // Construct a logger to keep track of the planning process.
+   AesopDemoContext context;
+   context.logEvent("Planning with normal behaviour.\n");
+
+   // Plan!
    if(planner.plan(&context))
    {
       const Plan plan = planner.getPlan();
-      printPlan(plan);
+      printPlan(context, plan);
    }
    else
    {
-      printf("No plan found to satisfy goal!\n");
+      context.logEvent("No plan found to satisfy goal!\n");
    }
-   putchar('\n');
-   */
+}
+
+int main(int argc, char **argv)
+{
+   hungerProblem();
    return 0;
 }
 
