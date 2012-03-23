@@ -107,6 +107,9 @@ namespace Aesop {
    {
       switch(eff)
       {
+      case Set:
+         // Fact must be set to the same value.
+         return val == eval;
       case Unset:
          // Fact is clearly set, so no.
          return false;
